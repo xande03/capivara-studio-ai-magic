@@ -1,6 +1,28 @@
+import { useState } from "react";
 import { Film } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { useToast } from "@/hooks/use-toast";
+
+const videoModels = [
+  { id: "seedream", label: "SeedReam" },
+  { id: "veo", label: "Veo" },
+  { id: "runway", label: "Runway" },
+];
 
 export default function VideoPage() {
+  const [prompt, setPrompt] = useState("");
+  const [selectedModel, setSelectedModel] = useState("seedream");
+  const { toast } = useToast();
+
+  const handleGenerate = () => {
+    if (!prompt.trim()) {
+      toast({ title: "Digite um prompt", description: "Descreva o vídeo que deseja gerar.", variant: "destructive" });
+      return;
+    }
+    toast({ title: "Em desenvolvimento", description: `Geração de vídeo com ${videoModels.find(m => m.id === selectedModel)?.label} estará disponível em breve.` });
+  };
+
   return (
     <div className="max-w-4xl mx-auto space-y-6">
       <div>
@@ -9,17 +31,43 @@ export default function VideoPage() {
           Gerar Vídeo
         </h1>
         <p className="text-sm text-muted-foreground mt-1">
-          Geração de vídeos com IA — em breve via SeedReam e outras plataformas
+          Descreva o vídeo que deseja criar e escolha o modelo de IA
         </p>
       </div>
 
-      <div className="glass-card rounded-xl p-12 text-center">
-        <Film className="w-16 h-16 mx-auto mb-4 text-primary/40" />
-        <h2 className="text-lg font-semibold text-foreground mb-2">Em Desenvolvimento</h2>
-        <p className="text-sm text-muted-foreground max-w-md mx-auto">
-          A ferramenta de geração de vídeos está sendo integrada com SeedReam e outras plataformas de IA generativa.
-          Em breve você poderá criar vídeos a partir de prompts e imagens.
-        </p>
+      <div className="glass-card rounded-xl p-6 space-y-5">
+        <div>
+          <label className="text-sm font-medium text-foreground mb-2 block">Prompt</label>
+          <Textarea
+            placeholder="Descreva o vídeo que deseja gerar..."
+            value={prompt}
+            onChange={(e) => setPrompt(e.target.value)}
+            rows={4}
+            className="bg-secondary/50 border-border resize-none"
+          />
+        </div>
+
+        <div>
+          <label className="text-sm font-medium text-foreground mb-2 block">Modelo</label>
+          <div className="flex gap-2 flex-wrap">
+            {videoModels.map((model) => (
+              <Button
+                key={model.id}
+                variant={selectedModel === model.id ? "default" : "outline"}
+                size="sm"
+                onClick={() => setSelectedModel(model.id)}
+                className={selectedModel === model.id ? "gold-gradient text-primary-foreground" : ""}
+              >
+                {model.label}
+              </Button>
+            ))}
+          </div>
+        </div>
+
+        <Button onClick={handleGenerate} className="w-full gold-gradient text-primary-foreground font-semibold">
+          <Film className="w-4 h-4 mr-2" />
+          Gerar Vídeo
+        </Button>
       </div>
     </div>
   );
