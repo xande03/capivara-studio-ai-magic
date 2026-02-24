@@ -70,7 +70,7 @@ export function AppSidebar() {
                       className="hover:bg-secondary/50 transition-colors"
                       activeClassName="bg-primary/10 text-primary font-medium border-l-2 border-primary"
                     >
-                      <item.icon className="mr-2 h-4 w-4" />
+                      <item.icon className="mr-2 h-5 w-5" />
                       {!collapsed && <span>{item.title}</span>}
                     </NavLink>
                   </SidebarMenuButton>
@@ -95,7 +95,7 @@ export function AppSidebar() {
                       className="hover:bg-secondary/50 transition-colors"
                       activeClassName="bg-primary/10 text-primary font-medium border-l-2 border-primary"
                     >
-                      <item.icon className="mr-2 h-4 w-4" />
+                      <item.icon className="mr-2 h-5 w-5" />
                       {!collapsed && <span>{item.title}</span>}
                     </NavLink>
                   </SidebarMenuButton>
