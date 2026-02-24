@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Film } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { AspectRatioSelector, AspectRatio } from "@/components/AspectRatioSelector";
 import { useToast } from "@/hooks/use-toast";
 
 const videoModels = [
@@ -13,6 +14,7 @@ const videoModels = [
 export default function VideoPage() {
   const [prompt, setPrompt] = useState("");
   const [selectedModel, setSelectedModel] = useState("seedream");
+  const [aspectRatio, setAspectRatio] = useState<AspectRatio>("16:9");
   const { toast } = useToast();
 
   const handleGenerate = () => {
@@ -63,6 +65,8 @@ export default function VideoPage() {
             ))}
           </div>
         </div>
+
+        <AspectRatioSelector value={aspectRatio} onChange={setAspectRatio} />
 
         <Button onClick={handleGenerate} className="w-full gold-gradient text-primary-foreground font-semibold">
           <Film className="w-4 h-4 mr-2" />

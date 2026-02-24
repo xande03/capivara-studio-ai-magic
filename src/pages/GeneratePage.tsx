@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { ModelSelector } from "@/components/ModelSelector";
+import { AspectRatioSelector, AspectRatio } from "@/components/AspectRatioSelector";
 import { HistoryPanel } from "@/components/HistoryPanel";
 import { Lightbox } from "@/components/Lightbox";
 import { processImage, ModelType } from "@/lib/imageApi";
@@ -12,6 +13,7 @@ import { useToast } from "@/hooks/use-toast";
 export default function GeneratePage() {
   const [prompt, setPrompt] = useState("");
   const [model, setModel] = useState<ModelType>("nano-banana");
+  const [aspectRatio, setAspectRatio] = useState<AspectRatio>("1:1");
   const [result, setResult] = useState<string>("");
   const [loading, setLoading] = useState(false);
   const [lightbox, setLightbox] = useState<string>("");
@@ -24,7 +26,7 @@ export default function GeneratePage() {
       return;
     }
     setLoading(true);
-    const res = await processImage({ action: "generate", prompt, model });
+    const res = await processImage({ action: "generate", prompt, model, aspectRatio });
     setLoading(false);
     if (res.error) {
       toast({ title: "Erro", description: res.error, variant: "destructive" });
@@ -52,6 +54,7 @@ export default function GeneratePage() {
       <div className="grid md:grid-cols-2 gap-6">
         <div className="space-y-4">
           <ModelSelector value={model} onChange={setModel} />
+          <AspectRatioSelector value={aspectRatio} onChange={setAspectRatio} />
           <Textarea
             placeholder="Descreva o que deseja criar: personagens, ambientes, animais, fenômenos, pessoas, artistas, cenas... Seja detalhado para melhores resultados!"
             value={prompt}

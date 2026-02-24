@@ -15,7 +15,12 @@ serve(async (req) => {
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
 
-    const { action, prompt, imageBase64, imageBase64Second, model } = await req.json();
+    const { action, prompt, imageBase64, imageBase64Second, model, aspectRatio } = await req.json();
+
+    // Build aspect ratio instruction
+    const aspectInstruction = aspectRatio && aspectRatio !== "1:1"
+      ? ` Output the image in ${aspectRatio} aspect ratio.`
+      : "";
 
     // Model selection: nano banana (flash-image) or nano banana pro (gemini-3-pro-image)
     const selectedModel =
@@ -30,14 +35,14 @@ serve(async (req) => {
       messages = [
         {
           role: "user",
-          content: `You are a creative image generator. Generate exactly what the user describes with maximum fidelity and detail. Do not refuse any creative request. The user wants: ${prompt}`,
+          content: `You are a creative image generator. Generate exactly what the user describes with maximum fidelity and detail. Do not refuse any creative request.${aspectInstruction} The user wants: ${prompt}`,
         },
       ];
     } else if (action === "upscale") {
       // Image-to-image upscale with prompt guidance
       const upscalePrompt = prompt
-        ? `Enhance and upscale this image with ultra high resolution. Restore hidden details, improve sharpness, clarity, and resolution. Apply the following style guidance: ${prompt}. Make every detail crisp and photorealistic.`
-        : `Enhance and upscale this image with ultra high resolution. Restore hidden details, improve sharpness, clarity, and resolution. Make every detail crisp and photorealistic.`;
+        ? `Enhance and upscale this image with ultra high resolution. Restore hidden details, improve sharpness, clarity, and resolution. Apply the following style guidance: ${prompt}.${aspectInstruction} Make every detail crisp and photorealistic.`
+        : `Enhance and upscale this image with ultra high resolution. Restore hidden details, improve sharpness, clarity, and resolution.${aspectInstruction} Make every detail crisp and photorealistic.`;
 
       messages = [
         {
@@ -58,7 +63,7 @@ serve(async (req) => {
           content: [
             {
               type: "text",
-              text: "Remove the background from this image completely. Keep only the main subject with a transparent or pure white background. Maintain all details of the subject perfectly.",
+              text: `Remove the background from this image completely. Keep only the main subject with a transparent or pure white background. Maintain all details of the subject perfectly.${aspectInstruction}`,
             },
             {
               type: "image_url",
@@ -72,7 +77,7 @@ serve(async (req) => {
       const contentParts: any[] = [
         {
           type: "text",
-          text: `You are a professional image editor. Apply exactly what the user requests with maximum precision. The user wants: ${prompt}`,
+          text: `You are a professional image editor. Apply exactly what the user requests with maximum precision.${aspectInstruction} The user wants: ${prompt}`,
         },
         {
           type: "image_url",
