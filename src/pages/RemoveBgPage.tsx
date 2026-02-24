@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ImageUploader } from "@/components/ImageUploader";
 import { ModelSelector } from "@/components/ModelSelector";
+import { AspectRatioSelector, AspectRatio } from "@/components/AspectRatioSelector";
 import { HistoryPanel } from "@/components/HistoryPanel";
 import { Lightbox } from "@/components/Lightbox";
 import { processImage, ModelType } from "@/lib/imageApi";
@@ -12,6 +13,7 @@ import { useToast } from "@/hooks/use-toast";
 export default function RemoveBgPage() {
   const [inputImage, setInputImage] = useState<string>("");
   const [model, setModel] = useState<ModelType>("nano-banana");
+  const [aspectRatio, setAspectRatio] = useState<AspectRatio>("1:1");
   const [result, setResult] = useState<string>("");
   const [loading, setLoading] = useState(false);
   const [lightbox, setLightbox] = useState<string>("");
@@ -24,7 +26,7 @@ export default function RemoveBgPage() {
       return;
     }
     setLoading(true);
-    const res = await processImage({ action: "remove-bg", imageBase64: inputImage, model });
+    const res = await processImage({ action: "remove-bg", imageBase64: inputImage, model, aspectRatio });
     setLoading(false);
     if (res.error) {
       toast({ title: "Erro", description: res.error, variant: "destructive" });
@@ -55,6 +57,7 @@ export default function RemoveBgPage() {
             onClear={() => setInputImage("")}
           />
           <ModelSelector value={model} onChange={setModel} />
+          <AspectRatioSelector value={aspectRatio} onChange={setAspectRatio} />
           <Button onClick={handleRemove} disabled={loading || !inputImage} className="w-full gold-gradient text-background font-semibold">
             {loading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Scissors className="w-4 h-4 mr-2" />}
             {loading ? "Removendo..." : "Remover Fundo"}

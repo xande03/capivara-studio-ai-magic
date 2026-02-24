@@ -3,6 +3,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { ImageUploader } from "@/components/ImageUploader";
 import { ModelSelector } from "@/components/ModelSelector";
+import { AspectRatioSelector, AspectRatio } from "@/components/AspectRatioSelector";
 import { HistoryPanel } from "@/components/HistoryPanel";
 import { Lightbox } from "@/components/Lightbox";
 import { processImage, ModelType } from "@/lib/imageApi";
@@ -14,6 +15,7 @@ export default function UpscalePage() {
   const [inputImage, setInputImage] = useState<string>("");
   const [prompt, setPrompt] = useState("");
   const [model, setModel] = useState<ModelType>("nano-banana");
+  const [aspectRatio, setAspectRatio] = useState<AspectRatio>("1:1");
   const [result, setResult] = useState<string>("");
   const [loading, setLoading] = useState(false);
   const [lightbox, setLightbox] = useState<string>("");
@@ -26,7 +28,7 @@ export default function UpscalePage() {
       return;
     }
     setLoading(true);
-    const res = await processImage({ action: "upscale", prompt, imageBase64: inputImage, model });
+    const res = await processImage({ action: "upscale", prompt, imageBase64: inputImage, model, aspectRatio });
     setLoading(false);
     if (res.error) {
       toast({ title: "Erro", description: res.error, variant: "destructive" });
@@ -60,6 +62,7 @@ export default function UpscalePage() {
             label="Imagem para upscale"
           />
           <ModelSelector value={model} onChange={setModel} />
+          <AspectRatioSelector value={aspectRatio} onChange={setAspectRatio} />
           <Textarea
             placeholder="Prompt de guia (opcional): ex. 'ultra realista, detalhes nítidos, iluminação cinematográfica'"
             value={prompt}
