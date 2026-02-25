@@ -66,13 +66,32 @@ export default function UpscalePage() {
             label="Imagem para upscale"
           />
           <AspectRatioSelector value={aspectRatio} onChange={setAspectRatio} />
-          <Textarea
-            placeholder="Prompt de guia (opcional): ex. 'ultra realista, detalhes nítidos, iluminação cinematográfica'"
-            value={prompt}
-            onChange={(e) => setPrompt(e.target.value)}
-            className="resize-none"
-            rows={3}
-          />
+          <div className="space-y-3">
+            <Textarea
+              placeholder="Descreva como deseja aprimorar a imagem..."
+              value={prompt}
+              onChange={(e) => setPrompt(e.target.value)}
+              className="resize-none"
+              rows={3}
+            />
+            <div className="flex flex-wrap gap-2">
+              {[
+                "Restaurar detalhes e nitidez máxima",
+                "Aumentar resolução preservando texturas",
+                "Melhorar cores e contraste com HDR",
+                "Restaurar rosto com detalhes realistas"
+              ].map((suggestion) => (
+                <button
+                  key={suggestion}
+                  onClick={() => setPrompt(suggestion)}
+                  type="button"
+                  className="text-[10px] px-3 py-2 rounded-full bg-secondary/50 hover:bg-secondary border border-white/5 transition-colors text-muted-foreground hover:text-foreground"
+                >
+                  {suggestion}
+                </button>
+              ))}
+            </div>
+          </div>
           <Button onClick={handleProcess} disabled={loading || !inputImage} className="w-full blue-gradient text-white font-semibold">
             {loading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <ArrowUpCircle className="w-4 h-4 mr-2" />}
             {loading ? "Processando..." : "Fazer Upscale"}
