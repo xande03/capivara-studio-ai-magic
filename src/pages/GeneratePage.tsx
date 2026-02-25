@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
+import { ModelSelector } from "@/components/ModelSelector";
 import { AspectRatioSelector, AspectRatio } from "@/components/AspectRatioSelector";
 import { HistoryPanel } from "@/components/HistoryPanel";
 import { Lightbox } from "@/components/Lightbox";
@@ -11,7 +12,7 @@ import { useToast } from "@/hooks/use-toast";
 
 export default function GeneratePage() {
   const [prompt, setPrompt] = useState("");
-  const [model] = useState<ModelType>("nano-banana-pro");
+  const [model, setModel] = useState<ModelType>("nano-banana");
   const [aspectRatio, setAspectRatio] = useState<AspectRatio>("1:1");
   const [result, setResult] = useState<string>("");
   const [loading, setLoading] = useState(false);
@@ -53,6 +54,7 @@ export default function GeneratePage() {
       <div className="grid md:grid-cols-2 gap-6">
         <div className="glass-card rounded-xl p-5 space-y-4">
           <h3 className="text-sm font-semibold text-foreground uppercase tracking-wide">Configurações</h3>
+          <ModelSelector value={model} onChange={setModel} />
           <AspectRatioSelector value={aspectRatio} onChange={setAspectRatio} />
           <Textarea
             placeholder="Descreva o que deseja criar: personagens, ambientes, animais, fenômenos, pessoas, artistas, cenas... Seja detalhado para melhores resultados!"
