@@ -31,43 +31,43 @@ export const CREATION_MODES: { id: CreationMode; label: string; icon: any; instr
         id: "anime",
         label: "Anime",
         icon: Palette,
-        instruction: "Estilo anime japonês, cores vibrantes, traços nítidos e expressivos."
+        instruction: "Japanese anime style, vibrant colors, sharp and expressive lines."
     },
     {
         id: "caricatura",
         label: "Caricatura",
         icon: Smile,
-        instruction: "Estilo caricatura cômica e exagerada, traços artísticos e expressivos."
+        instruction: "Comic and exaggerated caricature style, artistic and expressive lines."
     },
     {
         id: "slide",
         label: "Slide",
         icon: Presentation,
-        instruction: "Estilo slide de apresentação corporativa, clean, visual informativo e profissional."
+        instruction: "Corporate presentation slide style, clean, informative and professional visual."
     },
     {
         id: "logomarca",
         label: "Logomarca",
         icon: Layout,
-        instruction: "Design de logomarca (logo), minimalista, vetorizado, fundo sólido, visual profissional."
+        instruction: "Logo design, minimalist, vectorized, solid background, professional look."
     },
     {
         id: "adesivo",
         label: "Adesivo",
         icon: StickyNote,
-        instruction: "Estilo adesivo (sticker), contorno branco nítido, cores pop, visual moderno."
+        instruction: "Sticker style, sharp white outline, pop colors, modern look."
     },
     {
         id: "web-ui",
         label: "Web UI",
         icon: Laptop,
-        instruction: "Design de interface de web (Web UI), layout moderno, elementos de UI, visual limpo."
+        instruction: "Web interface design (Web UI), modern layout, UI elements, clean visual."
     },
     {
         id: "poster",
         label: "Poster",
         icon: ImageIcon,
-        instruction: "Estilo poster cinematográfico, composição artística de alto impacto, iluminação dramática."
+        instruction: "Cinematic poster style, high-impact artistic composition, dramatic lighting."
     },
 ];
 
@@ -80,7 +80,7 @@ export function CreationModeSelector({ value, onChange }: Props) {
     return (
         <div className="space-y-3">
             <label className="text-sm font-medium text-foreground block">Modo de Criação</label>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
                 {CREATION_MODES.map((mode) => (
                     <Button
                         key={mode.id}
@@ -88,11 +88,11 @@ export function CreationModeSelector({ value, onChange }: Props) {
                         variant={value === mode.id ? "default" : "outline"}
                         size="sm"
                         onClick={() => onChange(mode.id)}
-                        className={`flex items-center gap-2 justify-start px-3 py-4 h-auto ${value === mode.id ? "blue-gradient text-white border-transparent" : "hover:bg-secondary/50"
+                        className={`flex items-center gap-2 justify-center px-2 py-5 h-auto transition-all duration-300 ${value === mode.id ? "blue-gradient text-white border-transparent shadow-md" : "hover:bg-secondary/50"
                             }`}
                     >
-                        <mode.icon className={`h-4 w-4 ${value === mode.id ? "text-primary-foreground" : "text-primary"}`} />
-                        <span className="text-xs font-medium">{mode.label}</span>
+                        <mode.icon className={`h-4 w-4 shrink-0 ${value === mode.id ? "text-white" : "text-primary"}`} />
+                        <span className="text-[11px] font-semibold leading-tight break-words">{mode.label}</span>
                     </Button>
                 ))}
             </div>

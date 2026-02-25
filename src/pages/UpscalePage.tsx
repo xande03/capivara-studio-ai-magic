@@ -43,8 +43,8 @@ export default function UpscalePage() {
   return (
     <div className="max-w-5xl mx-auto space-y-6">
       <div>
-        <h1 className="text-2xl font-bold blue-text flex items-center gap-2">
-          <ArrowUpCircle className="w-7 h-7 text-primary" />
+        <h1 className="text-2xl font-bold text-indigo-500 flex items-center gap-2">
+          <ArrowUpCircle className="w-7 h-7 text-indigo-500" />
           Upscale & Restauração
         </h1>
         <p className="text-sm text-muted-foreground mt-1">

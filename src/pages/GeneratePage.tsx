@@ -57,8 +57,8 @@ export default function GeneratePage() {
   return (
     <div className="max-w-5xl mx-auto space-y-6">
       <div>
-        <h1 className="text-2xl font-bold blue-text flex items-center gap-2">
-          <Sparkles className="w-7 h-7 text-primary" />
+        <h1 className="text-2xl font-bold text-cyan-500 flex items-center gap-2">
+          <Sparkles className="w-7 h-7 text-cyan-500" />
           Gerar Imagem
         </h1>
         <p className="text-sm text-muted-foreground mt-1">
