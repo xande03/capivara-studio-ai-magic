@@ -2,7 +2,6 @@ import { useState } from "react";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { ImageUploader } from "@/components/ImageUploader";
-import { ModelSelector } from "@/components/ModelSelector";
 import { AspectRatioSelector, AspectRatio } from "@/components/AspectRatioSelector";
 import { HistoryPanel } from "@/components/HistoryPanel";
 import { Lightbox } from "@/components/Lightbox";
@@ -15,7 +14,7 @@ export default function EditPage() {
   const [inputImage, setInputImage] = useState<string>("");
   const [secondImage, setSecondImage] = useState<string>("");
   const [prompt, setPrompt] = useState("");
-  const [model, setModel] = useState<ModelType>("nano-banana");
+  const [model] = useState<ModelType>("nano-banana-pro");
   const [aspectRatio, setAspectRatio] = useState<AspectRatio>("1:1");
   const [result, setResult] = useState<string>("");
   const [loading, setLoading] = useState(false);
@@ -83,7 +82,6 @@ export default function EditPage() {
               label="Segunda imagem (opcional)"
             />
           </div>
-          <ModelSelector value={model} onChange={setModel} />
           <AspectRatioSelector value={aspectRatio} onChange={setAspectRatio} />
           <Textarea
             placeholder="O que deseja editar? Ex: 'remova o fundo e adicione uma praia', 'coloque a roupa da segunda imagem no personagem', 'adicione um chapéu vermelho'"
