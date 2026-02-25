@@ -97,26 +97,26 @@ export function CreationModeSelector({ value, onChange }: Props) {
     return (
         <div className="space-y-4">
             <h3 className="text-sm font-bold text-foreground">Modo de Criação</h3>
-            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-2 gap-3">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 gap-3">
                 {CREATION_MODES.map((mode) => (
                     <button
                         key={mode.id}
                         type="button"
                         onClick={() => onChange(mode.id)}
-                        className={`group relative flex flex-col items-center justify-center p-6 rounded-2xl transition-all duration-300 border-2 overflow-hidden ${value === mode.id
+                        className={`group relative flex flex-col items-center justify-center p-4 rounded-xl transition-all duration-300 border-2 overflow-hidden ${value === mode.id
                             ? "bg-orange-500/10 border-orange-500 shadow-[0_0_20px_rgba(249,115,22,0.15)]"
                             : "bg-card/30 border-white/5 hover:border-white/10 hover:bg-card/50"
                             }`}
                     >
-                        <div className={`mb-3 transition-transform duration-300 group-hover:scale-110 ${value === mode.id ? "text-orange-500" : "text-muted-foreground"
+                        <div className={`mb-2 transition-transform duration-300 group-hover:scale-110 ${value === mode.id ? "text-orange-500" : "text-muted-foreground/80"
                             }`}>
-                            <mode.icon className="h-8 w-8" />
+                            <mode.icon className="h-6 w-6" />
                         </div>
-                        <span className={`text-base font-bold mb-1 transition-colors ${value === mode.id ? "text-orange-500" : "text-foreground/90"
+                        <span className={`text-sm font-bold mb-0.5 transition-colors ${value === mode.id ? "text-orange-500" : "text-foreground/90"
                             }`}>
                             {mode.label}
                         </span>
-                        <span className={`text-[10px] text-center leading-tight transition-colors ${value === mode.id ? "text-orange-500/80" : "text-muted-foreground"
+                        <span className={`text-[9px] text-center leading-tight transition-colors ${value === mode.id ? "text-orange-500/80" : "text-muted-foreground/70"
                             }`}>
                             {mode.description}
                         </span>
