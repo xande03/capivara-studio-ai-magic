@@ -7,7 +7,8 @@ import {
     StickyNote,
     Laptop,
     MousePointer2,
-    Image as ImageIcon
+    Image as ImageIcon,
+    BookOpen
 } from "lucide-react";
 
 export type CreationMode =
@@ -18,6 +19,7 @@ export type CreationMode =
     | "adesivo"
     | "web-ui"
     | "modo-livre"
+    | "hq"
     | "poster";
 
 export const CREATION_MODES: { id: CreationMode; label: string; icon: any; instruction: string }[] = [
@@ -38,6 +40,12 @@ export const CREATION_MODES: { id: CreationMode; label: string; icon: any; instr
         label: "Caricatura",
         icon: Smile,
         instruction: "Comic and exaggerated caricature style, artistic and expressive lines."
+    },
+    {
+        id: "hq",
+        label: "HQ",
+        icon: BookOpen,
+        instruction: "Western comic book style, sharp inks, bold colors, dynamic layout, classic graphic novel aesthetic."
     },
     {
         id: "slide",

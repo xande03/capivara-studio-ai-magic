@@ -26,10 +26,10 @@ import {
 } from "@/components/ui/sidebar";
 
 const tools = [
-  { title: "Upscale", description: "Aumentar resolução com IA", url: "/upscale", icon: ArrowUpCircle, activeColor: "bg-purple-600 text-white", hoverColor: "hover:text-purple-500" },
+  { title: "Upscale", description: "Aumentar resolução com IA", url: "/upscale", icon: ArrowUpCircle, activeColor: "bg-emerald-600 text-white", hoverColor: "hover:text-emerald-500" },
   { title: "Remover Fundo", description: "Recortar fundo automaticamente", url: "/remove-bg", icon: Scissors, activeColor: "bg-teal-600 text-white", hoverColor: "hover:text-teal-500" },
-  { title: "Gerar Imagem", description: "Criar imagens com IA", url: "/generate", icon: Sparkles, activeColor: "bg-blue-600 text-white", hoverColor: "hover:text-blue-500" },
-  { title: "Editar Imagem", description: "Modificar e combinar imagens", url: "/edit", icon: Pencil, activeColor: "bg-indigo-600 text-white", hoverColor: "hover:text-indigo-500" },
+  { title: "Gerar Imagem", description: "Criar imagens com IA", url: "/generate", icon: Sparkles, activeColor: "bg-emerald-500 text-white", hoverColor: "hover:text-emerald-400" },
+  { title: "Editar Imagem", description: "Modificar e combinar imagens", url: "/edit", icon: Pencil, activeColor: "bg-cyan-600 text-white", hoverColor: "hover:text-cyan-400" },
 ];
 
 const gallery = [
@@ -45,15 +45,15 @@ export function AppSidebar() {
     <Sidebar className={collapsed ? "w-14" : "w-64"} collapsible="icon">
       <SidebarContent className="pt-4">
         {!collapsed && (
-          <div className="px-4 pb-4 flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl overflow-hidden shadow-lg shadow-blue-500/20 border border-white/10">
-              <img src="/logo.png" alt="Capivara Logo" className="w-full h-full object-cover" />
+          <div className="px-5 pb-6 flex items-center gap-3">
+            <div className="w-11 h-11 rounded-2xl overflow-hidden shadow-2xl shadow-emerald-500/30 border-2 border-emerald-500/20 bg-emerald-950/50 p-1">
+              <img src="/logo.png" alt="Capivara Logo" className="w-full h-full object-cover rounded-xl" />
             </div>
             <div>
-              <h1 className="text-base font-bold blue-text font-['Outfit']">
-                Capivara Stúdio
+              <h1 className="text-lg font-black emerald-text font-['Outfit'] tracking-tight leading-none">
+                Capivara
               </h1>
-              <p className="text-[10px] text-primary font-semibold tracking-widest uppercase opacity-80">
+              <p className="text-[9px] text-emerald-500/60 font-black tracking-[0.2em] uppercase mt-1">
                 STUDIO PRO
               </p>
             </div>
