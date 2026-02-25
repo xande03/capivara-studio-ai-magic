@@ -26,10 +26,10 @@ import {
 } from "@/components/ui/sidebar";
 
 const tools = [
-  { title: "Upscale", description: "Aumentar resolução com IA", url: "/upscale", icon: ArrowUpCircle, color: "hover:text-indigo-500" },
-  { title: "Gerar Imagem", description: "Criar imagens com IA", url: "/generate", icon: Sparkles, color: "hover:text-cyan-500" },
-  { title: "Editar Imagem", description: "Modificar e combinar imagens", url: "/edit", icon: Pencil, color: "hover:text-blue-500" },
-  { title: "Remover Fundo", description: "Recortar fundo automaticamente", url: "/remove-bg", icon: Scissors, color: "hover:text-sky-500" },
+  { title: "Upscale", description: "Aumentar resolução com IA", url: "/upscale", icon: ArrowUpCircle, activeColor: "bg-purple-600 text-white", hoverColor: "hover:text-purple-500" },
+  { title: "Remover Fundo", description: "Recortar fundo automaticamente", url: "/remove-bg", icon: Scissors, activeColor: "bg-teal-600 text-white", hoverColor: "hover:text-teal-500" },
+  { title: "Gerar Imagem", description: "Criar imagens com IA", url: "/generate", icon: Sparkles, activeColor: "bg-blue-600 text-white", hoverColor: "hover:text-blue-500" },
+  { title: "Editar Imagem", description: "Modificar e combinar imagens", url: "/edit", icon: Pencil, activeColor: "bg-indigo-600 text-white", hoverColor: "hover:text-indigo-500" },
 ];
 
 const gallery = [
@@ -72,16 +72,22 @@ export function AppSidebar() {
                     <NavLink
                       to={item.url}
                       end
-                      className="hover:bg-secondary/50 transition-all duration-300 py-3 group/item border-l-2 border-transparent hover:border-primary/30"
-                      activeClassName="bg-primary/10 text-primary font-medium border-l-2 border-primary"
-                    >
-                      <item.icon className={cn("mr-2 h-5 w-5 shrink-0 transition-colors", item.color)} />
-                      {!collapsed && (
-                        <div className="flex flex-col">
-                          <span className={cn("text-sm transition-colors font-medium", item.color)}>{item.title}</span>
-                          <span className="text-[10px] text-muted-foreground leading-tight">{item.description}</span>
-                        </div>
+                      className={cn(
+                        "transition-all duration-300 py-3 px-3 mx-2 rounded-xl group/item flex items-center justify-between",
+                        item.hoverColor
                       )}
+                      activeClassName={cn("font-medium", item.activeColor)}
+                    >
+                      <div className="flex items-center gap-2">
+                        <item.icon className="h-5 w-5 shrink-0" />
+                        {!collapsed && (
+                          <div className="flex flex-col">
+                            <span className="text-[13px] font-semibold">{item.title}</span>
+                            <span className="text-[10px] opacity-70 leading-tight">{item.description}</span>
+                          </div>
+                        )}
+                      </div>
+                      {!collapsed && <ChevronRight className="w-4 h-4 opacity-0 group-[.active]/item:opacity-100 transition-opacity" />}
                     </NavLink>
                   </SidebarMenuButton>
                 </SidebarMenuItem>

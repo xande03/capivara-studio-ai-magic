@@ -54,14 +54,18 @@ export default function EditPage() {
 
   return (
     <div className="max-w-5xl mx-auto space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-blue-500 flex items-center gap-2">
-          <Pencil className="w-7 h-7 text-blue-500" />
-          Editar Imagem
-        </h1>
-        <p className="text-sm text-muted-foreground mt-1">
-          Adicione, remova ou modifique elementos. Combine duas imagens em uma.
-        </p>
+      <div className="flex items-center gap-4">
+        <div className="tool-header-card glow-cyan">
+          <Pencil className="w-7 h-7 text-cyan-600" />
+        </div>
+        <div>
+          <h1 className="text-2xl font-bold text-foreground">
+            Editar Imagem
+          </h1>
+          <p className="text-sm text-muted-foreground">
+            Modificar e combinar imagens
+          </p>
+        </div>
       </div>
 
       <div className="grid md:grid-cols-2 gap-6">

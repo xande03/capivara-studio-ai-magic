@@ -40,12 +40,18 @@ export default function RemoveBgPage() {
 
   return (
     <div className="max-w-5xl mx-auto space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-sky-500 flex items-center gap-2">
-          <Scissors className="w-7 h-7 text-sky-500" />
-          Remover Fundo
-        </h1>
-        <p className="text-sm text-muted-foreground mt-1">Remova o fundo de qualquer imagem com IA</p>
+      <div className="flex items-center gap-4">
+        <div className="tool-header-card glow-teal">
+          <Scissors className="w-7 h-7 text-teal-600" />
+        </div>
+        <div>
+          <h1 className="text-2xl font-bold text-foreground">
+            Remover Fundo
+          </h1>
+          <p className="text-sm text-muted-foreground">
+            Remova o background automaticamente com IA
+          </p>
+        </div>
       </div>
 
       <div className="grid md:grid-cols-2 gap-6">

@@ -42,14 +42,18 @@ export default function UpscalePage() {
 
   return (
     <div className="max-w-5xl mx-auto space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-indigo-500 flex items-center gap-2">
-          <ArrowUpCircle className="w-7 h-7 text-indigo-500" />
-          Upscale & Restauração
-        </h1>
-        <p className="text-sm text-muted-foreground mt-1">
-          Aumente a resolução e restaure detalhes com IA
-        </p>
+      <div className="flex items-center gap-4">
+        <div className="tool-header-card glow-purple">
+          <ArrowUpCircle className="w-7 h-7 text-purple-600" />
+        </div>
+        <div>
+          <h1 className="text-2xl font-bold text-foreground">
+            Upscale Inteligente
+          </h1>
+          <p className="text-sm text-muted-foreground">
+            Aumente a resolução com restauração de detalhes via IA
+          </p>
+        </div>
       </div>
 
       <div className="grid md:grid-cols-2 gap-6">
