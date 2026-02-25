@@ -54,28 +54,26 @@ export default function EditPage() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6">
+    <div className="max-w-5xl mx-auto space-y-6">
       <div>
         <h1 className="text-2xl font-bold gold-text flex items-center gap-2">
           <Pencil className="w-7 h-7 text-primary" />
           Editar Imagem
         </h1>
         <p className="text-sm text-muted-foreground mt-1">
-          Edite, remova ou adicione elementos. Combine duas imagens em uma.
+          Adicione, remova ou modifique elementos. Combine duas imagens em uma.
         </p>
       </div>
 
       <div className="grid md:grid-cols-2 gap-6">
-        <div className="space-y-4">
-          <div>
-            <p className="text-xs text-muted-foreground mb-2">Imagem principal</p>
-            <ImageUploader
-              onImageSelect={setInputImage}
-              currentImage={inputImage}
-              onClear={() => setInputImage("")}
-              label="Imagem principal"
-            />
-          </div>
+        <div className="glass-card rounded-xl p-5 space-y-4">
+          <h3 className="text-sm font-semibold text-foreground uppercase tracking-wide">Imagem Original</h3>
+          <ImageUploader
+            onImageSelect={setInputImage}
+            currentImage={inputImage}
+            onClear={() => setInputImage("")}
+            label="Imagem principal"
+          />
           <div>
             <p className="text-xs text-muted-foreground mb-2">Segunda imagem (opcional — para combinar)</p>
             <ImageUploader
@@ -100,10 +98,10 @@ export default function EditPage() {
           </Button>
         </div>
 
-        <div className="space-y-4">
+        <div className="glass-card rounded-xl p-5 space-y-4">
+          <h3 className="text-sm font-semibold text-foreground uppercase tracking-wide">Resultado</h3>
           {result ? (
             <div className="space-y-3">
-              <h3 className="text-sm font-medium text-foreground">Resultado</h3>
               <div
                 className="rounded-xl overflow-hidden border border-border cursor-pointer hover:border-primary/50 transition-colors"
                 onClick={() => setLightbox(result)}
@@ -121,7 +119,7 @@ export default function EditPage() {
               </Button>
             </div>
           ) : (
-            <div className="h-64 rounded-xl border border-dashed border-border flex items-center justify-center text-muted-foreground text-sm">
+            <div className="h-64 rounded-xl checkerboard flex items-center justify-center text-muted-foreground text-sm">
               O resultado aparecerá aqui
             </div>
           )}

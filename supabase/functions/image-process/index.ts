@@ -73,23 +73,18 @@ serve(async (req) => {
         },
       ];
     } else if (action === "edit") {
-      // Edit image with prompt - can also combine two images
+      const hasSecondImage = !!imageBase64Second;
+      const editInstruction = hasSecondImage
+        ? `You are a professional image editor. You have TWO images. Use the second image as reference material and apply the user's instructions to modify the first image. Combine elements from both images as the user describes. Keep the original image intact except for the specific changes requested.${aspectInstruction} The user wants: ${prompt}`
+        : `You are a professional image editor. Edit this image exactly as the user requests. You can ADD new objects, elements, or details to the image. You can REMOVE existing objects by seamlessly filling the area with appropriate background. You can MODIFY colors, lighting, style, or any visual aspect. Keep everything else in the original image perfectly intact — only change what the user explicitly asks for.${aspectInstruction} The user wants: ${prompt}`;
+
       const contentParts: any[] = [
-        {
-          type: "text",
-          text: `You are a professional image editor. Apply exactly what the user requests with maximum precision.${aspectInstruction} The user wants: ${prompt}`,
-        },
-        {
-          type: "image_url",
-          image_url: { url: imageBase64 },
-        },
+        { type: "text", text: editInstruction },
+        { type: "image_url", image_url: { url: imageBase64 } },
       ];
 
-      if (imageBase64Second) {
-        contentParts.push({
-          type: "image_url",
-          image_url: { url: imageBase64Second },
-        });
+      if (hasSecondImage) {
+        contentParts.push({ type: "image_url", image_url: { url: imageBase64Second } });
       }
 
       messages = [{ role: "user", content: contentParts }];

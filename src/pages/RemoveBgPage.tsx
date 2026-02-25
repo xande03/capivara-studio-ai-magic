@@ -40,7 +40,7 @@ export default function RemoveBgPage() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6">
+    <div className="max-w-5xl mx-auto space-y-6">
       <div>
         <h1 className="text-2xl font-bold gold-text flex items-center gap-2">
           <Scissors className="w-7 h-7 text-primary" />
@@ -50,7 +50,8 @@ export default function RemoveBgPage() {
       </div>
 
       <div className="grid md:grid-cols-2 gap-6">
-        <div className="space-y-4">
+        <div className="glass-card rounded-xl p-5 space-y-4">
+          <h3 className="text-sm font-semibold text-foreground uppercase tracking-wide">Imagem Original</h3>
           <ImageUploader
             onImageSelect={setInputImage}
             currentImage={inputImage}
@@ -64,10 +65,10 @@ export default function RemoveBgPage() {
           </Button>
         </div>
 
-        <div className="space-y-4">
+        <div className="glass-card rounded-xl p-5 space-y-4">
+          <h3 className="text-sm font-semibold text-foreground uppercase tracking-wide">Resultado</h3>
           {result ? (
             <div className="space-y-3">
-              <h3 className="text-sm font-medium text-foreground">Resultado</h3>
               <div
                 className="rounded-xl overflow-hidden border border-border cursor-pointer hover:border-primary/50 transition-colors"
                 onClick={() => setLightbox(result)}
@@ -85,7 +86,7 @@ export default function RemoveBgPage() {
               </Button>
             </div>
           ) : (
-            <div className="h-64 rounded-xl border border-dashed border-border flex items-center justify-center text-muted-foreground text-sm">
+            <div className="h-64 rounded-xl checkerboard flex items-center justify-center text-muted-foreground text-sm">
               O resultado aparecerá aqui
             </div>
           )}

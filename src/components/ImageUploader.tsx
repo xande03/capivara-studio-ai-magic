@@ -69,8 +69,8 @@ export function ImageUploader({ onImageSelect, label = "Upload imagem", currentI
       }}
     >
       <Upload className="w-10 h-10 mx-auto mb-3 text-muted-foreground" />
-      <p className="text-sm text-muted-foreground">{label}</p>
-      <p className="text-xs text-muted-foreground/60 mt-1">Arraste ou clique para selecionar</p>
+      <p className="text-sm text-muted-foreground font-medium">Arraste ou clique para upload</p>
+      <p className="text-xs text-muted-foreground/50 mt-1">PNG, JPG até 10MB</p>
     </div>
   );
 }
