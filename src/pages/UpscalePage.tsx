@@ -43,7 +43,7 @@ export default function UpscalePage() {
   return (
     <div className="max-w-5xl mx-auto space-y-6">
       <div>
-        <h1 className="text-2xl font-bold gold-text flex items-center gap-2">
+        <h1 className="text-2xl font-bold blue-text flex items-center gap-2">
           <ArrowUpCircle className="w-7 h-7 text-primary" />
           Upscale & Restauração
         </h1>
@@ -69,7 +69,7 @@ export default function UpscalePage() {
             className="resize-none"
             rows={3}
           />
-          <Button onClick={handleProcess} disabled={loading || !inputImage} className="w-full gold-gradient text-background font-semibold">
+          <Button onClick={handleProcess} disabled={loading || !inputImage} className="w-full blue-gradient text-white font-semibold">
             {loading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <ArrowUpCircle className="w-4 h-4 mr-2" />}
             {loading ? "Processando..." : "Fazer Upscale"}
           </Button>

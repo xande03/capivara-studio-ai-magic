@@ -41,7 +41,7 @@ export default function RemoveBgPage() {
   return (
     <div className="max-w-5xl mx-auto space-y-6">
       <div>
-        <h1 className="text-2xl font-bold gold-text flex items-center gap-2">
+        <h1 className="text-2xl font-bold blue-text flex items-center gap-2">
           <Scissors className="w-7 h-7 text-primary" />
           Remover Fundo
         </h1>
@@ -57,7 +57,7 @@ export default function RemoveBgPage() {
             onClear={() => setInputImage("")}
           />
           <AspectRatioSelector value={aspectRatio} onChange={setAspectRatio} />
-          <Button onClick={handleRemove} disabled={loading || !inputImage} className="w-full gold-gradient text-background font-semibold">
+          <Button onClick={handleRemove} disabled={loading || !inputImage} className="w-full blue-gradient text-white font-semibold">
             {loading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Scissors className="w-4 h-4 mr-2" />}
             {loading ? "Removendo..." : "Remover Fundo"}
           </Button>

@@ -57,7 +57,7 @@ export default function GeneratePage() {
   return (
     <div className="max-w-5xl mx-auto space-y-6">
       <div>
-        <h1 className="text-2xl font-bold gold-text flex items-center gap-2">
+        <h1 className="text-2xl font-bold blue-text flex items-center gap-2">
           <Sparkles className="w-7 h-7 text-primary" />
           Gerar Imagem
         </h1>
@@ -79,7 +79,7 @@ export default function GeneratePage() {
             className="resize-none"
             rows={4}
           />
-          <Button onClick={handleGenerate} disabled={loading || !prompt.trim()} className="w-full gold-gradient text-background font-semibold">
+          <Button onClick={handleGenerate} disabled={loading || !prompt.trim()} className="w-full blue-gradient text-white font-semibold">
             {loading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Sparkles className="w-4 h-4 mr-2" />}
             {loading ? "Gerando..." : "Gerar Imagem"}
           </Button>

@@ -55,7 +55,7 @@ export default function EditPage() {
   return (
     <div className="max-w-5xl mx-auto space-y-6">
       <div>
-        <h1 className="text-2xl font-bold gold-text flex items-center gap-2">
+        <h1 className="text-2xl font-bold blue-text flex items-center gap-2">
           <Pencil className="w-7 h-7 text-primary" />
           Editar Imagem
         </h1>
@@ -90,7 +90,7 @@ export default function EditPage() {
             className="resize-none"
             rows={3}
           />
-          <Button onClick={handleEdit} disabled={loading || !inputImage || !prompt.trim()} className="w-full gold-gradient text-background font-semibold">
+          <Button onClick={handleEdit} disabled={loading || !inputImage || !prompt.trim()} className="w-full blue-gradient text-white font-semibold">
             {loading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Pencil className="w-4 h-4 mr-2" />}
             {loading ? "Editando..." : "Editar Imagem"}
           </Button>

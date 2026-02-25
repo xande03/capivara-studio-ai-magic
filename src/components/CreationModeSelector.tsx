@@ -88,7 +88,7 @@ export function CreationModeSelector({ value, onChange }: Props) {
                         variant={value === mode.id ? "default" : "outline"}
                         size="sm"
                         onClick={() => onChange(mode.id)}
-                        className={`flex items-center gap-2 justify-start px-3 py-4 h-auto ${value === mode.id ? "gold-gradient text-primary-foreground border-transparent" : "hover:bg-secondary/50"
+                        className={`flex items-center gap-2 justify-start px-3 py-4 h-auto ${value === mode.id ? "blue-gradient text-white border-transparent" : "hover:bg-secondary/50"
                             }`}
                     >
                         <mode.icon className={`h-4 w-4 ${value === mode.id ? "text-primary-foreground" : "text-primary"}`} />
