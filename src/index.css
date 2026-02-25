@@ -124,4 +124,27 @@
     backdrop-filter: blur(20px);
     border: 1px solid hsl(240, 6%, 20% / 0.5);
   }
+
+  :root .glass-card {
+    background: hsl(0, 0%, 100% / 0.8);
+    border: 1px solid hsl(40, 10%, 85% / 0.5);
+  }
+
+  .checkerboard {
+    background-image:
+      linear-gradient(45deg, hsl(0 0% 80%) 25%, transparent 25%),
+      linear-gradient(-45deg, hsl(0 0% 80%) 25%, transparent 25%),
+      linear-gradient(45deg, transparent 75%, hsl(0 0% 80%) 75%),
+      linear-gradient(-45deg, transparent 75%, hsl(0 0% 80%) 75%);
+    background-size: 20px 20px;
+    background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+  }
+
+  .dark .checkerboard {
+    background-image:
+      linear-gradient(45deg, hsl(240 6% 16%) 25%, transparent 25%),
+      linear-gradient(-45deg, hsl(240 6% 16%) 25%, transparent 25%),
+      linear-gradient(45deg, transparent 75%, hsl(240 6% 16%) 75%),
+      linear-gradient(-45deg, transparent 75%, hsl(240 6% 16%) 75%);
+  }
 }

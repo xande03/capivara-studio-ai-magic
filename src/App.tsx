@@ -10,7 +10,6 @@ import UpscalePage from "./pages/UpscalePage";
 import GeneratePage from "./pages/GeneratePage";
 import EditPage from "./pages/EditPage";
 import RemoveBgPage from "./pages/RemoveBgPage";
-import VideoPage from "./pages/VideoPage";
 import GalleryPage from "./pages/GalleryPage";
 import NotFound from "./pages/NotFound";
 
@@ -30,7 +29,6 @@ const App = () => (
             <Route path="/generate" element={<GeneratePage />} />
             <Route path="/edit" element={<EditPage />} />
             <Route path="/remove-bg" element={<RemoveBgPage />} />
-            <Route path="/video" element={<VideoPage />} />
             <Route path="/gallery" element={<GalleryPage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
