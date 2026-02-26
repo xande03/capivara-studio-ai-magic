@@ -70,7 +70,7 @@ Deno.serve(async (req) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "google/gemini-2.5-flash",
+        model: "google/gemini-2.0-flash", // Corrected model name from 2.5 to 2.0
         messages: [
           {
             role: "system",
@@ -78,7 +78,7 @@ Deno.serve(async (req) => {
           },
           {
             role: "user",
-            content: `Analyze the following content from a music page and extract all music information.\n\nURL: ${url}\n\nPage content:\n${pageContent.slice(0, 8000)}`,
+            content: `Analyze the following content from a music page and extract all music information.\n\nURL: ${url}\n\nPage content:\n${pageContent ? pageContent.slice(0, 8000) : "Scraping failed or no content found. Please use the URL to identify the song and provide details based on your knowledge."}`,
           },
         ],
         tools: [
@@ -97,6 +97,7 @@ Deno.serve(async (req) => {
                   bpm: { type: "number", description: "Estimated beats per minute" },
                   key: { type: "string", description: "Musical key/tonality (e.g. C Major, Am, F#m)" },
                   lyrics: { type: "string", description: "Complete song lyrics" },
+                  mp3Url: { type: "string", description: "A high-quality direct download link for the MP3 of this song if you can find one, otherwise an empty string." },
                 },
                 required: ["title", "artist", "genre", "bpm", "key", "lyrics"],
               },

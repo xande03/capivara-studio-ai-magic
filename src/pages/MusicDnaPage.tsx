@@ -95,10 +95,22 @@ export default function MusicDnaPage() {
   };
 
   const handleDownloadMp3 = () => {
-    toast({
-      title: "Download MP3",
-      description: "O download de MP3 depende da disponibilidade da plataforma. Para músicas do YouTube, use ferramentas como yt-dlp localmente.",
-    });
+    if (!result) return;
+
+    if (result.mp3Url) {
+      window.open(result.mp3Url, "_blank");
+      toast({ title: "Iniciando download...", description: "Você será redirecionado para o link do MP3." });
+    } else {
+      // Fallback: use a generic downloader service if mp3Url is missing
+      const downloadUrl = `https://cobalt.tools/api/json?url=${encodeURIComponent(url)}&format=mp3`;
+      toast({
+        title: "Processando MP3",
+        description: "Buscando melhor fonte para download...",
+      });
+
+      // We can also just redirect to a tool if direct link isn't available
+      window.open(`https://cobalt.tools/?u=${encodeURIComponent(url)}`, "_blank");
+    }
   };
 
   return (

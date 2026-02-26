@@ -8,6 +8,7 @@ export interface MusicInfo {
   bpm: number;
   key: string;
   lyrics: string;
+  mp3Url?: string;
 }
 
 export async function analyzeMusicLink(url: string): Promise<{ data?: MusicInfo; error?: string }> {
