@@ -40,3 +40,5 @@ const App = () => (
 );
 
 export default App;
+
+// Manual sync to trigger Lovable build: 22:56
