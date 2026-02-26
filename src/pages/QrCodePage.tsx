@@ -38,6 +38,7 @@ const QrCodePage = () => {
     const [qrValue, setQrValue] = useState("");
     const [isGenerating, setIsGenerating] = useState(false);
     const [isUploading, setIsUploading] = useState(false);
+    const [processingStep, setProcessingStep] = useState<string>("");
     const { toast } = useToast();
     const qrRef = useRef<HTMLDivElement>(null);
 
@@ -77,14 +78,23 @@ const QrCodePage = () => {
                 return;
             }
             setIsGenerating(true);
+            setProcessingStep("Analisando metadados...");
+
+            await new Promise(r => setTimeout(r, 600));
+            setProcessingStep("Implantando informações...");
+
+            await new Promise(r => setTimeout(r, 600));
+            setProcessingStep("Finalizando Q-Zonal...");
+
             setTimeout(() => {
                 setQrValue(inputValue);
                 setIsGenerating(false);
+                setProcessingStep("");
                 toast({
                     title: "Sucesso!",
                     description: "Seu QR Code foi gerado com sucesso.",
                 });
-            }, 800);
+            }, 500);
         } else {
             if (!file) {
                 toast({
@@ -97,9 +107,13 @@ const QrCodePage = () => {
 
             try {
                 setIsUploading(true);
+                setProcessingStep("Escaneando arquivo...");
 
                 const formData = new FormData();
                 formData.append("file", file);
+
+                await new Promise(r => setTimeout(r, 800));
+                setProcessingStep("Enviando para o Motor Magic...");
 
                 // Using file.io for temporary hosting (expires in 14 days or 1 download)
                 const response = await fetch("https://file.io", {
@@ -114,6 +128,9 @@ const QrCodePage = () => {
                 const data = await response.json();
 
                 if (data.success) {
+                    setProcessingStep("Gerando encriptação QR...");
+                    await new Promise(r => setTimeout(r, 700));
+
                     setQrValue(data.link);
                     toast({
                         title: "Upload concluído!",
@@ -131,6 +148,7 @@ const QrCodePage = () => {
                 });
             } finally {
                 setIsUploading(false);
+                setProcessingStep("");
             }
         }
     };
@@ -170,8 +188,8 @@ const QrCodePage = () => {
                         <img src="/logo.png" alt="Capivara Stúdio" className="w-full h-full object-cover" />
                     </div>
                     <div>
-                        <h1 className="text-3xl font-bold tracking-tight emerald-text">QR Code Magic</h1>
-                        <p className="text-muted-foreground text-sm font-medium">Implantando informações com precisão cinematográfica</p>
+                        <h1 className="text-3xl font-black tracking-tight emerald-text">QR Code Magic</h1>
+                        <p className="text-muted-foreground text-xs font-bold uppercase tracking-[0.2em] opacity-70">Implantando informações com precisão cinematográfica</p>
                     </div>
                 </div>
             </header>
@@ -210,14 +228,14 @@ const QrCodePage = () => {
                                                 placeholder={category === "link" ? "https://exemplo.com" : "Digite a mensagem que o QR Code deve exibir..."}
                                                 value={inputValue}
                                                 onChange={(e) => setInputValue(e.target.value)}
-                                                className="bg-black/30 border-white/10 focus:border-emerald-500/50 h-12 transition-all"
+                                                className="bg-black/5 dark:bg-black/30 border-black/10 dark:border-white/10 focus:border-emerald-500/50 h-12 transition-all placeholder:text-muted-foreground/50"
                                             />
                                         </div>
                                     ) : (
                                         <div className="space-y-3">
-                                            <Label className="text-sm font-semibold">Upload de {category.toUpperCase()}</Label>
+                                            <Label className="text-sm font-bold tracking-tight uppercase opacity-70">Upload de {category.toUpperCase()}</Label>
                                             <label
-                                                className="flex flex-col items-center justify-center w-full h-40 border-2 border-dashed border-white/10 rounded-2xl cursor-pointer hover:bg-emerald-500/5 hover:border-emerald-500/40 transition-all group overflow-hidden relative"
+                                                className="flex flex-col items-center justify-center w-full h-40 border-2 border-dashed border-black/10 dark:border-white/10 rounded-2xl cursor-pointer hover:bg-emerald-500/5 hover:border-emerald-500/40 transition-all group overflow-hidden relative bg-black/5 dark:bg-transparent"
                                             >
                                                 <div className="flex flex-col items-center justify-center pt-5 pb-6 z-10">
                                                     {file ? (
@@ -225,22 +243,25 @@ const QrCodePage = () => {
                                                     ) : (
                                                         <Upload className="w-10 h-10 text-muted-foreground group-hover:text-emerald-500 transition-colors mb-3" />
                                                     )}
-                                                    <p className="text-sm font-medium text-foreground">
+                                                    <p className="text-sm font-bold text-foreground">
                                                         {file ? file.name : `Selecione seu arquivo ${category === 'music' ? 'de Áudio' : category.toUpperCase()}`}
                                                     </p>
-                                                    <p className="text-xs text-muted-foreground mt-1">Arraste e solte ou clique para navegar</p>
+                                                    <p className="text-[11px] text-muted-foreground font-medium mt-1">Arraste e solte ou clique para navegar</p>
                                                 </div>
                                                 <input type="file" className="hidden" onChange={handleFileUpload} accept={category === 'music' ? 'audio/*' : category === 'image' ? 'image/*' : category === 'pdf' ? '.pdf' : '*'} />
                                             </label>
                                         </div>
                                     )}
 
-                                    <div className="space-y-3">
-                                        <Label htmlFor="prompt" className="text-sm font-semibold italic opacity-80 underline decoration-emerald-500/30">Deseja um estilo visual via IA? (Opcional)</Label>
+                                    <div className="space-y-3 p-4 rounded-2xl bg-black/5 dark:bg-black/20 border border-black/5 dark:border-white/5">
+                                        <Label htmlFor="prompt" className="text-xs font-bold italic opacity-60 flex items-center gap-2">
+                                            <Sparkles className="w-3 h-3 text-emerald-500" />
+                                            Deseja um estilo visual via IA? (Opcional)
+                                        </Label>
                                         <Input
                                             id="prompt"
                                             placeholder="Ex: Estilo Tech, Futurista com bordas arredondadas..."
-                                            className="bg-black/20 border-white/5 focus:border-emerald-500/20 italic text-xs h-10"
+                                            className="bg-white/50 dark:bg-black/20 border-black/5 dark:border-white/5 focus:border-emerald-500/20 italic text-xs h-10 placeholder:text-muted-foreground/40"
                                         />
                                     </div>
                                 </div>
@@ -249,14 +270,17 @@ const QrCodePage = () => {
                         <CardFooter className="pt-2">
                             <Button
                                 onClick={generateQrCode}
-                                className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold h-14 rounded-xl gap-2 shadow-xl shadow-emerald-900/40 transition-all hover:scale-[1.01] active:scale-[0.98]"
+                                className={`w-full h-14 rounded-xl gap-2 shadow-xl transition-all hover:scale-[1.01] active:scale-[0.98] font-black uppercase tracking-widest text-xs ${(isGenerating || isUploading)
+                                    ? "bg-emerald-500/20 text-emerald-600 dark:text-emerald-400"
+                                    : "bg-emerald-600 hover:bg-emerald-500 text-white shadow-emerald-900/40"
+                                    }`}
                                 disabled={isGenerating || isUploading}
                             >
                                 {(isGenerating || isUploading) ? (
-                                    <>
-                                        <Loader2 className="w-5 h-5 animate-spin" />
-                                        Gerando Magia...
-                                    </>
+                                    <div className="flex flex-col items-center">
+                                        <Loader2 className="w-5 h-5 animate-spin mb-1" />
+                                        <span className="text-[10px] animate-pulse">{processingStep || "Gerando Magia..."}</span>
+                                    </div>
                                 ) : (
                                     <>
                                         Gerar QR Code Profissional

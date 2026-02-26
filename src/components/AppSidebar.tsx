@@ -43,17 +43,17 @@ export function AppSidebar() {
 
   return (
     <Sidebar className={collapsed ? "w-14" : "w-64"} collapsible="icon">
-      <SidebarContent className="pt-6">
+      <SidebarContent className="pt-8">
         {!collapsed && (
-          <div className="px-6 pb-8 flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl overflow-hidden shadow-lg shadow-emerald-500/10 border border-white/10 flex items-center justify-center">
+          <div className="px-6 pb-10 flex items-center gap-4">
+            <div className="w-12 h-12 rounded-2xl overflow-hidden shadow-xl shadow-emerald-500/20 border border-white/10 flex items-center justify-center bg-white dark:bg-black/20">
               <img src="/logo.png" alt="Capivara Stúdio" className="w-full h-full object-cover" />
             </div>
             <div>
-              <h1 className="text-base font-black emerald-text font-['Space_Grotesk'] tracking-tight">
+              <h1 className="text-xl font-black emerald-text font-['Space_Grotesk'] tracking-tighter leading-none">
                 Capivara Stúdio
               </h1>
-              <p className="text-[10px] text-primary/70 font-bold tracking-widest uppercase opacity-60">
+              <p className="text-[11px] text-foreground/50 font-black tracking-[0.2em] uppercase mt-1">
                 STUDIO PRO
               </p>
             </div>
@@ -135,13 +135,13 @@ export function AppSidebar() {
 
       {!collapsed && (
         <SidebarFooter className="p-6">
-          <div className="p-4 rounded-2xl bg-emerald-500/5 border border-emerald-500/10 flex items-center justify-between">
+          <div className="p-4 rounded-2xl bg-emerald-500/5 dark:bg-emerald-500/5 border border-emerald-500/10 dark:border-emerald-500/10 flex items-center justify-between">
             <div className="flex flex-col">
-              <span className="text-[10px] font-black uppercase tracking-widest text-emerald-500/50">Version</span>
-              <span className="text-xs font-bold text-emerald-500/80">Premium v2.4</span>
+              <span className="text-[10px] font-black uppercase tracking-widest text-emerald-600/50 dark:text-emerald-500/50">Version</span>
+              <span className="text-xs font-bold text-emerald-600 dark:text-emerald-500/80">Premium v2.4</span>
             </div>
             <div className="w-8 h-8 rounded-lg bg-emerald-500/10 flex items-center justify-center">
-              <Zap className="w-4 h-4 text-emerald-500 animate-pulse" />
+              <Zap className="w-4 h-4 text-emerald-600 dark:text-emerald-500 animate-pulse" />
             </div>
           </div>
         </SidebarFooter>
