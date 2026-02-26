@@ -2,7 +2,6 @@ import { useState } from "react";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { ImageUploader } from "@/components/ImageUploader";
-import { ModelSelector } from "@/components/ModelSelector";
 import { AspectRatioSelector, AspectRatio } from "@/components/AspectRatioSelector";
 import { HistoryPanel } from "@/components/HistoryPanel";
 import { Lightbox } from "@/components/Lightbox";
@@ -14,7 +13,7 @@ import { useToast } from "@/hooks/use-toast";
 export default function UpscalePage() {
   const [inputImage, setInputImage] = useState<string>("");
   const [prompt, setPrompt] = useState("");
-  const [model, setModel] = useState<ModelType>("nano-banana");
+  const [model] = useState<ModelType>("nano-banana-pro");
   const [aspectRatio, setAspectRatio] = useState<AspectRatio>("1:1");
   const [result, setResult] = useState<string>("");
   const [loading, setLoading] = useState(false);
@@ -43,14 +42,18 @@ export default function UpscalePage() {
 
   return (
     <div className="max-w-5xl mx-auto space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold gold-text flex items-center gap-2">
-          <ArrowUpCircle className="w-7 h-7 text-primary" />
-          Upscale & Restauração
-        </h1>
-        <p className="text-sm text-muted-foreground mt-1">
-          Aumente a resolução e restaure detalhes com IA
-        </p>
+      <div className="flex items-center gap-4">
+        <div className="tool-header-card glow-purple">
+          <ArrowUpCircle className="w-7 h-7 text-purple-600" />
+        </div>
+        <div>
+          <h1 className="text-2xl font-bold text-foreground">
+            Upscale Inteligente
+          </h1>
+          <p className="text-sm text-muted-foreground">
+            Aumente a resolução com restauração de detalhes via IA
+          </p>
+        </div>
       </div>
 
       <div className="grid md:grid-cols-2 gap-6">
@@ -62,16 +65,34 @@ export default function UpscalePage() {
             onClear={() => setInputImage("")}
             label="Imagem para upscale"
           />
-          <ModelSelector value={model} onChange={setModel} />
           <AspectRatioSelector value={aspectRatio} onChange={setAspectRatio} />
-          <Textarea
-            placeholder="Prompt de guia (opcional): ex. 'ultra realista, detalhes nítidos, iluminação cinematográfica'"
-            value={prompt}
-            onChange={(e) => setPrompt(e.target.value)}
-            className="resize-none"
-            rows={3}
-          />
-          <Button onClick={handleProcess} disabled={loading || !inputImage} className="w-full gold-gradient text-background font-semibold">
+          <div className="space-y-3">
+            <Textarea
+              placeholder="Descreva como deseja aprimorar a imagem..."
+              value={prompt}
+              onChange={(e) => setPrompt(e.target.value)}
+              className="resize-none"
+              rows={3}
+            />
+            <div className="flex flex-wrap gap-2">
+              {[
+                "Restaurar detalhes e nitidez máxima",
+                "Aumentar resolução preservando texturas",
+                "Melhorar cores e contraste com HDR",
+                "Restaurar rosto com detalhes realistas"
+              ].map((suggestion) => (
+                <button
+                  key={suggestion}
+                  onClick={() => setPrompt(suggestion)}
+                  type="button"
+                  className="text-[10px] px-3 py-2 rounded-full bg-secondary/50 hover:bg-secondary border border-white/5 transition-colors text-muted-foreground hover:text-foreground"
+                >
+                  {suggestion}
+                </button>
+              ))}
+            </div>
+          </div>
+          <Button onClick={handleProcess} disabled={loading || !inputImage} className="w-full blue-gradient text-white font-semibold">
             {loading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <ArrowUpCircle className="w-4 h-4 mr-2" />}
             {loading ? "Processando..." : "Fazer Upscale"}
           </Button>

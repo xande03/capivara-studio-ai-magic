@@ -2,7 +2,6 @@ import { useState } from "react";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { ImageUploader } from "@/components/ImageUploader";
-import { ModelSelector } from "@/components/ModelSelector";
 import { AspectRatioSelector, AspectRatio } from "@/components/AspectRatioSelector";
 import { HistoryPanel } from "@/components/HistoryPanel";
 import { Lightbox } from "@/components/Lightbox";
@@ -15,7 +14,7 @@ export default function EditPage() {
   const [inputImage, setInputImage] = useState<string>("");
   const [secondImage, setSecondImage] = useState<string>("");
   const [prompt, setPrompt] = useState("");
-  const [model, setModel] = useState<ModelType>("nano-banana");
+  const [model] = useState<ModelType>("nano-banana-pro");
   const [aspectRatio, setAspectRatio] = useState<AspectRatio>("1:1");
   const [result, setResult] = useState<string>("");
   const [loading, setLoading] = useState(false);
@@ -55,14 +54,18 @@ export default function EditPage() {
 
   return (
     <div className="max-w-5xl mx-auto space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold gold-text flex items-center gap-2">
-          <Pencil className="w-7 h-7 text-primary" />
-          Editar Imagem
-        </h1>
-        <p className="text-sm text-muted-foreground mt-1">
-          Adicione, remova ou modifique elementos. Combine duas imagens em uma.
-        </p>
+      <div className="flex items-center gap-4">
+        <div className="tool-header-card glow-cyan">
+          <Pencil className="w-7 h-7 text-cyan-600" />
+        </div>
+        <div>
+          <h1 className="text-2xl font-bold text-foreground">
+            Editar Imagem
+          </h1>
+          <p className="text-sm text-muted-foreground">
+            Modificar e combinar imagens
+          </p>
+        </div>
       </div>
 
       <div className="grid md:grid-cols-2 gap-6">
@@ -83,7 +86,6 @@ export default function EditPage() {
               label="Segunda imagem (opcional)"
             />
           </div>
-          <ModelSelector value={model} onChange={setModel} />
           <AspectRatioSelector value={aspectRatio} onChange={setAspectRatio} />
           <Textarea
             placeholder="O que deseja editar? Ex: 'remova o fundo e adicione uma praia', 'coloque a roupa da segunda imagem no personagem', 'adicione um chapéu vermelho'"
@@ -92,7 +94,7 @@ export default function EditPage() {
             className="resize-none"
             rows={3}
           />
-          <Button onClick={handleEdit} disabled={loading || !inputImage || !prompt.trim()} className="w-full gold-gradient text-background font-semibold">
+          <Button onClick={handleEdit} disabled={loading || !inputImage || !prompt.trim()} className="w-full blue-gradient text-white font-semibold">
             {loading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Pencil className="w-4 h-4 mr-2" />}
             {loading ? "Editando..." : "Editar Imagem"}
           </Button>

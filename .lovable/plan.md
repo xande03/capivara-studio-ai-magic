@@ -1,77 +1,99 @@
 
 
-## Plano de Implementacao
+# Music DNA - Plano de Implementacao
 
-### 1. Remover ferramenta "Gerar Video"
+## Visao Geral
 
-**Arquivos afetados:**
-- `src/App.tsx` — Remover import do `VideoPage` e a rota `/video`
-- `src/components/AppSidebar.tsx` — Remover item "Gerar Video" do array `tools`
-- `src/pages/VideoPage.tsx` — Deletar arquivo (ou deixar sem referencia)
+Nova ferramenta "Music DNA" que recebe um link de musica (YouTube, Spotify, etc.), usa Firecrawl para extrair dados da pagina e IA para analisar a musica, apresentando os resultados em uma interface rica com download em PDF e MP3.
 
-### 2. Garantir que a edicao de imagens funcione corretamente
+## Arquitetura
 
-A edge function `image-process` ja tem a logica de `edit` implementada corretamente (linhas 75-95), suportando:
-- Uma imagem principal + prompt para adicionar/remover elementos
-- Duas imagens combinadas via prompt
-
-O prompt na edge function sera melhorado para ser mais explicito sobre edicoes de adicao e remocao:
-
-**Arquivo:** `supabase/functions/image-process/index.ts` — Melhorar o prompt do action `edit` para:
-- Instruir explicitamente que o modelo deve adicionar ou remover elementos conforme solicitado
-- Manter a imagem original intacta exceto pelas alteracoes pedidas
-- Quando houver segunda imagem, instruir a combinar elementos de ambas
-
-### 3. Melhorar o visual conforme a imagem de referencia
-
-A imagem mostra um layout mais polido com:
-- **Sidebar** com subtitulos descritivos sob cada item do menu (ex: "Aumentar resolucao com IA", "Criar imagens com IA", "Modificar e combinar imagens")
-- **Label "STUDIO PRO"** sob o nome Capivara
-- **Badge "Online"** no header (canto superior direito, verde)
-- **Badge "Powered by AI"** no rodape da sidebar
-- **Secoes de conteudo** com titulos "Imagem Original" e "Resultado" em cards separados com bordas mais definidas
-- **Area de resultado** com padrao xadrez (transparencia) quando vazio
-- **Upload area** mais limpa com icone e texto "Arraste ou clique para upload / PNG, JPG ate 10MB"
-
-**Arquivos afetados:**
-
-**`src/components/AppSidebar.tsx`:**
-- Adicionar subtitulos descritivos a cada item do menu
-- Trocar "AI Image Suite" por "STUDIO PRO"
-- Adicionar badge "Powered by AI" no rodape da sidebar
-- Renomear grupo "Biblioteca" para "VISUALIZACAO"
-
-**`src/components/Layout.tsx`:**
-- Adicionar badge "Online" verde no canto superior direito do header
-
-**`src/components/ImageUploader.tsx`:**
-- Melhorar textos: "Arraste ou clique para upload" e "PNG, JPG ate 10MB"
-
-**Paginas de ferramentas (Upscale, Edit, RemoveBg, Generate):**
-- Envolver areas de upload e resultado em cards com titulos "Imagem Original" e "Resultado"
-- Area de resultado vazia com padrao xadrez (checkered) para indicar transparencia
-- Layout mais organizado com cards glass-card
-
-**`src/index.css`:**
-- Adicionar classe CSS para padrao xadrez (checkered pattern) na area de resultado vazio
-- Ajustar `.glass-card` para suportar melhor o tema claro
-
-### Detalhes Tecnicos
-
-**Padrao xadrez CSS:**
-```css
-.checkerboard {
-  background-image: 
-    linear-gradient(45deg, #808080 25%, transparent 25%),
-    linear-gradient(-45deg, #808080 25%, transparent 25%),
-    linear-gradient(45deg, transparent 75%, #808080 75%),
-    linear-gradient(-45deg, transparent 75%, #808080 75%);
-  background-size: 20px 20px;
-  background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
-}
+```text
+[Usuario cola link] → [Frontend] → [Edge Function: music-dna]
+                                         │
+                                    ┌────┴────┐
+                                    │Firecrawl │ → Scrape da pagina do link
+                                    └────┬────┘
+                                         │ conteudo extraido
+                                    ┌────┴─────────┐
+                                    │ Gemini 2.5    │ → Analise com tool calling
+                                    │ Flash         │   para dados estruturados
+                                    └────┬─────────┘
+                                         │
+                              { title, artist, band, genre,
+                                bpm, key, lyrics, albumArt }
+                                         │
+                                    [Frontend exibe resultados]
+                                    [Gera PDF no cliente com jspdf]
+                                    [Busca MP3 via API externa]
 ```
 
-**Subtitulos no menu:** Cada item tera um `description` adicional renderizado como texto menor abaixo do titulo.
+## Pre-requisito: Conectar Firecrawl
 
-**Edge function edit prompt:** Sera atualizado para instrucoes mais claras sobre adicao/remocao de elementos, garantindo que o modelo entenda exatamente o que preservar e o que alterar.
+O Firecrawl ainda nao esta conectado ao projeto. Sera necessario conectar o conector Firecrawl antes de implementar, para que a chave `FIRECRAWL_API_KEY` esteja disponivel nas edge functions.
+
+## Etapas
+
+### 1. Conectar Firecrawl
+Usar o conector Firecrawl para configurar a chave de API automaticamente no projeto.
+
+### 2. Instalar dependencia `jspdf`
+Para geracao de PDF no cliente com as informacoes da musica.
+
+### 3. Criar Edge Function `music-dna`
+
+**Arquivo:** `supabase/functions/music-dna/index.ts`
+
+Fluxo:
+1. Recebe `{ url }` do frontend
+2. Usa Firecrawl API para scrape da URL (extrai markdown da pagina)
+3. Envia conteudo extraido para Lovable AI (`google/gemini-2.5-flash`) com tool calling para obter dados estruturados:
+   - `title` (nome da musica)
+   - `artist` (cantor/artista)
+   - `band` (banda, se aplicavel)
+   - `genre` (estilo musical)
+   - `bpm` (batidas por minuto estimadas)
+   - `key` (tom da musica)
+   - `lyrics` (letra completa)
+4. Retorna JSON estruturado ao frontend
+
+Registrar em `supabase/config.toml` com `verify_jwt = false`.
+
+### 4. Criar `src/lib/musicApi.ts`
+
+Funcao `analyzeMusicLink(url: string)` que chama a edge function `music-dna` via `supabase.functions.invoke`.
+
+### 5. Criar pagina `src/pages/MusicDnaPage.tsx`
+
+Interface com:
+- Campo de input para colar o link da musica (YouTube, Spotify, YouTube Music, etc.)
+- Botao "Analisar Musica" com icone
+- Estado de loading com animacao de pulso
+- Card de resultado com layout rico:
+  - Titulo e Artista/Banda em destaque
+  - Badges visuais para BPM, Tom e Genero
+  - Area scrollavel com a letra da musica (preview)
+- Botao "Baixar PDF" — gera PDF no cliente usando `jspdf` com todas as informacoes formatadas
+- Botao "Baixar MP3" — busca o audio via API de conversao (cobrafreevideodownloader ou servico similar gratuito); caso indisponivel, exibe mensagem informativa
+
+### 6. Atualizar navegacao
+
+**`src/components/AppSidebar.tsx`:**
+- Adicionar item "Music DNA" ao array `tools` com icone `Music` do lucide-react
+- Descricao: "Identificar musicas por link"
+- Cor: `bg-purple-600` / `hover:text-purple-500`
+
+**`src/App.tsx`:**
+- Adicionar import de `MusicDnaPage` e rota `/music-dna`
+
+## Detalhes Tecnicos
+
+**Edge function - Tool calling para dados estruturados:**
+O Gemini sera instruido a retornar um JSON estruturado com os campos necessarios. O prompt incluira o conteudo scrapeado da pagina e pedira para a IA completar com seu conhecimento proprio (especialmente BPM, tom e letra completa caso nao estejam na pagina).
+
+**Download MP3:**
+Sera implementado um mecanismo de busca de audio utilizando APIs publicas de conversao. O botao tera um estado de loading proprio e, caso a conversao falhe, exibira uma mensagem explicativa ao usuario.
+
+**PDF com jspdf:**
+O PDF contera: titulo, artista, banda, genero, BPM, tom, e a letra completa formatada. Sera gerado inteiramente no cliente sem necessidade de backend adicional.
 

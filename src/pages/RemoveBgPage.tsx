@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ImageUploader } from "@/components/ImageUploader";
-import { ModelSelector } from "@/components/ModelSelector";
 import { AspectRatioSelector, AspectRatio } from "@/components/AspectRatioSelector";
 import { HistoryPanel } from "@/components/HistoryPanel";
 import { Lightbox } from "@/components/Lightbox";
@@ -12,7 +11,7 @@ import { useToast } from "@/hooks/use-toast";
 
 export default function RemoveBgPage() {
   const [inputImage, setInputImage] = useState<string>("");
-  const [model, setModel] = useState<ModelType>("nano-banana");
+  const [model] = useState<ModelType>("nano-banana-pro");
   const [aspectRatio, setAspectRatio] = useState<AspectRatio>("1:1");
   const [result, setResult] = useState<string>("");
   const [loading, setLoading] = useState(false);
@@ -41,12 +40,18 @@ export default function RemoveBgPage() {
 
   return (
     <div className="max-w-5xl mx-auto space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold gold-text flex items-center gap-2">
-          <Scissors className="w-7 h-7 text-primary" />
-          Remover Fundo
-        </h1>
-        <p className="text-sm text-muted-foreground mt-1">Remova o fundo de qualquer imagem com IA</p>
+      <div className="flex items-center gap-4">
+        <div className="tool-header-card glow-teal">
+          <Scissors className="w-7 h-7 text-teal-600" />
+        </div>
+        <div>
+          <h1 className="text-2xl font-bold text-foreground">
+            Remover Fundo
+          </h1>
+          <p className="text-sm text-muted-foreground">
+            Remova o background automaticamente com IA
+          </p>
+        </div>
       </div>
 
       <div className="grid md:grid-cols-2 gap-6">
@@ -57,9 +62,8 @@ export default function RemoveBgPage() {
             currentImage={inputImage}
             onClear={() => setInputImage("")}
           />
-          <ModelSelector value={model} onChange={setModel} />
           <AspectRatioSelector value={aspectRatio} onChange={setAspectRatio} />
-          <Button onClick={handleRemove} disabled={loading || !inputImage} className="w-full gold-gradient text-background font-semibold">
+          <Button onClick={handleRemove} disabled={loading || !inputImage} className="w-full blue-gradient text-white font-semibold">
             {loading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Scissors className="w-4 h-4 mr-2" />}
             {loading ? "Removendo..." : "Remover Fundo"}
           </Button>

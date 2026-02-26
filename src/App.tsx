@@ -11,6 +11,7 @@ import GeneratePage from "./pages/GeneratePage";
 import EditPage from "./pages/EditPage";
 import RemoveBgPage from "./pages/RemoveBgPage";
 import GalleryPage from "./pages/GalleryPage";
+import MusicDnaPage from "./pages/MusicDnaPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -23,15 +24,16 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <Layout>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/upscale" element={<UpscalePage />} />
-            <Route path="/generate" element={<GeneratePage />} />
-            <Route path="/edit" element={<EditPage />} />
-            <Route path="/remove-bg" element={<RemoveBgPage />} />
-            <Route path="/gallery" element={<GalleryPage />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/upscale" element={<UpscalePage />} />
+              <Route path="/generate" element={<GeneratePage />} />
+              <Route path="/edit" element={<EditPage />} />
+              <Route path="/remove-bg" element={<RemoveBgPage />} />
+              <Route path="/gallery" element={<GalleryPage />} />
+              <Route path="/music-dna" element={<MusicDnaPage />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
           </Layout>
         </BrowserRouter>
       </TooltipProvider>
@@ -40,3 +42,5 @@ const App = () => (
 );
 
 export default App;
+
+// Manual sync to trigger Lovable build: 22:56

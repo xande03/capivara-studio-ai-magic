@@ -2,10 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap');
 
 @layer base {
   :root {
+    /* Light Mode */
     --background: 0 0% 100%;
     --foreground: 240 10% 10%;
 
@@ -15,8 +16,8 @@
     --popover: 0 0% 100%;
     --popover-foreground: 240 10% 10%;
 
-    --primary: 42 100% 55%;
-    --primary-foreground: 240 10% 6%;
+    --primary: 150 80% 50%;
+    --primary-foreground: 155 45% 8%;
 
     --secondary: 240 5% 96%;
     --secondary-foreground: 240 10% 20%;
@@ -24,71 +25,72 @@
     --muted: 240 5% 96%;
     --muted-foreground: 240 5% 45%;
 
-    --accent: 42 80% 45%;
-    --accent-foreground: 240 10% 6%;
+    --accent: 150 80% 50%;
+    --accent-foreground: 155 45% 8%;
 
-    --destructive: 0 72% 51%;
-    --destructive-foreground: 0 0% 100%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 210 40% 98%;
 
     --border: 240 6% 90%;
     --input: 240 6% 90%;
-    --ring: 42 100% 55%;
+    --ring: 150 80% 50%;
 
-    --radius: 0.75rem;
+    --radius: 0.85rem;
 
     --sidebar-background: 240 5% 98%;
     --sidebar-foreground: 240 10% 20%;
-    --sidebar-primary: 42 100% 55%;
-    --sidebar-primary-foreground: 240 10% 6%;
+    --sidebar-primary: 150 80% 50%;
+    --sidebar-primary-foreground: 155 45% 8%;
     --sidebar-accent: 240 5% 96%;
     --sidebar-accent-foreground: 240 10% 15%;
     --sidebar-border: 240 6% 90%;
-    --sidebar-ring: 42 100% 55%;
+    --sidebar-ring: 150 80% 50%;
 
-    --gold-glow: 42 100% 55%;
-    --gold-muted: 42 40% 35%;
+    --primary-glow: 150 80% 50%;
+    --primary-muted: 155 40% 25%;
   }
 
   .dark {
-    --background: 240 10% 6%;
-    --foreground: 40 20% 95%;
+    /* Emerald Theme - Mode Escuro */
+    --background: 155 45% 8%;
+    --foreground: 160 20% 98%;
 
-    --card: 240 8% 10%;
-    --card-foreground: 40 20% 95%;
+    --card: 155 40% 12%;
+    --card-foreground: 160 20% 98%;
 
-    --popover: 240 8% 10%;
-    --popover-foreground: 40 20% 95%;
+    --popover: 155 40% 12%;
+    --popover-foreground: 160 20% 98%;
 
-    --primary: 42 100% 55%;
-    --primary-foreground: 240 10% 6%;
+    --primary: 150 80% 50%;
+    --primary-foreground: 155 45% 8%;
 
-    --secondary: 240 6% 16%;
-    --secondary-foreground: 40 20% 90%;
+    --secondary: 155 20% 18%;
+    --secondary-foreground: 160 20% 98%;
 
-    --muted: 240 6% 16%;
-    --muted-foreground: 240 5% 55%;
+    --muted: 155 20% 18%;
+    --muted-foreground: 155 10% 65%;
 
-    --accent: 42 80% 45%;
-    --accent-foreground: 240 10% 6%;
+    --accent: 150 80% 50%;
+    --accent-foreground: 155 45% 8%;
 
-    --destructive: 0 72% 51%;
-    --destructive-foreground: 0 0% 100%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 210 40% 98%;
 
-    --border: 240 6% 20%;
-    --input: 240 6% 20%;
-    --ring: 42 100% 55%;
+    --border: 155 20% 20%;
+    --input: 155 20% 20%;
+    --ring: 150 80% 50%;
 
-    --sidebar-background: 240 10% 8%;
-    --sidebar-foreground: 40 20% 85%;
-    --sidebar-primary: 42 100% 55%;
-    --sidebar-primary-foreground: 240 10% 6%;
-    --sidebar-accent: 240 6% 14%;
-    --sidebar-accent-foreground: 40 20% 90%;
-    --sidebar-border: 240 6% 16%;
-    --sidebar-ring: 42 100% 55%;
+    --sidebar-background: 155 45% 6%;
+    --sidebar-foreground: 160 15% 90%;
+    --sidebar-primary: 150 80% 50%;
+    --sidebar-primary-foreground: 155 45% 8%;
+    --sidebar-accent: 155 20% 15%;
+    --sidebar-accent-foreground: 160 20% 98%;
+    --sidebar-border: 155 20% 15%;
+    --sidebar-ring: 150 80% 50%;
 
-    --gold-glow: 42 100% 55%;
-    --gold-muted: 42 40% 35%;
+    --primary-glow: 150 80% 50%;
+    --primary-muted: 155 40% 25%;
   }
 }
 
@@ -102,21 +104,32 @@
     font-family: 'Inter', sans-serif;
   }
 
-  h1, h2, h3, h4, h5, h6 {
-    font-family: 'Space Grotesk', sans-serif;
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: 'Outfit', sans-serif;
+    letter-spacing: -0.02em;
   }
 }
 
 @layer utilities {
-  .gold-gradient {
-    background: linear-gradient(135deg, hsl(42, 100%, 55%), hsl(32, 100%, 45%));
+
+  .emerald-gradient,
+  .blue-gradient {
+    background: linear-gradient(135deg, hsl(150, 80%, 50%), hsl(170, 90%, 45%));
+    @apply shadow-lg shadow-emerald-500/20;
   }
-  
-  .gold-text {
-    background: linear-gradient(135deg, hsl(42, 100%, 65%), hsl(32, 100%, 50%));
+
+  .emerald-text,
+  .blue-text {
+    background: linear-gradient(135deg, hsl(150, 80%, 70%), hsl(180, 90%, 60%));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
+    filter: drop-shadow(0 0 10px rgba(16, 185, 129, 0.3));
   }
 
   .glass-card {
@@ -126,25 +139,17 @@
   }
 
   .dark .glass-card {
-    background: hsl(240, 8%, 10% / 0.8);
-    border: 1px solid hsl(240, 6%, 20% / 0.5);
+    background: hsl(155, 40% 12% / 0.5);
+    backdrop-filter: blur(20px);
+    border: 1px solid hsl(155, 20% 25% / 0.3);
   }
 
   .checkerboard {
     background-image:
-      linear-gradient(45deg, hsl(0 0% 80%) 25%, transparent 25%),
-      linear-gradient(-45deg, hsl(0 0% 80%) 25%, transparent 25%),
-      linear-gradient(45deg, transparent 75%, hsl(0 0% 80%) 75%),
-      linear-gradient(-45deg, transparent 75%, hsl(0 0% 80%) 75%);
+      linear-gradient(45deg, hsl(155 20% 12%) 25%, transparent 25%),
+      linear-gradient(-45deg, hsl(155 20% 12%) 25%, transparent 25%),
+      linear-gradient(45deg, transparent 75%, hsl(155 20% 12%) 75%),
+      linear-gradient(-45deg, transparent 75%, hsl(155 20% 12%) 75%);
     background-size: 20px 20px;
-    background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
-  }
-
-  .dark .checkerboard {
-    background-image:
-      linear-gradient(45deg, hsl(240 6% 16%) 25%, transparent 25%),
-      linear-gradient(-45deg, hsl(240 6% 16%) 25%, transparent 25%),
-      linear-gradient(45deg, transparent 75%, hsl(240 6% 16%) 75%),
-      linear-gradient(-45deg, transparent 75%, hsl(240 6% 16%) 75%);
   }
 }

@@ -11,22 +11,54 @@ const toolLabels: Record<string, string> = {
 };
 
 export default function GalleryPage() {
-  const [items] = useState<HistoryItem[]>(() => getAllHistory());
+  const [allItems] = useState<HistoryItem[]>(() => getAllHistory());
+  const [activeFilter, setActiveFilter] = useState("Todas");
   const [lightbox, setLightbox] = useState<string>("");
+
+  const filters = [
+    { label: "Todas", tool: null },
+    { label: "Upscale", tool: "upscale" },
+    { label: "Fundo", tool: "remove-bg" },
+    { label: "Geradas", tool: "generate" },
+  ];
+
+  const filteredItems = activeFilter === "Todas"
+    ? allItems
+    : allItems.filter(item => {
+      const targetTool = filters.find(f => f.label === activeFilter)?.tool;
+      return item.tool === targetTool;
+    });
 
   return (
     <div className="max-w-6xl mx-auto space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold gold-text flex items-center gap-2">
-          <LayoutGrid className="w-7 h-7 text-primary" />
-          Galeria
-        </h1>
-        <p className="text-sm text-muted-foreground mt-1">
-          Todas as imagens processadas nesta sessão ({items.length} itens)
-        </p>
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-black emerald-text flex items-center gap-2">
+            <LayoutGrid className="w-7 h-7 text-emerald-500" />
+            Galeria
+          </h1>
+          <p className="text-[11px] text-muted-foreground mt-1 uppercase tracking-wider font-medium opacity-70">
+            {filteredItems.length} {(filteredItems.length === 1) ? 'item processado' : 'itens processados'}
+          </p>
+        </div>
+
+        <div className="flex items-center gap-2 bg-card/30 p-1.5 rounded-full border border-white/5 backdrop-blur-md">
+          {filters.map((filter) => (
+            <button
+              key={filter.label}
+              onClick={() => setActiveFilter(filter.label)}
+              className={`px-5 py-1.5 rounded-full text-xs font-bold transition-all duration-300 ${activeFilter === filter.label
+                ? "bg-emerald-500 text-emerald-950 shadow-lg shadow-emerald-500/20 scale-105"
+                : "text-muted-foreground hover:text-foreground hover:bg-white/5"
+                }`}
+            >
+              {filter.label}
+            </button>
+          ))}
+        </div>
       </div>
 
-      {items.length === 0 ? (
+      {filteredItems.length === 0 ? (
         <div className="glass-card rounded-xl p-12 text-center">
           <LayoutGrid className="w-16 h-16 mx-auto mb-4 text-primary/40" />
           <h2 className="text-lg font-semibold text-foreground mb-2">Galeria Vazia</h2>
@@ -35,8 +67,8 @@ export default function GalleryPage() {
           </p>
         </div>
       ) : (
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-          {items.map((item) => (
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
+          {filteredItems.map((item) => (
             <div
               key={item.id}
               className="group cursor-pointer rounded-xl overflow-hidden border border-border hover:border-primary/50 transition-all hover:scale-[1.02]"

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { ModelSelector } from "@/components/ModelSelector";
+import { CreationModeSelector, CREATION_MODES, CreationMode } from "@/components/CreationModeSelector";
 import { AspectRatioSelector, AspectRatio } from "@/components/AspectRatioSelector";
 import { HistoryPanel } from "@/components/HistoryPanel";
 import { Lightbox } from "@/components/Lightbox";
@@ -13,6 +14,7 @@ import { useToast } from "@/hooks/use-toast";
 export default function GeneratePage() {
   const [prompt, setPrompt] = useState("");
   const [model, setModel] = useState<ModelType>("nano-banana");
+  const [creationMode, setCreationMode] = useState<CreationMode>("modo-livre");
   const [aspectRatio, setAspectRatio] = useState<AspectRatio>("1:1");
   const [result, setResult] = useState<string>("");
   const [loading, setLoading] = useState(false);
@@ -26,7 +28,20 @@ export default function GeneratePage() {
       return;
     }
     setLoading(true);
-    const res = await processImage({ action: "generate", prompt, model, aspectRatio });
+
+    // Construct optimized prompt based on creation mode
+    const selectedMode = CREATION_MODES.find(m => m.id === creationMode);
+    const finalPrompt = selectedMode?.instruction
+      ? `${selectedMode.instruction} ${prompt}`
+      : prompt;
+
+    const res = await processImage({
+      action: "generate",
+      prompt: finalPrompt,
+      model,
+      aspectRatio
+    });
+
     setLoading(false);
     if (res.error) {
       toast({ title: "Erro", description: res.error, variant: "destructive" });
@@ -34,36 +49,41 @@ export default function GeneratePage() {
     }
     if (res.image) {
       setResult(res.image);
-      addToHistory({ tool: "generate", prompt, outputImage: res.image, model });
+      addToHistory({ tool: "generate", prompt: finalPrompt, outputImage: res.image, model });
       setHistory(getToolHistory("generate"));
     }
   };
 
   return (
     <div className="max-w-5xl mx-auto space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold gold-text flex items-center gap-2">
-          <Sparkles className="w-7 h-7 text-primary" />
-          Gerar Imagem
-        </h1>
-        <p className="text-sm text-muted-foreground mt-1">
-          Crie imagens de personagens, cenários, fenômenos, pessoas e muito mais
-        </p>
+      <div className="flex items-center gap-4">
+        <div className="tool-header-card glow-blue">
+          <Sparkles className="w-7 h-7 text-blue-600" />
+        </div>
+        <div>
+          <h1 className="text-2xl font-bold text-foreground">
+            Gerar Imagem
+          </h1>
+          <p className="text-sm text-muted-foreground">
+            Criar imagens com IA
+          </p>
+        </div>
       </div>
 
       <div className="grid md:grid-cols-2 gap-6">
         <div className="glass-card rounded-xl p-5 space-y-4">
           <h3 className="text-sm font-semibold text-foreground uppercase tracking-wide">Configurações</h3>
           <ModelSelector value={model} onChange={setModel} />
+          <CreationModeSelector value={creationMode} onChange={setCreationMode} />
           <AspectRatioSelector value={aspectRatio} onChange={setAspectRatio} />
           <Textarea
-            placeholder="Descreva o que deseja criar: personagens, ambientes, animais, fenômenos, pessoas, artistas, cenas... Seja detalhado para melhores resultados!"
+            placeholder="Descreva o que deseja criar..."
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
             className="resize-none"
-            rows={5}
+            rows={4}
           />
-          <Button onClick={handleGenerate} disabled={loading || !prompt.trim()} className="w-full gold-gradient text-background font-semibold">
+          <Button onClick={handleGenerate} disabled={loading || !prompt.trim()} className="w-full blue-gradient text-white font-semibold">
             {loading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Sparkles className="w-4 h-4 mr-2" />}
             {loading ? "Gerando..." : "Gerar Imagem"}
           </Button>

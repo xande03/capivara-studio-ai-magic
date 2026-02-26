@@ -125,10 +125,10 @@ serve(async (req) => {
         );
       }
       const errorText = await response.text();
-      console.error("AI gateway error:", response.status, errorText);
+      console.error(`AI gateway error (${response.status}):`, errorText);
       return new Response(
-        JSON.stringify({ error: "Erro ao processar imagem" }),
-        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        JSON.stringify({ error: `Ocorreu um erro na geração. Status: ${response.status}. Tente novamente.` }),
+        { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
