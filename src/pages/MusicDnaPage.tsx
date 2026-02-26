@@ -156,7 +156,7 @@ export default function MusicDnaPage() {
             <h1 className="text-4xl font-black tracking-tight text-white mb-1">
               Music <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-emerald-400">DNA</span>
             </h1>
-            <p className="text-zinc-400 font-medium">Extração de metadados e diagnóstico diagnóstico local</p>
+            <p className="text-zinc-400 font-medium">Extração de metadados e diagnóstico local</p>
           </div>
         </div>
 
