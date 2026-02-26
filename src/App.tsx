@@ -11,7 +11,7 @@ import GeneratePage from "./pages/GeneratePage";
 import EditPage from "./pages/EditPage";
 import RemoveBgPage from "./pages/RemoveBgPage";
 import GalleryPage from "./pages/GalleryPage";
-import MusicDnaPage from "./pages/MusicDnaPremium";
+import MusicDnaPage from "./pages/MusicDnaPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
