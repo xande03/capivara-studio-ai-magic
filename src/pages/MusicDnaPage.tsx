@@ -127,11 +127,26 @@ export default function MusicDnaPage() {
 
   const handleDownloadMp3 = () => {
     if (!result) return;
-    toast({
-      title: "Redirecionando para Downloader",
-      description: "Preparando processamento externo via Cobalt...",
-    });
-    window.open(`https://cobalt.tools/?u=${encodeURIComponent(url)}`, "_blank");
+
+    let downloadUrl = url;
+    const isYouTube = url.includes("youtube.com") || url.includes("youtu.be");
+
+    if (isYouTube) {
+      toast({
+        title: "Redirecionando para Downloader",
+        description: "Abrindo conversão via Yout.com...",
+      });
+      // yout.com works by replacing youtube.com with yout.com or following the pattern
+      downloadUrl = url.replace("youtube.com", "yout.com").replace("youtu.be", "yout.com");
+    } else {
+      toast({
+        title: "Redirecionando para Downloader",
+        description: "Preparando processamento externo via Cobalt...",
+      });
+      downloadUrl = `https://cobalt.tools/?u=${encodeURIComponent(url)}`;
+    }
+
+    window.open(downloadUrl, "_blank");
   };
 
   return (
