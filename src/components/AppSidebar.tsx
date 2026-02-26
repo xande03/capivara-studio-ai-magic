@@ -45,9 +45,9 @@ export function AppSidebar() {
     <Sidebar className={collapsed ? "w-14" : "w-64"} collapsible="icon">
       <SidebarContent className="pt-4">
         {!collapsed && (
-          <div className="px-5 pb-6 flex items-center gap-3">
-            <div className="w-11 h-11 rounded-2xl overflow-hidden shadow-2xl shadow-emerald-500/30 border-2 border-emerald-500/20 bg-emerald-950/50 p-1">
-              <img src="/logo.png" alt="Capivara Logo" className="w-full h-full object-cover rounded-xl" />
+          <div className="px-6 pb-8 pt-4 flex items-center gap-3">
+            <div className="w-12 h-12 rounded-2xl overflow-hidden shadow-[0_0_20px_rgba(16,185,129,0.2)] border border-emerald-500/30 bg-emerald-950/20 p-0.5">
+              <img src="/logo.png" alt="Capivara Logo" className="w-full h-full object-cover rounded-[14px]" />
             </div>
             <div>
               <h1 className="text-lg font-black emerald-text font-['Outfit'] tracking-tight leading-none">
@@ -61,33 +61,34 @@ export function AppSidebar() {
         )}
 
         <SidebarGroup>
-          <SidebarGroupLabel className="text-muted-foreground text-xs uppercase tracking-wider">
+          <SidebarGroupLabel className="text-muted-foreground/50 text-[10px] font-bold uppercase tracking-[0.2em] mb-4 px-5">
             Ferramentas
           </SidebarGroupLabel>
           <SidebarGroupContent>
-            <SidebarMenu>
+            <SidebarMenu className="space-y-3 px-2">
               {tools.map((item) => (
                 <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
+                  <SidebarMenuButton asChild className="h-auto p-0">
                     <NavLink
                       to={item.url}
                       end
                       className={cn(
-                        "transition-all duration-300 py-3 px-3 mx-2 rounded-xl group/item flex items-center justify-between",
-                        item.hoverColor
+                        "transition-all duration-300 py-4 px-4 rounded-2xl group/item flex items-center justify-between border border-transparent shadow-sm",
+                        item.hoverColor,
+                        "hover:bg-white/5"
                       )}
-                      activeClassName={cn("font-medium", item.activeColor)}
+                      activeClassName={cn("font-medium border-white/10 shadow-lg", item.activeColor)}
                     >
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-3">
                         <item.icon className="h-5 w-5 shrink-0" />
                         {!collapsed && (
                           <div className="flex flex-col">
-                            <span className="text-[13px] font-semibold">{item.title}</span>
-                            <span className="text-[10px] opacity-70 leading-tight">{item.description}</span>
+                            <span className="text-[14px] font-bold tracking-tight">{item.title}</span>
+                            <span className="text-[10px] opacity-60 leading-tight font-medium">{item.description}</span>
                           </div>
                         )}
                       </div>
-                      {!collapsed && <ChevronRight className="w-4 h-4 opacity-0 group-[.active]/item:opacity-100 transition-opacity" />}
+                      {!collapsed && <ChevronRight className="w-4 h-4 opacity-10 group-[.active]/item:opacity-100 transition-opacity" />}
                     </NavLink>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -97,25 +98,25 @@ export function AppSidebar() {
         </SidebarGroup>
 
         <SidebarGroup>
-          <SidebarGroupLabel className="text-muted-foreground text-xs uppercase tracking-wider">
+          <SidebarGroupLabel className="text-muted-foreground/50 text-[10px] font-bold uppercase tracking-[0.2em] mb-4 mt-6 px-5">
             Visualização
           </SidebarGroupLabel>
           <SidebarGroupContent>
-            <SidebarMenu>
+            <SidebarMenu className="space-y-3 px-2">
               {gallery.map((item) => (
                 <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
+                  <SidebarMenuButton asChild className="h-auto p-0">
                     <NavLink
                       to={item.url}
                       end
-                      className={`hover:bg-secondary/50 transition-all duration-300 py-3 group/item`}
-                      activeClassName="bg-primary/10 text-primary font-medium border-l-2 border-primary"
+                      className={`hover:bg-white/5 transition-all duration-300 py-4 px-4 rounded-2xl group/item flex items-center border border-transparent`}
+                      activeClassName="bg-emerald-500/10 text-emerald-500 font-bold border-emerald-500/20 shadow-lg"
                     >
-                      <item.icon className={cn("mr-2 h-5 w-5 shrink-0 transition-colors", item.color)} />
+                      <item.icon className={cn("mr-3 h-5 w-5 shrink-0 transition-colors", item.color)} />
                       {!collapsed && (
                         <div className="flex flex-col">
-                          <span className={cn("text-sm transition-colors", item.color)}>{item.title}</span>
-                          <span className="text-[10px] text-muted-foreground leading-tight">{item.description}</span>
+                          <span className={cn("text-[14px] font-bold tracking-tight transition-colors", item.color)}>{item.title}</span>
+                          <span className="text-[10px] text-muted-foreground/60 leading-tight font-medium">{item.description}</span>
                         </div>
                       )}
                     </NavLink>
