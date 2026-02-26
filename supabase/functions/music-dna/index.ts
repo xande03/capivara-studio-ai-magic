@@ -49,6 +49,7 @@ Deno.serve(async (req) => {
           url: url.trim(),
           formats: ["markdown"],
           onlyMainContent: true,
+          timeout: 30000,
         }),
       });
 
