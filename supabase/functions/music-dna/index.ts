@@ -1,3 +1,5 @@
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers":
@@ -10,6 +12,23 @@ Deno.serve(async (req) => {
   }
 
   try {
+    // 1. Authenticate user
+    const supabaseClient = createClient(
+      Deno.env.get("SUPABASE_URL") ?? "",
+      Deno.env.get("SUPABASE_ANON_KEY") ?? "",
+      { global: { headers: { Authorization: req.headers.get("Authorization")! } } }
+    );
+
+    const { data: { user }, error: authError } = await supabaseClient.auth.getUser();
+
+    if (authError || !user) {
+      console.error("Authentication error:", authError);
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     const { url } = await req.json();
 
     if (!url) {
@@ -79,7 +98,7 @@ Deno.serve(async (req) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "google/gemini-2.0-flash", // Corrected model name
+        model: "google/gemini-2.0-flash",
         messages: [
           {
             role: "system",
@@ -103,10 +122,10 @@ Deno.serve(async (req) => {
                   artist: { type: "string", description: "Main artist/singer name" },
                   band: { type: "string", description: "Band name if applicable, empty string if solo artist" },
                   genre: { type: "string", description: "Music genre/style (e.g. Pop, Rock, Sertanejo, Funk, etc.)" },
-                  bpm: { type: "number", description: "Estimated beats per minute" },
-                  key: { type: "string", description: "Musical key/tonality (e.g. C Major, Am, F#m)" },
-                  lyrics: { type: "string", description: "Complete song lyrics" },
-                  mp3Url: { type: "string", description: "A high-quality direct download link for the MP3 of this song if you can find one, otherwise an empty string." },
+                  bpm: { type: "number", description: "Beats per minute" },
+                  key: { type: "string", description: "Musical key" },
+                  lyrics: { type: "string", description: "Complete lyrics" },
+                  mp3Url: { type: "string", description: "MP3 link" },
                 },
                 required: ["title", "artist", "genre", "bpm", "key", "lyrics"],
               },
@@ -118,33 +137,11 @@ Deno.serve(async (req) => {
     });
 
     if (!aiRes.ok) {
-      if (aiRes.status === 429) {
-        return new Response(
-          JSON.stringify({ error: "Rate limit exceeded. Try again later." }),
-          { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-        );
-      }
-      if (aiRes.status === 402) {
-        return new Response(
-          JSON.stringify({ error: "Credits exhausted. Please add credits." }),
-          { status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-        );
-      }
       const errText = await aiRes.text();
       console.error("AI error:", aiRes.status, errText);
       return new Response(
-        JSON.stringify({ error: `AI analysis failed: ${aiRes.status} ${errText.slice(0, 100)}` }),
+        JSON.stringify({ error: `AI analysis failed: ${aiRes.status}` }),
         { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
-    }
-
-    const contentType = aiRes.headers.get("content-type");
-    if (!contentType || !contentType.includes("application/json")) {
-      const errText = await aiRes.text();
-      console.error("AI gateway returned non-JSON:", errText);
-      return new Response(
-        JSON.stringify({ error: `AI Gateway error: Expected JSON but got ${contentType}. ${errText.slice(0, 100)}` }),
-        { status: 502, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
@@ -152,7 +149,6 @@ Deno.serve(async (req) => {
     const toolCall = aiData.choices?.[0]?.message?.tool_calls?.[0];
 
     if (!toolCall?.function?.arguments) {
-      console.error("No tool call in AI response:", JSON.stringify(aiData));
       return new Response(
         JSON.stringify({ error: "AI could not extract music information" }),
         { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
@@ -160,7 +156,6 @@ Deno.serve(async (req) => {
     }
 
     const musicInfo = JSON.parse(toolCall.function.arguments);
-    console.log("Extracted music info:", musicInfo.title, "-", musicInfo.artist);
 
     return new Response(
       JSON.stringify({ success: true, data: musicInfo }),

@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -12,6 +13,23 @@ serve(async (req) => {
   }
 
   try {
+    // 1. Authenticate user
+    const supabaseClient = createClient(
+      Deno.env.get("SUPABASE_URL") ?? "",
+      Deno.env.get("SUPABASE_ANON_KEY") ?? "",
+      { global: { headers: { Authorization: req.headers.get("Authorization")! } } }
+    );
+
+    const { data: { user }, error: authError } = await supabaseClient.auth.getUser();
+
+    if (authError || !user) {
+      console.error("Authentication error:", authError);
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
 
@@ -31,7 +49,6 @@ serve(async (req) => {
     let messages: any[] = [];
 
     if (action === "generate") {
-      // Text to image generation - very permissive prompt
       messages = [
         {
           role: "user",
@@ -39,10 +56,20 @@ serve(async (req) => {
         },
       ];
     } else if (action === "upscale") {
-      // Image-to-image upscale with prompt guidance
-      const upscalePrompt = prompt
-        ? `Enhance and upscale this image with ultra high resolution. Restore hidden details, improve sharpness, clarity, and resolution. Apply the following style guidance: ${prompt}.${aspectInstruction} Make every detail crisp and photorealistic.`
-        : `Enhance and upscale this image with ultra high resolution. Restore hidden details, improve sharpness, clarity, and resolution.${aspectInstruction} Make every detail crisp and photorealistic.`;
+      // ENHANCED UPSCALE PROMPT
+      const upscalePrompt = `Professional AI Reconstruction & Upscale Engine. 
+      TASK: IDENTIFY AND ENHANCE ALL ELEMENTS (PEOPLE, CHARACTERS, ANIMALS, OBJECTS, ENVIRONMENTS).
+      
+      INSTRUCTIONS:
+      1. FINE DETAILS: Restore and reconstruct lost textures with ultra-high precision (skin pores, fabric weaves, hair strands, biological micro-textures, environmental surfaces like stone, wood, water).
+      2. SUBJECT IDENTIFICATION: Perfectly recognize and refine faces, anatomy, character features, and animal fur/scales, ensuring they look biologically or design-consistent.
+      3. SHARPNESS & CLARITY: Drastically improve edge definition and internal detail sharpness. Eliminate artifacts, blur, and noise while maintaining a natural, non-plastic look.
+      4. FIDELITY: Preserve the essence, lighting, and original proportions of the image. DO NOT CHANGE the identity of subjects, just increase their definition to cinematic quality.
+      5. ENVIRONMENT: Reconstruct background elements with depth and clarity, ensuring they match the foreground's enhanced quality.
+      
+      User Guidance/Style: ${prompt || "Professional photorealistic restoration"}.${aspectInstruction}
+      
+      OUTPUT: A result that looks like it was captured with a high-end professional camera, with infinite detail and perfect textures.`;
 
       messages = [
         {
