@@ -1,7 +1,12 @@
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
+import { useTheme } from "next-themes";
+import { Sun, Moon } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
+  const { theme, setTheme } = useTheme();
+
   return (
     <SidebarProvider>
       <div className="min-h-screen flex w-full bg-background text-foreground animate-in fade-in duration-500">
@@ -19,6 +24,14 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
                 <span className="text-[11px] font-bold text-emerald-500 uppercase tracking-tighter">Online</span>
               </div>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+                className="h-9 w-9 text-emerald-500/70 hover:text-emerald-500 hover:bg-emerald-500/10"
+              >
+                {theme === "dark" ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+              </Button>
             </div>
           </header>
           <div className="flex-1 overflow-auto p-6">{children}</div>
