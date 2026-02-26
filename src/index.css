@@ -6,7 +6,7 @@
 
 @layer base {
   :root {
-    --background: 40 20% 97%;
+    --background: 0 0% 100%;
     --foreground: 240 10% 10%;
 
     --card: 0 0% 100%;
@@ -18,10 +18,10 @@
     --primary: 42 100% 55%;
     --primary-foreground: 240 10% 6%;
 
-    --secondary: 40 10% 92%;
+    --secondary: 240 5% 96%;
     --secondary-foreground: 240 10% 20%;
 
-    --muted: 40 10% 92%;
+    --muted: 240 5% 96%;
     --muted-foreground: 240 5% 45%;
 
     --accent: 42 80% 45%;
@@ -30,19 +30,19 @@
     --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 40 10% 85%;
-    --input: 40 10% 85%;
+    --border: 240 6% 90%;
+    --input: 240 6% 90%;
     --ring: 42 100% 55%;
 
     --radius: 0.75rem;
 
-    --sidebar-background: 40 15% 95%;
+    --sidebar-background: 240 5% 98%;
     --sidebar-foreground: 240 10% 20%;
     --sidebar-primary: 42 100% 55%;
     --sidebar-primary-foreground: 240 10% 6%;
-    --sidebar-accent: 40 10% 90%;
+    --sidebar-accent: 240 5% 96%;
     --sidebar-accent-foreground: 240 10% 15%;
-    --sidebar-border: 40 10% 88%;
+    --sidebar-border: 240 6% 90%;
     --sidebar-ring: 42 100% 55%;
 
     --gold-glow: 42 100% 55%;
@@ -120,14 +120,14 @@
   }
 
   .glass-card {
-    background: hsl(240, 8%, 10% / 0.8);
+    background: hsl(0, 0%, 100% / 0.8);
     backdrop-filter: blur(20px);
-    border: 1px solid hsl(240, 6%, 20% / 0.5);
+    border: 1px solid hsl(240, 6%, 90% / 0.5);
   }
 
-  :root .glass-card {
-    background: hsl(0, 0%, 100% / 0.8);
-    border: 1px solid hsl(40, 10%, 85% / 0.5);
+  .dark .glass-card {
+    background: hsl(240, 8%, 10% / 0.8);
+    border: 1px solid hsl(240, 6%, 20% / 0.5);
   }
 
   .checkerboard {
