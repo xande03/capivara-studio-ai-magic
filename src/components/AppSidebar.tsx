@@ -3,7 +3,6 @@ import {
   ArrowUpCircle,
   Scissors,
   Pencil,
-  Image,
   LayoutGrid,
   Zap,
   QrCode,
@@ -45,11 +44,11 @@ export function AppSidebar() {
       <SidebarContent className="pt-4">
         {!collapsed && (
           <div className="px-4 pb-4 flex items-center gap-3">
-            <div className="w-9 h-9 rounded-lg gold-gradient flex items-center justify-center">
-              <Image className="w-5 h-5 text-background" />
+            <div className="w-9 h-9 rounded-lg overflow-hidden flex items-center justify-center">
+              <img src="/logo.png" alt="Capivara Stúdio" className="w-full h-full object-cover" />
             </div>
             <div>
-              <h1 className="text-base font-bold gold-text font-['Space_Grotesk']">
+              <h1 className="text-base font-bold emerald-text font-['Space_Grotesk']">
                 Capivara Stúdio
               </h1>
               <p className="text-[10px] text-primary/70 font-semibold tracking-widest uppercase">

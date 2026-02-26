@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { ArrowUpCircle, Sparkles, Pencil, Scissors, Film, Image, QrCode } from "lucide-react";
+import { ArrowUpCircle, Sparkles, Pencil, Scissors, Film, QrCode } from "lucide-react";
 
 const tools = [
   {
@@ -47,10 +47,10 @@ const Index = () => {
   return (
     <div className="max-w-5xl mx-auto space-y-10">
       <header className="text-center space-y-4 py-8">
-        <div className="w-16 h-16 rounded-2xl gold-gradient flex items-center justify-center mx-auto">
-          <Image className="w-9 h-9 text-background" />
+        <div className="w-16 h-16 rounded-2xl overflow-hidden flex items-center justify-center mx-auto shadow-lg shadow-emerald-500/10">
+          <img src="/logo.png" alt="Capivara Stúdio" className="w-full h-full object-cover" />
         </div>
-        <h1 className="text-4xl font-bold gold-text">Capivara Stúdio</h1>
+        <h1 className="text-4xl font-bold emerald-text">Capivara Stúdio</h1>
         <p className="text-muted-foreground max-w-lg mx-auto">
           Suite profissional de processamento de imagens com IA. Upscale, geração, edição e muito mais — com modelos Nano Banana e Nano Banana Pro.
         </p>
