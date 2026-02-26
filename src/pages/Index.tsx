@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { ArrowUpCircle, Sparkles, Pencil, Scissors, Film, Image } from "lucide-react";
+import { ArrowUpCircle, Sparkles, Pencil, Scissors, Film, Image, QrCode } from "lucide-react";
 
 const tools = [
   {
@@ -33,6 +33,12 @@ const tools = [
     icon: Film,
     path: "/video",
   },
+  {
+    title: "QR Code Magic",
+    description: "Crie QR Codes dinâmicos para arquivos, mídia e links",
+    icon: QrCode,
+    path: "/qrcode",
+  },
 ];
 
 const Index = () => {
@@ -41,11 +47,10 @@ const Index = () => {
   return (
     <div className="max-w-5xl mx-auto space-y-10">
       <header className="text-center space-y-4 py-8">
-        <div className="w-16 h-16 rounded-2xl blue-gradient flex items-center justify-center mx-auto shadow-xl shadow-blue-500/20">
-          <Image className="w-9 h-9 text-white" />
+        <div className="w-16 h-16 rounded-2xl gold-gradient flex items-center justify-center mx-auto">
+          <Image className="w-9 h-9 text-background" />
         </div>
-        <h1 className="text-4xl font-bold blue-text">Capivara Stúdio</h1>
-        <p className="text-[10px] font-mono text-zinc-600 opacity-50">VER: PREMIUM_v1.0</p>
+        <h1 className="text-4xl font-bold gold-text">Capivara Stúdio</h1>
         <p className="text-muted-foreground max-w-lg mx-auto">
           Suite profissional de processamento de imagens com IA. Upscale, geração, edição e muito mais — com modelos Nano Banana e Nano Banana Pro.
         </p>
