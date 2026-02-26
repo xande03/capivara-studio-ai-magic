@@ -37,29 +37,37 @@ Deno.serve(async (req) => {
 
     // Step 1: Scrape the URL with Firecrawl
     console.log("Scraping URL:", url);
-    const scrapeRes = await fetch("https://api.firecrawl.dev/v1/scrape", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${firecrawlKey}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        url: url.trim(),
-        formats: ["markdown"],
-        onlyMainContent: true,
-      }),
-    });
+    let pageContent = "";
+    try {
+      const scrapeRes = await fetch("https://api.firecrawl.dev/v1/scrape", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${firecrawlKey}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          url: url.trim(),
+          formats: ["markdown"],
+          onlyMainContent: true,
+        }),
+      });
 
-    const scrapeData = await scrapeRes.json();
-    if (!scrapeRes.ok) {
-      console.error("Firecrawl error:", scrapeData);
-      return new Response(
-        JSON.stringify({ error: "Failed to scrape URL: " + (scrapeData.error || scrapeRes.status) }),
-        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+      if (scrapeRes.ok) {
+        const contentType = scrapeRes.headers.get("content-type");
+        if (contentType && contentType.includes("application/json")) {
+          const scrapeData = await scrapeRes.json();
+          pageContent = scrapeData?.data?.markdown || "";
+        } else {
+          console.warn("Firecrawl returned non-JSON response:", await scrapeRes.text());
+        }
+      } else {
+        const errText = await scrapeRes.text();
+        console.error("Firecrawl error:", scrapeRes.status, errText);
+      }
+    } catch (err) {
+      console.error("Firecrawl fetch failed:", err);
     }
 
-    const pageContent = scrapeData?.data?.markdown || "";
     console.log("Scraped content length:", pageContent.length);
 
     // Step 2: Use Lovable AI to extract structured music data
@@ -70,7 +78,7 @@ Deno.serve(async (req) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "google/gemini-2.0-flash", // Corrected model name from 2.5 to 2.0
+        model: "google/gemini-2.0-flash", // Corrected model name
         messages: [
           {
             role: "system",
@@ -124,8 +132,18 @@ Deno.serve(async (req) => {
       const errText = await aiRes.text();
       console.error("AI error:", aiRes.status, errText);
       return new Response(
-        JSON.stringify({ error: "AI analysis failed" }),
+        JSON.stringify({ error: `AI analysis failed: ${aiRes.status} ${errText.slice(0, 100)}` }),
         { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    const contentType = aiRes.headers.get("content-type");
+    if (!contentType || !contentType.includes("application/json")) {
+      const errText = await aiRes.text();
+      console.error("AI gateway returned non-JSON:", errText);
+      return new Response(
+        JSON.stringify({ error: `AI Gateway error: Expected JSON but got ${contentType}. ${errText.slice(0, 100)}` }),
+        { status: 502, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
