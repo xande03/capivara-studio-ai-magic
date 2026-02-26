@@ -45,6 +45,7 @@ const Index = () => {
           <Image className="w-9 h-9 text-white" />
         </div>
         <h1 className="text-4xl font-bold blue-text">Capivara Stúdio</h1>
+        <p className="text-[10px] font-mono text-zinc-600 opacity-50">VER: PREMIUM_v1.0</p>
         <p className="text-muted-foreground max-w-lg mx-auto">
           Suite profissional de processamento de imagens com IA. Upscale, geração, edição e muito mais — com modelos Nano Banana e Nano Banana Pro.
         </p>
