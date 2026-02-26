@@ -6,6 +6,7 @@ import {
   LayoutGrid,
   Zap,
   QrCode,
+  Music,
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation } from "react-router-dom";
@@ -28,6 +29,7 @@ const tools = [
   { title: "Editar Imagem", description: "Modificar e combinar imagens", url: "/edit", icon: Pencil },
   { title: "Remover Fundo", description: "Recortar fundo automaticamente", url: "/remove-bg", icon: Scissors },
   { title: "QR Code Magic", description: "Gerar QR Codes profissionais", url: "/qrcode", icon: QrCode },
+  { title: "Music DNA", description: "Análise profunda de áudio", url: "/music-dna", icon: Music },
 ];
 
 const gallery = [

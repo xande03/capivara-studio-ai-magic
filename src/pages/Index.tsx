@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { ArrowUpCircle, Sparkles, Pencil, Scissors, Film, QrCode } from "lucide-react";
+import { ArrowUpCircle, Sparkles, Pencil, Scissors, Film, QrCode, Music } from "lucide-react";
 
 const tools = [
   {
@@ -38,6 +38,12 @@ const tools = [
     description: "Crie QR Codes dinâmicos para arquivos, mídia e links",
     icon: QrCode,
     path: "/qrcode",
+  },
+  {
+    title: "Music DNA",
+    description: "Identifique BPM, Tom, Letras e muito mais com IA",
+    icon: Music,
+    path: "/music-dna",
   },
 ];
 
