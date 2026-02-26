@@ -13,6 +13,7 @@ import {
     ShieldCheck,
     CheckCircle2,
     Loader2,
+    Type,
     Image as ImageIcon
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -78,13 +79,10 @@ const QrCodePage = () => {
                 return;
             }
             setIsGenerating(true);
-            setProcessingStep("Analisando metadados...");
+            setProcessingStep("Analisando...");
 
-            await new Promise(r => setTimeout(r, 600));
-            setProcessingStep("Implantando informações...");
-
-            await new Promise(r => setTimeout(r, 600));
-            setProcessingStep("Finalizando Q-Zonal...");
+            await new Promise(r => setTimeout(r, 150));
+            setProcessingStep("Finalizando...");
 
             setTimeout(() => {
                 setQrValue(inputValue);
@@ -92,9 +90,9 @@ const QrCodePage = () => {
                 setProcessingStep("");
                 toast({
                     title: "Sucesso!",
-                    description: "Seu QR Code foi gerado com sucesso.",
+                    description: "QR Code gerado instantaneamente.",
                 });
-            }, 500);
+            }, 100);
         } else {
             if (!file) {
                 toast({
@@ -107,16 +105,16 @@ const QrCodePage = () => {
 
             try {
                 setIsUploading(true);
-                setProcessingStep("Escaneando arquivo...");
+                setProcessingStep("Escaneando...");
 
                 const formData = new FormData();
                 formData.append("file", file);
 
-                await new Promise(r => setTimeout(r, 800));
-                setProcessingStep("Enviando para o Motor Magic...");
+                await new Promise(r => setTimeout(r, 300));
+                setProcessingStep("Enviando...");
 
-                // Using file.io for temporary hosting (expires in 14 days or 1 download)
-                const response = await fetch("https://file.io", {
+                // Using tmpfiles.org for better CORS support during client-side upload
+                const response = await fetch("https://tmpfiles.org/api/v1/upload", {
                     method: "POST",
                     body: formData
                 });
@@ -125,19 +123,20 @@ const QrCodePage = () => {
                     throw new Error("Falha ao enviar arquivo para o serviço temporário.");
                 }
 
-                const data = await response.json();
+                const result = await response.json();
 
-                if (data.success) {
-                    setProcessingStep("Gerando encriptação QR...");
-                    await new Promise(r => setTimeout(r, 700));
+                if (result.status === "success") {
+                    setProcessingStep("Finalizando...");
+                    await new Promise(r => setTimeout(r, 200));
 
-                    setQrValue(data.link);
+                    // tmpfiles.org returns URL in data.url
+                    setQrValue(result.data.url);
                     toast({
                         title: "Upload concluído!",
                         description: "Arquivo hospedado temporariamente e QR Code gerado com sucesso.",
                     });
                 } else {
-                    throw new Error(data.message || "Erro no serviço de hospedagem.");
+                    throw new Error(result.message || "Erro no serviço de hospedagem.");
                 }
             } catch (error: any) {
                 console.error("Error uploading file:", error);
@@ -216,7 +215,7 @@ const QrCodePage = () => {
                                     <TabsTrigger value="music" className="data-[state=active]:bg-emerald-500 data-[state=active]:text-white rounded-lg transition-all"><Music className="w-4 h-4" /></TabsTrigger>
                                     <TabsTrigger value="image" className="data-[state=active]:bg-emerald-500 data-[state=active]:text-white rounded-lg transition-all"><ImageIcon className="w-4 h-4" /></TabsTrigger>
                                     <TabsTrigger value="file" className="data-[state=active]:bg-emerald-500 data-[state=active]:text-white rounded-lg transition-all"><File className="w-4 h-4" /></TabsTrigger>
-                                    <TabsTrigger value="text" className="data-[state=active]:bg-emerald-500 data-[state=active]:text-white rounded-lg transition-all"><Loader2 className="w-4 h-4 rotate-45" /></TabsTrigger>
+                                    <TabsTrigger value="text" className="data-[state=active]:bg-emerald-500 data-[state=active]:text-white rounded-lg transition-all"><Type className="w-4 h-4" /></TabsTrigger>
                                 </TabsList>
 
                                 <div className="mt-8 space-y-6">
