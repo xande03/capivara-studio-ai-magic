@@ -8,6 +8,7 @@ import {
   Zap,
   ChevronLeft,
   ChevronRight,
+  Music,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { NavLink } from "@/components/NavLink";
@@ -30,6 +31,7 @@ const tools = [
   { title: "Remover Fundo", description: "Recortar fundo automaticamente", url: "/remove-bg", icon: Scissors, activeColor: "bg-teal-600 text-white", hoverColor: "hover:text-teal-500" },
   { title: "Gerar Imagem", description: "Criar imagens com IA", url: "/generate", icon: Sparkles, activeColor: "bg-emerald-500 text-white", hoverColor: "hover:text-emerald-400" },
   { title: "Editar Imagem", description: "Modificar e combinar imagens", url: "/edit", icon: Pencil, activeColor: "bg-cyan-600 text-white", hoverColor: "hover:text-cyan-400" },
+  { title: "Music DNA", description: "Identificar músicas por link", url: "/music-dna", icon: Music, activeColor: "bg-purple-600 text-white", hoverColor: "hover:text-purple-500" },
 ];
 
 const gallery = [

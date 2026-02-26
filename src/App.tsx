@@ -11,6 +11,7 @@ import GeneratePage from "./pages/GeneratePage";
 import EditPage from "./pages/EditPage";
 import RemoveBgPage from "./pages/RemoveBgPage";
 import GalleryPage from "./pages/GalleryPage";
+import MusicDnaPage from "./pages/MusicDnaPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -29,6 +30,7 @@ const App = () => (
             <Route path="/edit" element={<EditPage />} />
             <Route path="/remove-bg" element={<RemoveBgPage />} />
             <Route path="/gallery" element={<GalleryPage />} />
+            <Route path="/music-dna" element={<MusicDnaPage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Layout>
