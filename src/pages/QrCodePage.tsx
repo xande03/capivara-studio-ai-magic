@@ -28,7 +28,6 @@ import {
     CardFooter
 } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
 
 type QrCategory = "link" | "text" | "pdf" | "music" | "image" | "file";
 
@@ -98,32 +97,31 @@ const QrCodePage = () => {
 
             try {
                 setIsUploading(true);
-                const fileExt = file.name.split('.').pop();
-                const fileName = `${Math.random().toString(36).substring(2, 15)}.${fileExt}`;
-                const filePath = `qrcode-files/${fileName}`;
 
-                // Ensure we're using the correct bucket name or handle error if it doesn't exist
-                const { error: uploadError } = await supabase.storage
-                    .from('generated_contents')
-                    .upload(filePath, file, {
-                        cacheControl: '3600',
-                        upsert: false
-                    });
+                const formData = new FormData();
+                formData.append("file", file);
 
-                if (uploadError) {
-                    console.error("Storage error:", uploadError);
-                    throw new Error("Erro ao enviar arquivo para o storage. Certifique-se de que o bucket 'generated_contents' existe.");
+                // Using file.io for temporary hosting (expires in 14 days or 1 download)
+                const response = await fetch("https://file.io", {
+                    method: "POST",
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    throw new Error("Falha ao enviar arquivo para o serviço temporário.");
                 }
 
-                const { data: { publicUrl } } = supabase.storage
-                    .from('generated_contents')
-                    .getPublicUrl(filePath);
+                const data = await response.json();
 
-                setQrValue(publicUrl);
-                toast({
-                    title: "Upload concluído!",
-                    description: "Arquivo hospedado e QR Code gerado com sucesso.",
-                });
+                if (data.success) {
+                    setQrValue(data.link);
+                    toast({
+                        title: "Upload concluído!",
+                        description: "Arquivo hospedado temporariamente e QR Code gerado com sucesso.",
+                    });
+                } else {
+                    throw new Error(data.message || "Erro no serviço de hospedagem.");
+                }
             } catch (error: any) {
                 console.error("Error uploading file:", error);
                 toast({

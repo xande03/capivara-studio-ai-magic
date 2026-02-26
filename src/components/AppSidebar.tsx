@@ -24,16 +24,16 @@ import {
 } from "@/components/ui/sidebar";
 
 const tools = [
-  { title: "Upscale", description: "Aumentar resolução com IA", url: "/upscale", icon: ArrowUpCircle },
-  { title: "Gerar Imagem", description: "Criar imagens com IA", url: "/generate", icon: Sparkles },
-  { title: "Editar Imagem", description: "Modificar e combinar imagens", url: "/edit", icon: Pencil },
-  { title: "Remover Fundo", description: "Recortar fundo automaticamente", url: "/remove-bg", icon: Scissors },
-  { title: "QR Code Magic", description: "Gerar QR Codes profissionais", url: "/qrcode", icon: QrCode },
-  { title: "Music DNA", description: "Análise profunda de áudio", url: "/music-dna", icon: Music },
+  { title: "Upscale", description: "Aumentar resolução com IA", url: "/upscale", icon: ArrowUpCircle, color: "bg-purple-500/10 text-purple-600" },
+  { title: "Gerar Imagem", description: "Criar imagens com IA", url: "/generate", icon: Sparkles, color: "bg-emerald-500/10 text-emerald-600" },
+  { title: "Editar Imagem", description: "Modificar e combinar imagens", url: "/edit", icon: Pencil, color: "bg-blue-500/10 text-blue-600" },
+  { title: "Remover Fundo", description: "Recortar fundo automaticamente", url: "/remove-bg", icon: Scissors, color: "bg-orange-500/10 text-orange-600" },
+  { title: "QR Code Magic", description: "Gerar QR Codes profissionais", url: "/qrcode", icon: QrCode, color: "bg-pink-500/10 text-pink-600" },
+  { title: "Music DNA", description: "Análise profunda de áudio", url: "/music-dna", icon: Music, color: "bg-indigo-500/10 text-indigo-600" },
 ];
 
 const gallery = [
-  { title: "Galeria", description: "Ver imagens geradas", url: "/gallery", icon: LayoutGrid },
+  { title: "Galeria", description: "Ver imagens geradas", url: "/gallery", icon: LayoutGrid, color: "bg-slate-500/10 text-slate-600" },
 ];
 
 export function AppSidebar() {
@@ -43,43 +43,49 @@ export function AppSidebar() {
 
   return (
     <Sidebar className={collapsed ? "w-14" : "w-64"} collapsible="icon">
-      <SidebarContent className="pt-4">
+      <SidebarContent className="pt-6">
         {!collapsed && (
-          <div className="px-4 pb-4 flex items-center gap-3">
-            <div className="w-9 h-9 rounded-lg overflow-hidden flex items-center justify-center">
+          <div className="px-6 pb-8 flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl overflow-hidden shadow-lg shadow-emerald-500/10 border border-white/10 flex items-center justify-center">
               <img src="/logo.png" alt="Capivara Stúdio" className="w-full h-full object-cover" />
             </div>
             <div>
-              <h1 className="text-base font-bold emerald-text font-['Space_Grotesk']">
+              <h1 className="text-base font-black emerald-text font-['Space_Grotesk'] tracking-tight">
                 Capivara Stúdio
               </h1>
-              <p className="text-[10px] text-primary/70 font-semibold tracking-widest uppercase">
+              <p className="text-[10px] text-primary/70 font-bold tracking-widest uppercase opacity-60">
                 STUDIO PRO
               </p>
             </div>
           </div>
         )}
 
-        <SidebarGroup>
-          <SidebarGroupLabel className="text-muted-foreground text-xs uppercase tracking-wider">
+        <SidebarGroup className="px-3">
+          <SidebarGroupLabel className="text-muted-foreground/50 text-[10px] uppercase tracking-[0.2em] font-black pb-2 px-3">
             Ferramentas
           </SidebarGroupLabel>
           <SidebarGroupContent>
-            <SidebarMenu>
+            <SidebarMenu className="gap-3">
               {tools.map((item) => (
                 <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
+                  <SidebarMenuButton asChild className="h-auto p-0">
                     <NavLink
                       to={item.url}
                       end
-                      className="hover:bg-secondary/50 transition-colors py-3"
-                      activeClassName="bg-primary/10 text-primary font-medium border-l-2 border-primary"
+                      className="flex items-center gap-3 p-3 rounded-2xl transition-all duration-300 hover:bg-white/5 group border border-transparent hover:border-white/5"
+                      activeClassName="bg-white/5 border-emerald-500/20 shadow-xl shadow-black/20"
                     >
-                      <item.icon className="mr-2 h-5 w-5 shrink-0" />
+                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 transition-transform group-hover:scale-110 ${item.color} shadow-inner`}>
+                        <item.icon className="h-5 w-5" />
+                      </div>
                       {!collapsed && (
-                        <div className="flex flex-col">
-                          <span className="text-sm">{item.title}</span>
-                          <span className="text-[10px] text-muted-foreground leading-tight">{item.description}</span>
+                        <div className="flex flex-col min-w-0">
+                          <span className="text-sm font-bold tracking-tight text-foreground/90 group-hover:text-foreground transition-colors truncate">
+                            {item.title}
+                          </span>
+                          <span className="text-[10px] text-muted-foreground font-medium leading-tight opacity-70 group-hover:opacity-100 transition-opacity truncate">
+                            {item.description}
+                          </span>
                         </div>
                       )}
                     </NavLink>
@@ -90,26 +96,32 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
 
-        <SidebarGroup>
-          <SidebarGroupLabel className="text-muted-foreground text-xs uppercase tracking-wider">
-            Visualização
+        <SidebarGroup className="px-3 mt-4">
+          <SidebarGroupLabel className="text-muted-foreground/50 text-[10px] uppercase tracking-[0.2em] font-black pb-2 px-3">
+            Explorar
           </SidebarGroupLabel>
           <SidebarGroupContent>
-            <SidebarMenu>
+            <SidebarMenu className="gap-3">
               {gallery.map((item) => (
                 <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
+                  <SidebarMenuButton asChild className="h-auto p-0">
                     <NavLink
                       to={item.url}
                       end
-                      className="hover:bg-secondary/50 transition-colors py-3"
-                      activeClassName="bg-primary/10 text-primary font-medium border-l-2 border-primary"
+                      className="flex items-center gap-3 p-3 rounded-2xl transition-all duration-300 hover:bg-white/5 group border border-transparent hover:border-white/5"
+                      activeClassName="bg-white/5 border-emerald-500/20 shadow-xl shadow-black/20"
                     >
-                      <item.icon className="mr-2 h-5 w-5 shrink-0" />
+                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 transition-transform group-hover:scale-110 ${item.color} shadow-inner`}>
+                        <item.icon className="h-5 w-5" />
+                      </div>
                       {!collapsed && (
-                        <div className="flex flex-col">
-                          <span className="text-sm">{item.title}</span>
-                          <span className="text-[10px] text-muted-foreground leading-tight">{item.description}</span>
+                        <div className="flex flex-col min-w-0">
+                          <span className="text-sm font-bold tracking-tight text-foreground/90 group-hover:text-foreground transition-colors truncate">
+                            {item.title}
+                          </span>
+                          <span className="text-[10px] text-muted-foreground font-medium leading-tight opacity-70 group-hover:opacity-100 transition-opacity truncate">
+                            {item.description}
+                          </span>
                         </div>
                       )}
                     </NavLink>
@@ -122,10 +134,15 @@ export function AppSidebar() {
       </SidebarContent>
 
       {!collapsed && (
-        <SidebarFooter className="p-4">
-          <div className="flex items-center gap-2 text-muted-foreground">
-            <Zap className="w-3.5 h-3.5 text-primary" />
-            <span className="text-[10px] tracking-wide uppercase">Powered by AI</span>
+        <SidebarFooter className="p-6">
+          <div className="p-4 rounded-2xl bg-emerald-500/5 border border-emerald-500/10 flex items-center justify-between">
+            <div className="flex flex-col">
+              <span className="text-[10px] font-black uppercase tracking-widest text-emerald-500/50">Version</span>
+              <span className="text-xs font-bold text-emerald-500/80">Premium v2.4</span>
+            </div>
+            <div className="w-8 h-8 rounded-lg bg-emerald-500/10 flex items-center justify-center">
+              <Zap className="w-4 h-4 text-emerald-500 animate-pulse" />
+            </div>
           </div>
         </SidebarFooter>
       )}
