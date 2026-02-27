@@ -1,99 +1,88 @@
 
 
-# Music DNA - Plano de Implementacao
+# Plano de Correções: Temas, QR Code Permanente, Music DNA
 
-## Visao Geral
+## 1. Corrigir títulos encobertos no modo escuro
 
-Nova ferramenta "Music DNA" que recebe um link de musica (YouTube, Spotify, etc.), usa Firecrawl para extrair dados da pagina e IA para analisar a musica, apresentando os resultados em uma interface rica com download em PDF e MP3.
+O problema está na classe `.emerald-text` em `src/index.css`. No modo escuro, o gradiente de texto com `-webkit-background-clip: text` funciona, mas no modo claro o gradiente usa cores muito escuras que se confundem com backgrounds. Além disso, a classe `emerald-gradient` / `blue-gradient` aplicada em botões tem `shadow-lg shadow-emerald-500/20` que pode criar barras visuais sobre texto.
 
-## Arquitetura
+**Arquivos afetados:**
+- `src/index.css` — Ajustar `.emerald-text` para ter contraste adequado em ambos os temas; revisar `.glass-card` para modo claro
+- `src/pages/Index.tsx` — Título "Capivara Stúdio" usa `emerald-text`, garantir visibilidade
+- `src/pages/GalleryPage.tsx` — Título usa `emerald-text`
+- `src/pages/QrCodePage.tsx` — Título usa `emerald-text`, cards usam `border-white/5` e `bg-black/40` (ilegíveis no modo claro)
+- `src/components/AppSidebar.tsx` — `emerald-text` no nome, `hover:bg-white/5` não funciona no claro
+- `src/components/Layout.tsx` — Header com `border-white/5` invisível no claro
 
-```text
-[Usuario cola link] → [Frontend] → [Edge Function: music-dna]
-                                         │
-                                    ┌────┴────┐
-                                    │Firecrawl │ → Scrape da pagina do link
-                                    └────┬────┘
-                                         │ conteudo extraido
-                                    ┌────┴─────────┐
-                                    │ Gemini 2.5    │ → Analise com tool calling
-                                    │ Flash         │   para dados estruturados
-                                    └────┬─────────┘
-                                         │
-                              { title, artist, band, genre,
-                                bpm, key, lyrics, albumArt }
-                                         │
-                                    [Frontend exibe resultados]
-                                    [Gera PDF no cliente com jspdf]
-                                    [Busca MP3 via API externa]
+**Correções específicas:**
+- `.emerald-text` no modo claro: usar cores mais vibrantes/escuras que contrastem com fundo branco
+- `.glass-card` no modo claro: usar `bg-white/80` com `border` visível em vez de `border-white/5`
+- Substituir todas as referências `border-white/5`, `bg-white/5`, `bg-black/40` por variantes que funcionem em ambos os temas usando classes condicionais `dark:`
+- `blue-gradient` nos botões: garantir que o texto fique visível
+
+## 2. QR Codes permanentes via Lovable Cloud Storage
+
+Atualmente os arquivos são enviados para `tmpfiles.org` (temporário). Para links permanentes e acessíveis:
+
+**Etapas:**
+- Criar um bucket público `qr-files` no Lovable Cloud Storage via migração SQL
+- Atualizar `src/pages/QrCodePage.tsx` para fazer upload via `supabase.storage` ao invés de `tmpfiles.org`
+- O QR Code apontará para a URL pública permanente do arquivo no storage
+- Links/textos continuam funcionando diretamente sem upload
+
+**Migração SQL:**
+```sql
+INSERT INTO storage.buckets (id, name, public) VALUES ('qr-files', 'qr-files', true);
+CREATE POLICY "Allow public read" ON storage.objects FOR SELECT USING (bucket_id = 'qr-files');
+CREATE POLICY "Allow anon upload" ON storage.objects FOR INSERT WITH CHECK (bucket_id = 'qr-files');
 ```
 
-## Pre-requisito: Conectar Firecrawl
+## 3. Music DNA — Correções de tema e funcionalidade
 
-O Firecrawl ainda nao esta conectado ao projeto. Sera necessario conectar o conector Firecrawl antes de implementar, para que a chave `FIRECRAWL_API_KEY` esteja disponivel nas edge functions.
+**Problema atual:** `src/lib/musicApi.ts` usa heurísticas locais fake (seed-based) ao invés da edge function `music-dna` que usa Firecrawl + Gemini. A função `analyzeMusicLink` não chama a edge function.
 
-## Etapas
+**Correções:**
+- `src/lib/musicApi.ts` — Reescrever para chamar a edge function `music-dna` via `supabase.functions.invoke` como fallback principal, mantendo OEmbed apenas como fallback secundário
+- `src/pages/MusicDnaPage.tsx` — Corrigir classes hardcoded `dark:bg-[#0a0a0c]`, `dark:bg-[#121215]`, `dark:bg-[#0c0c0e]`, `dark:bg-zinc-*` para usar variáveis do tema (`bg-card`, `bg-secondary`, etc.)
+- Garantir que badges de gênero, BPM e tom tenham texto legível no modo claro (trocar `text-purple-400` → `text-purple-600 dark:text-purple-400`)
+- Reforçar o botão de download MP3 para abrir `yout.com` de forma mais clara com label explícito
 
-### 1. Conectar Firecrawl
-Usar o conector Firecrawl para configurar a chave de API automaticamente no projeto.
+## 4. Revisão global de tema claro/escuro
 
-### 2. Instalar dependencia `jspdf`
-Para geracao de PDF no cliente com as informacoes da musica.
+**Páginas a revisar e corrigir:**
 
-### 3. Criar Edge Function `music-dna`
+- `src/pages/UpscalePage.tsx` — `blue-gradient` no botão pode ter texto ilegível; `border-white/5` invisível no claro
+- `src/pages/GeneratePage.tsx` — Mesmos problemas
+- `src/pages/EditPage.tsx` — Mesmos problemas  
+- `src/pages/RemoveBgPage.tsx` — Mesmos problemas
+- `src/pages/QrCodePage.tsx` — `bg-black/40` nos tabs, `border-white/5` nos cards, `bg-black/5` nos inputs — tudo precisa de variantes `dark:`
+- `src/pages/GalleryPage.tsx` — `bg-card/30`, `border-white/5` nos filtros
+- `src/components/AppSidebar.tsx` — `hover:bg-white/5`, `border-white/5`
 
-**Arquivo:** `supabase/functions/music-dna/index.ts`
+**Padrão de correção:**
+- `border-white/5` → `border-border`
+- `bg-white/5` → `bg-secondary/50`
+- `bg-black/40` → `bg-secondary dark:bg-secondary`
+- `hover:bg-white/5` → `hover:bg-secondary/50`
+- Textos com cor fixa → usar `text-foreground` / `text-muted-foreground`
 
-Fluxo:
-1. Recebe `{ url }` do frontend
-2. Usa Firecrawl API para scrape da URL (extrai markdown da pagina)
-3. Envia conteudo extraido para Lovable AI (`google/gemini-2.5-flash`) com tool calling para obter dados estruturados:
-   - `title` (nome da musica)
-   - `artist` (cantor/artista)
-   - `band` (banda, se aplicavel)
-   - `genre` (estilo musical)
-   - `bpm` (batidas por minuto estimadas)
-   - `key` (tom da musica)
-   - `lyrics` (letra completa)
-4. Retorna JSON estruturado ao frontend
+## Detalhes Técnicos
 
-Registrar em `supabase/config.toml` com `verify_jwt = false`.
+**Storage upload no QR Code:**
+```typescript
+const { data, error } = await supabase.storage
+  .from('qr-files')
+  .upload(`${Date.now()}-${file.name}`, file, { upsert: false });
+const publicUrl = supabase.storage.from('qr-files').getPublicUrl(data.path).data.publicUrl;
+setQrValue(publicUrl);
+```
 
-### 4. Criar `src/lib/musicApi.ts`
-
-Funcao `analyzeMusicLink(url: string)` que chama a edge function `music-dna` via `supabase.functions.invoke`.
-
-### 5. Criar pagina `src/pages/MusicDnaPage.tsx`
-
-Interface com:
-- Campo de input para colar o link da musica (YouTube, Spotify, YouTube Music, etc.)
-- Botao "Analisar Musica" com icone
-- Estado de loading com animacao de pulso
-- Card de resultado com layout rico:
-  - Titulo e Artista/Banda em destaque
-  - Badges visuais para BPM, Tom e Genero
-  - Area scrollavel com a letra da musica (preview)
-- Botao "Baixar PDF" — gera PDF no cliente usando `jspdf` com todas as informacoes formatadas
-- Botao "Baixar MP3" — busca o audio via API de conversao (cobrafreevideodownloader ou servico similar gratuito); caso indisponivel, exibe mensagem informativa
-
-### 6. Atualizar navegacao
-
-**`src/components/AppSidebar.tsx`:**
-- Adicionar item "Music DNA" ao array `tools` com icone `Music` do lucide-react
-- Descricao: "Identificar musicas por link"
-- Cor: `bg-purple-600` / `hover:text-purple-500`
-
-**`src/App.tsx`:**
-- Adicionar import de `MusicDnaPage` e rota `/music-dna`
-
-## Detalhes Tecnicos
-
-**Edge function - Tool calling para dados estruturados:**
-O Gemini sera instruido a retornar um JSON estruturado com os campos necessarios. O prompt incluira o conteudo scrapeado da pagina e pedira para a IA completar com seu conhecimento proprio (especialmente BPM, tom e letra completa caso nao estejam na pagina).
-
-**Download MP3:**
-Sera implementado um mecanismo de busca de audio utilizando APIs publicas de conversao. O botao tera um estado de loading proprio e, caso a conversao falhe, exibira uma mensagem explicativa ao usuario.
-
-**PDF com jspdf:**
-O PDF contera: titulo, artista, banda, genero, BPM, tom, e a letra completa formatada. Sera gerado inteiramente no cliente sem necessidade de backend adicional.
+**Music API reescrita:**
+```typescript
+export async function analyzeMusicLink(url: string) {
+  const { data, error } = await supabase.functions.invoke("music-dna", { body: { url } });
+  if (error) return { error: error.message };
+  return { data: data.data };
+}
+```
 
