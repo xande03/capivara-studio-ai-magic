@@ -6,7 +6,7 @@ import { HistoryPanel } from "@/components/HistoryPanel";
 import { Lightbox } from "@/components/Lightbox";
 import { processImage, ModelType } from "@/lib/imageApi";
 import { addToHistory, getToolHistory, HistoryItem } from "@/lib/sessionHistory";
-import { Scissors, Loader2, Download } from "lucide-react";
+import { Scissors, Loader2, Download, Crown } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 export default function RemoveBgPage() {
@@ -62,6 +62,12 @@ export default function RemoveBgPage() {
             currentImage={inputImage}
             onClear={() => setInputImage("")}
           />
+
+          <div className="flex items-center gap-2 px-3 py-2 bg-purple-500/5 border border-purple-500/10 rounded-xl">
+            <Crown className="w-4 h-4 text-purple-600" />
+            <span className="text-xs font-bold text-purple-700 uppercase tracking-tight">Utilizando Nano Banana Pro</span>
+          </div>
+
           <AspectRatioSelector value={aspectRatio} onChange={setAspectRatio} />
           <Button onClick={handleRemove} disabled={loading || !inputImage} className="w-full blue-gradient text-white font-semibold">
             {loading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Scissors className="w-4 h-4 mr-2" />}

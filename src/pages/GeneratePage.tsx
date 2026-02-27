@@ -86,7 +86,10 @@ export default function GeneratePage() {
             />
           </div>
 
-          <ModelSelector value={model} onChange={setModel} />
+          <div className="space-y-2">
+            <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Modelo de IA</p>
+            <ModelSelector value={model} onChange={setModel} />
+          </div>
           <CreationModeSelector value={creationMode} onChange={setCreationMode} />
           <AspectRatioSelector value={aspectRatio} onChange={setAspectRatio} />
           <Textarea

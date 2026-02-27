@@ -7,7 +7,7 @@ import { HistoryPanel } from "@/components/HistoryPanel";
 import { Lightbox } from "@/components/Lightbox";
 import { processImage, ModelType } from "@/lib/imageApi";
 import { addToHistory, getToolHistory, HistoryItem } from "@/lib/sessionHistory";
-import { ArrowUpCircle, Loader2, Download } from "lucide-react";
+import { ArrowUpCircle, Loader2, Download, Crown } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 export default function UpscalePage() {
@@ -65,6 +65,12 @@ export default function UpscalePage() {
             onClear={() => setInputImage("")}
             label="Imagem para upscale"
           />
+
+          <div className="flex items-center gap-2 px-3 py-2 bg-purple-500/5 border border-purple-500/10 rounded-xl">
+            <Crown className="w-4 h-4 text-purple-600" />
+            <span className="text-xs font-bold text-purple-700 uppercase tracking-tight">Utilizando Nano Banana Pro</span>
+          </div>
+
           <AspectRatioSelector value={aspectRatio} onChange={setAspectRatio} />
           <div className="space-y-3">
             <Textarea
