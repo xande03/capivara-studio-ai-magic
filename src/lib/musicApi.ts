@@ -40,6 +40,10 @@ export async function analyzeMusicLink(url: string): Promise<{ data?: MusicInfo;
       };
     }
 
+    if (data?.error) {
+      console.error("Music DNA Error:", data.error);
+    }
+
     console.warn("Edge function failed, using OEmbed fallback:", error?.message || data?.error);
 
     // Fallback: OEmbed metadata

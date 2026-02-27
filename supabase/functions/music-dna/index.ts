@@ -66,10 +66,9 @@ Deno.serve(async (req) => {
     const quickMeta = await getOEmbedData(url);
     console.log("Quick Meta (OEmbed):", quickMeta);
 
-    // Step 1: Scrape the URL with Firecrawl (Optional fallback)
+    // Step 1: Scrape the URL with Firecrawl
     let pageContent = "";
     if (firecrawlKey) {
-      console.log("Scraping URL:", url);
       try {
         const scrapeRes = await fetch("https://api.firecrawl.dev/v1/scrape", {
           method: "POST",
@@ -81,7 +80,7 @@ Deno.serve(async (req) => {
             url: url.trim(),
             formats: ["markdown"],
             onlyMainContent: true,
-            timeout: 15000, // Reduced timeout to fail faster and use knowledge
+            timeout: 12000, // Safe timeout
           }),
         });
 
@@ -93,7 +92,7 @@ Deno.serve(async (req) => {
           }
         }
       } catch (err) {
-        console.error("Firecrawl fetch failed (continuing with knowledge):", err);
+        console.warn("Scraping failed, will rely on AI knowledge:", err.message);
       }
     }
 
@@ -109,21 +108,18 @@ Deno.serve(async (req) => {
         messages: [
           {
             role: "system",
-            content: `You are a high-level music analysis expert. Your goal is to provide TOTAL FIDELITY music information.
-            Extract details like title, artist, genre, BPM, musical key, and lyrics.
-            - If scraping metadata is provided, use it.
-            - If scraping fails, use the provided OEmbed data and the URL to identify the song from your internal knowledge.
-            - For BPM and Key, provide exact or highly accurate professional estimates.
+            content: `You are a music analysis expert. Your goal is to provide HIGH FIDELITY music information.
+            Extract title, artist, genre, BPM, musical key, and lyrics.
+            - If scraping failed, use your internal knowledge of the song based on the URL and Title.
+            - BPM and Key must be accurate as per professional music theory.
             - Provide COMPLETE lyrics.`,
           },
           {
             role: "user",
             content: `Analyze this music:
             URL: ${url}
-            OEmbed Data: ${quickMeta ? JSON.stringify(quickMeta) : "None"}
-            Scraped Content: ${pageContent ? pageContent.slice(0, 5000) : "Scraping timed out or failed. Use your knowledge."}
-            
-            Return the data in a precise structured format.`,
+            Metadata: ${quickMeta ? JSON.stringify(quickMeta) : "N/A"}
+            Scraped Content: ${pageContent ? pageContent.slice(0, 4000) : "Scraping failed. Identify the song from URL/Metadata and its content."}`,
           },
         ],
         tools: [
@@ -137,7 +133,6 @@ Deno.serve(async (req) => {
                 properties: {
                   title: { type: "string" },
                   artist: { type: "string" },
-                  band: { type: "string" },
                   genre: { type: "string" },
                   bpm: { type: "number" },
                   key: { type: "string" },
@@ -153,33 +148,24 @@ Deno.serve(async (req) => {
       }),
     });
 
-    if (!aiRes.ok) {
-      throw new Error(`AI Gateway Error: ${aiRes.status}`);
-    }
+    if (!aiRes.ok) throw new Error("AI Gateway Error");
 
     const aiData = await aiRes.json();
     const args = aiData.choices?.[0]?.message?.tool_calls?.[0]?.function?.arguments;
-
-    if (!args) {
-      throw new Error("AI failed to return structured data");
-    }
+    if (!args) throw new Error("AI Analysis Empty");
 
     const musicInfo = JSON.parse(args);
-
-    // Merge OEmbed thumbnail if AI didn't provide one
-    if (!musicInfo.thumbnail && quickMeta?.thumbnail) {
-      musicInfo.thumbnail = quickMeta.thumbnail;
-    }
+    if (!musicInfo.thumbnail && quickMeta?.thumbnail) musicInfo.thumbnail = quickMeta.thumbnail;
 
     return new Response(
       JSON.stringify({ success: true, data: musicInfo }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   } catch (error) {
-    console.error("music-dna logic error:", error);
+    console.error("music-dna error:", error);
     return new Response(
-      JSON.stringify({ error: error instanceof Error ? error.message : "Internal Server Error" }),
-      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      JSON.stringify({ error: "Ocorreu um erro ao processar o DNA da música. Tente novamente." }),
+      { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }
 });
