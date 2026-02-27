@@ -42,14 +42,14 @@ export default function GalleryPage() {
           </p>
         </div>
 
-        <div className="flex items-center gap-2 bg-card/30 p-1.5 rounded-full border border-white/5 backdrop-blur-md">
+        <div className="flex items-center gap-2 bg-card/30 p-1.5 rounded-full border border-border backdrop-blur-md">
           {filters.map((filter) => (
             <button
               key={filter.label}
               onClick={() => setActiveFilter(filter.label)}
               className={`px-5 py-1.5 rounded-full text-xs font-bold transition-all duration-300 ${activeFilter === filter.label
                 ? "bg-emerald-500 text-emerald-950 shadow-lg shadow-emerald-500/20 scale-105"
-                : "text-muted-foreground hover:text-foreground hover:bg-white/5"
+                : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
                 }`}
             >
               {filter.label}

@@ -85,7 +85,7 @@ export default function UpscalePage() {
                   key={suggestion}
                   onClick={() => setPrompt(suggestion)}
                   type="button"
-                  className="text-[10px] px-3 py-2 rounded-full bg-secondary/50 hover:bg-secondary border border-white/5 transition-colors text-muted-foreground hover:text-foreground"
+                  className="text-[10px] px-3 py-2 rounded-full bg-secondary/50 hover:bg-secondary border border-border transition-colors text-muted-foreground hover:text-foreground"
                 >
                   {suggestion}
                 </button>

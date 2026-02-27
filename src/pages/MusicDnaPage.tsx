@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
@@ -6,7 +6,6 @@ import {
   Loader2,
   Download,
   FileText,
-  Link2,
   Search,
   Disc,
   Activity,
@@ -37,7 +36,6 @@ export default function MusicDnaPage() {
     setScanning(true);
     setResult(null);
 
-    // Artificial delay to make scanning feel "thorough"
     const analysisPromise = analyzeMusicLink(url.trim());
     const delayPromise = new Promise(resolve => setTimeout(resolve, 3500));
 
@@ -133,15 +131,14 @@ export default function MusicDnaPage() {
 
     if (isYouTube) {
       toast({
-        title: "Redirecionando para Downloader",
-        description: "Abrindo conversão via Yout.com...",
+        title: "Redirecionando para Yout.com",
+        description: "Baixe o áudio em MP3 diretamente pelo site.",
       });
-      // yout.com works by replacing youtube.com with yout.com or following the pattern
       downloadUrl = url.replace("youtube.com", "yout.com").replace("youtu.be", "yout.com");
     } else {
       toast({
-        title: "Redirecionando para Downloader",
-        description: "Preparando processamento externo via Cobalt...",
+        title: "Redirecionando para Cobalt",
+        description: "Preparando processamento externo...",
       });
       downloadUrl = `https://cobalt.tools/?u=${encodeURIComponent(url)}`;
     }
@@ -163,7 +160,7 @@ export default function MusicDnaPage() {
       >
         <div className="flex items-center gap-5">
           <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-500 to-indigo-600 p-[1px] shadow-2xl shadow-purple-500/20">
-            <div className="w-full h-full rounded-2xl bg-white dark:bg-[#0a0a0c] flex items-center justify-center">
+            <div className="w-full h-full rounded-2xl bg-background flex items-center justify-center">
               <Activity className="w-8 h-8 text-purple-600 dark:text-purple-400" />
             </div>
           </div>
@@ -171,13 +168,13 @@ export default function MusicDnaPage() {
             <h1 className="text-4xl font-black tracking-tight text-foreground mb-1">
               Music <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-emerald-600 dark:from-purple-400 dark:to-emerald-400">DNA</span>
             </h1>
-            <p className="text-muted-foreground font-medium">Extração de metadados e diagnóstico local</p>
+            <p className="text-muted-foreground font-medium">Extração de metadados e diagnóstico via IA</p>
           </div>
         </div>
 
-        <div className="flex items-center gap-2 px-4 py-2 bg-secondary dark:bg-zinc-900/50 border border-border dark:border-zinc-800 rounded-full">
+        <div className="flex items-center gap-2 px-4 py-2 bg-secondary border border-border rounded-full">
           <Lock className="w-3 h-3 text-emerald-600 dark:text-emerald-400" />
-          <span className="text-[10px] uppercase tracking-[0.2em] font-bold text-muted-foreground">Security Mode: Temporary</span>
+          <span className="text-[10px] uppercase tracking-[0.2em] font-bold text-muted-foreground">Firecrawl + Gemini</span>
         </div>
       </motion.div>
 
@@ -186,9 +183,9 @@ export default function MusicDnaPage() {
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ delay: 0.1 }}
-        className="glass-card rounded-[2rem] p-1 mb-12 border-zinc-800 shadow-2xl relative z-10"
+        className="glass-card rounded-[2rem] p-1 mb-12 shadow-2xl relative z-10"
       >
-        <div className="bg-card dark:bg-[#121215] rounded-[1.8rem] p-8 flex flex-col md:flex-row gap-4 items-center">
+        <div className="bg-card rounded-[1.8rem] p-8 flex flex-col md:flex-row gap-4 items-center">
           <div className="relative flex-1 w-full">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
             <Input
@@ -196,7 +193,7 @@ export default function MusicDnaPage() {
               value={url}
               onChange={(e) => setUrl(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && handleAnalyze()}
-              className="pl-12 h-14 bg-secondary dark:bg-zinc-950/50 border-border dark:border-zinc-800 focus:border-purple-500/50 focus:ring-purple-500/20 rounded-2xl text-lg text-foreground transition-all"
+              className="pl-12 h-14 bg-secondary border-border focus:border-purple-500/50 focus:ring-purple-500/20 rounded-2xl text-lg text-foreground transition-all"
             />
           </div>
           <Button
@@ -225,7 +222,6 @@ export default function MusicDnaPage() {
               className="flex flex-col items-center justify-center p-20"
             >
               <div className="relative w-48 h-48 mb-8 flex items-center justify-center">
-                {/* Orbital Rings */}
                 <motion.div
                   animate={{ rotate: 360 }}
                   transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
@@ -236,13 +232,11 @@ export default function MusicDnaPage() {
                   transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
                   className="absolute inset-4 border border-emerald-500/20 rounded-full"
                 />
-                {/* Scanning Bar */}
                 <motion.div
                   animate={{ top: ["0%", "90%", "0%"] }}
                   transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
                   className="absolute left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-purple-500 to-transparent z-10 shadow-[0_0_15px_rgba(168,85,247,0.5)]"
                 />
-                {/* Icon */}
                 <Disc className="w-20 h-20 text-purple-600 dark:text-purple-400 animate-pulse" />
               </div>
               <h2 className="text-2xl font-bold text-foreground mb-2">Escaneando Frequências</h2>
@@ -258,14 +252,14 @@ export default function MusicDnaPage() {
               {/* Left Column: Visual & Lyrics */}
               <div className="lg:col-span-12 xl:col-span-8 space-y-8">
                 {/* Cover & Main Info */}
-                <div className="glass-card rounded-[2.5rem] p-8 border-border dark:border-zinc-800 shadow-2xl relative overflow-hidden bg-white/50 dark:bg-[#0c0c0e]">
+                <div className="glass-card rounded-[2.5rem] p-8 shadow-2xl relative overflow-hidden">
                   <div className="flex flex-col md:flex-row gap-8 relative z-10">
-                    <div className="w-full md:w-64 h-64 rounded-3xl overflow-hidden shadow-2xl bg-secondary dark:bg-zinc-900 border border-border dark:border-zinc-800 relative group">
+                    <div className="w-full md:w-64 h-64 rounded-3xl overflow-hidden shadow-2xl bg-secondary border border-border relative group">
                       {result.thumbnail ? (
                         <img src={result.thumbnail} alt={result.title} className="w-full h-full object-cover" />
                       ) : (
-                        <div className="w-full h-full flex items-center justify-center bg-secondary dark:bg-zinc-900">
-                          <Music className="w-20 h-20 text-muted-foreground/30 dark:text-zinc-800" />
+                        <div className="w-full h-full flex items-center justify-center bg-secondary">
+                          <Music className="w-20 h-20 text-muted-foreground/30" />
                         </div>
                       )}
                       <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
@@ -276,10 +270,10 @@ export default function MusicDnaPage() {
                     <div className="flex-1 flex flex-col justify-between py-2">
                       <div>
                         <div className="flex flex-wrap gap-2 mb-4">
-                          <span className="px-3 py-1 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-400 text-[10px] font-bold uppercase tracking-wider">
+                          <span className="px-3 py-1 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-600 dark:text-purple-400 text-[10px] font-bold uppercase tracking-wider">
                             {result.genre}
                           </span>
-                          <span className="px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[10px] font-bold uppercase tracking-wider">
+                          <span className="px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-[10px] font-bold uppercase tracking-wider">
                             {result.duration ? `${result.duration} MIN` : 'ANÁLISE COMPLETA'}
                           </span>
                         </div>
@@ -293,16 +287,16 @@ export default function MusicDnaPage() {
                       </div>
 
                       <div className="flex flex-wrap gap-3 mt-8">
-                        <Button variant="outline" onClick={handleDownloadPdf} className="h-12 border-border dark:border-zinc-700 bg-secondary/50 dark:bg-zinc-900/50 text-foreground dark:text-white rounded-xl hover:bg-black/5 dark:hover:bg-white/5 font-bold">
+                        <Button variant="outline" onClick={handleDownloadPdf} className="h-12 border-border bg-secondary/50 text-foreground rounded-xl hover:bg-secondary font-bold">
                           <FileText className="w-4 h-4 mr-2" />
                           Diagnostic PDF
                         </Button>
                         <Button
-                          className="h-12 bg-white text-black font-bold rounded-xl hover:bg-zinc-200"
+                          className="h-12 bg-foreground text-background font-bold rounded-xl hover:opacity-90"
                           onClick={handleDownloadMp3}
                         >
                           <Download className="w-4 h-4 mr-2" />
-                          Download Audio
+                          Download via Yout.com
                         </Button>
                       </div>
                     </div>
@@ -310,22 +304,22 @@ export default function MusicDnaPage() {
                 </div>
 
                 {/* Lyrics Section */}
-                <div className="glass-card rounded-[2.5rem] p-10 border-border dark:border-zinc-800 shadow-2xl bg-white/50 dark:bg-[#0c0c0e]">
+                <div className="glass-card rounded-[2.5rem] p-10 shadow-2xl">
                   <div className="flex items-center justify-between mb-8">
                     <div className="flex items-center gap-3">
                       <Mic2 className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
                       <h3 className="text-xl font-bold text-foreground tracking-tight">Análise Lírica</h3>
                     </div>
-                    <div className="w-10 h-10 rounded-full bg-secondary dark:bg-zinc-900 flex items-center justify-center text-muted-foreground transform hover:rotate-45 transition-transform cursor-pointer">
+                    <div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center text-muted-foreground transform hover:rotate-45 transition-transform cursor-pointer">
                       <ChevronRight className="w-5 h-5" />
                     </div>
                   </div>
                   <div className="relative group">
-                    <pre className="whitespace-pre-wrap font-sans text-lg text-foreground/80 dark:text-zinc-400 leading-[2] max-h-[500px] overflow-y-auto pr-4 scrollbar-thin scrollbar-thumb-border dark:scrollbar-thumb-zinc-800">
+                    <pre className="whitespace-pre-wrap font-sans text-lg text-foreground/80 leading-[2] max-h-[500px] overflow-y-auto pr-4">
                       {result.lyrics}
                     </pre>
                     {result.lyrics.includes("Genius") && (
-                      <div className="mt-8 pt-8 border-t border-white/5">
+                      <div className="mt-8 pt-8 border-t border-border">
                         <a
                           href={`https://genius.com/search?q=${encodeURIComponent(result.title + " " + result.artist)}`}
                           target="_blank"
@@ -343,53 +337,53 @@ export default function MusicDnaPage() {
 
               {/* Right Column: DNA Specs */}
               <div className="lg:col-span-12 xl:col-span-4 space-y-6">
-                <div className="glass-card rounded-[2rem] p-8 border-border dark:border-zinc-800 bg-white/40 dark:bg-black/40 shadow-xl">
-                  <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground/40 dark:text-zinc-600 mb-8 px-2 flex items-center justify-between">
+                <div className="glass-card rounded-[2rem] p-8 shadow-xl">
+                  <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground/60 mb-8 px-2 flex items-center justify-between">
                     Technical DNA Specs
                     <Activity className="w-3 h-3 text-purple-600 dark:text-purple-500 animate-pulse" />
                   </h4>
 
                   <div className="space-y-4">
-                    <div className="p-6 rounded-3xl bg-secondary dark:bg-zinc-900/50 border border-border dark:border-white/5 flex items-center justify-between">
+                    <div className="p-6 rounded-3xl bg-secondary border border-border flex items-center justify-between">
                       <div className="flex items-center gap-4">
                         <div className="w-10 h-10 rounded-xl bg-purple-500/10 flex items-center justify-center">
                           <Waves className="w-5 h-5 text-purple-600 dark:text-purple-400" />
                         </div>
                         <span className="text-muted-foreground font-bold uppercase text-[10px] tracking-widest">Ritmo</span>
                       </div>
-                      <span className="text-2xl font-black text-foreground dark:text-white">{result.bpm} <span className="text-sm font-medium text-muted-foreground/60 dark:text-zinc-600">BPM</span></span>
+                      <span className="text-2xl font-black text-foreground">{result.bpm} <span className="text-sm font-medium text-muted-foreground">BPM</span></span>
                     </div>
 
-                    <div className="p-6 rounded-3xl bg-secondary dark:bg-zinc-900/50 border border-border dark:border-white/5 flex items-center justify-between">
+                    <div className="p-6 rounded-3xl bg-secondary border border-border flex items-center justify-between">
                       <div className="flex items-center gap-4">
                         <div className="w-10 h-10 rounded-xl bg-cyan-500/10 flex items-center justify-center">
                           <Music className="w-5 h-5 text-cyan-600 dark:text-cyan-400" />
                         </div>
                         <span className="text-muted-foreground font-bold uppercase text-[10px] tracking-widest">Tonalidade</span>
                       </div>
-                      <span className="text-2xl font-black text-foreground dark:text-white uppercase tracking-tight">{result.key}</span>
+                      <span className="text-2xl font-black text-foreground uppercase tracking-tight">{result.key}</span>
                     </div>
 
-                    <div className="p-6 rounded-3xl bg-secondary dark:bg-zinc-900/50 border border-border dark:border-white/5 flex items-center justify-between">
+                    <div className="p-6 rounded-3xl bg-secondary border border-border flex items-center justify-between">
                       <div className="flex items-center gap-4">
                         <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center">
                           <Disc className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
                         </div>
                         <span className="text-muted-foreground font-bold uppercase text-[10px] tracking-widest">Gênero</span>
                       </div>
-                      <span className="text-xl font-black text-foreground dark:text-white uppercase tracking-tight">{result.genre}</span>
+                      <span className="text-xl font-black text-foreground uppercase tracking-tight">{result.genre}</span>
                     </div>
                   </div>
                 </div>
 
                 {/* Secondary Info */}
-                <div className="p-8 rounded-[2rem] bg-gradient-to-br from-purple-500/10 to-indigo-500/10 dark:from-purple-900/40 dark:to-indigo-900/40 border border-border dark:border-white/5 shadow-inner">
+                <div className="p-8 rounded-[2rem] bg-gradient-to-br from-purple-500/10 to-indigo-500/10 dark:from-purple-900/20 dark:to-indigo-900/20 border border-border shadow-inner">
                   <div className="flex items-start gap-4 mb-4">
                     <Activity className="w-5 h-5 text-purple-600 dark:text-purple-400 mt-1" />
                     <div>
-                      <h5 className="text-foreground dark:text-white font-bold mb-1">Diagnóstico Efetivo</h5>
-                      <p className="text-sm text-foreground/50 dark:text-white/50 leading-relaxed font-medium">
-                        O processo de extração utilizou metadados OEmbed de alta fidelidade e cálculos heurísticos para determinar a estrutura rítmica da obra.
+                      <h5 className="text-foreground font-bold mb-1">Diagnóstico via IA</h5>
+                      <p className="text-sm text-muted-foreground leading-relaxed font-medium">
+                        A extração utilizou Firecrawl para raspagem e Gemini para análise inteligente dos metadados musicais.
                       </p>
                     </div>
                   </div>
@@ -403,11 +397,11 @@ export default function MusicDnaPage() {
               animate={{ opacity: 1 }}
               className="flex flex-col items-center justify-center p-20 text-center"
             >
-              <div className="w-24 h-24 rounded-full bg-secondary dark:bg-zinc-900/50 border border-border dark:border-zinc-800 flex items-center justify-center mb-6">
-                <Music className="w-10 h-10 text-muted-foreground/30 dark:text-zinc-700" />
+              <div className="w-24 h-24 rounded-full bg-secondary border border-border flex items-center justify-center mb-6">
+                <Music className="w-10 h-10 text-muted-foreground/30" />
               </div>
-              <h3 className="text-xl font-medium text-muted-foreground dark:text-zinc-400 mb-2">Aguardando Input</h3>
-              <p className="text-muted-foreground/60 dark:text-zinc-600 max-w-xs text-sm">Insira um link válido para iniciar a análise do DNA musical.</p>
+              <h3 className="text-xl font-medium text-muted-foreground mb-2">Aguardando Input</h3>
+              <p className="text-muted-foreground/60 max-w-xs text-sm">Insira um link válido para iniciar a análise do DNA musical.</p>
             </motion.div>
           )}
         </AnimatePresence>
