@@ -6,6 +6,37 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
+async function getOEmbedData(url: string) {
+  try {
+    if (url.includes("youtube.com") || url.includes("youtu.be")) {
+      const oembedUrl = `https://www.youtube.com/oembed?url=${encodeURIComponent(url)}&format=json`;
+      const res = await fetch(oembedUrl);
+      if (res.ok) {
+        const json = await res.json();
+        return {
+          title: json.title || "",
+          artist: json.author_name || "",
+          thumbnail: json.thumbnail_url || "",
+        };
+      }
+    } else if (url.includes("spotify.com")) {
+      const oembedUrl = `https://embed.spotify.com/oembed?url=${encodeURIComponent(url)}`;
+      const res = await fetch(oembedUrl);
+      if (res.ok) {
+        const json = await res.json();
+        return {
+          title: json.title || "",
+          artist: json.provider_name || "",
+          thumbnail: json.thumbnail_url || "",
+        };
+      }
+    }
+  } catch (e) {
+    console.warn("OEmbed fetch failed in Edge Function:", e);
+  }
+  return null;
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -22,14 +53,8 @@ Deno.serve(async (req) => {
     }
 
     const firecrawlKey = Deno.env.get("FIRECRAWL_API_KEY");
-    if (!firecrawlKey) {
-      return new Response(
-        JSON.stringify({ error: "Firecrawl not configured" }),
-        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
-    }
-
     const lovableKey = Deno.env.get("LOVABLE_API_KEY");
+
     if (!lovableKey) {
       return new Response(
         JSON.stringify({ error: "LOVABLE_API_KEY not configured" }),
@@ -37,41 +62,40 @@ Deno.serve(async (req) => {
       );
     }
 
-    // Step 1: Scrape the URL with Firecrawl
-    console.log("Scraping URL:", url);
+    // Step 0: Fast Meta Data (OEmbed)
+    const quickMeta = await getOEmbedData(url);
+    console.log("Quick Meta (OEmbed):", quickMeta);
+
+    // Step 1: Scrape the URL with Firecrawl (Optional fallback)
     let pageContent = "";
-    try {
-      const scrapeRes = await fetch("https://api.firecrawl.dev/v1/scrape", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${firecrawlKey}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          url: url.trim(),
-          formats: ["markdown"],
-          onlyMainContent: true,
-          timeout: 30000,
-        }),
-      });
+    if (firecrawlKey) {
+      console.log("Scraping URL:", url);
+      try {
+        const scrapeRes = await fetch("https://api.firecrawl.dev/v1/scrape", {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${firecrawlKey}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            url: url.trim(),
+            formats: ["markdown"],
+            onlyMainContent: true,
+            timeout: 15000, // Reduced timeout to fail faster and use knowledge
+          }),
+        });
 
-      if (scrapeRes.ok) {
-        const contentType = scrapeRes.headers.get("content-type");
-        if (contentType && contentType.includes("application/json")) {
-          const scrapeData = await scrapeRes.json();
-          pageContent = scrapeData?.data?.markdown || "";
-        } else {
-          console.warn("Firecrawl returned non-JSON response:", await scrapeRes.text());
+        if (scrapeRes.ok) {
+          const contentType = scrapeRes.headers.get("content-type");
+          if (contentType && contentType.includes("application/json")) {
+            const scrapeData = await scrapeRes.json();
+            pageContent = scrapeData?.data?.markdown || "";
+          }
         }
-      } else {
-        const errText = await scrapeRes.text();
-        console.error("Firecrawl error:", scrapeRes.status, errText);
+      } catch (err) {
+        console.error("Firecrawl fetch failed (continuing with knowledge):", err);
       }
-    } catch (err) {
-      console.error("Firecrawl fetch failed:", err);
     }
-
-    console.log("Scraped content length:", pageContent.length);
 
     // Step 2: Use Lovable AI to extract structured music data
     const aiRes = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
@@ -85,11 +109,21 @@ Deno.serve(async (req) => {
         messages: [
           {
             role: "system",
-            content: `You are a music analysis expert. Given the content scraped from a music page (YouTube, Spotify, etc.), extract all relevant music information. Use your extensive knowledge of music to fill in details not present in the page content, especially BPM, key/tonality, and complete lyrics. Always provide the complete lyrics if you know the song. For BPM and key, give your best estimate based on your knowledge of the song.`,
+            content: `You are a high-level music analysis expert. Your goal is to provide TOTAL FIDELITY music information.
+            Extract details like title, artist, genre, BPM, musical key, and lyrics.
+            - If scraping metadata is provided, use it.
+            - If scraping fails, use the provided OEmbed data and the URL to identify the song from your internal knowledge.
+            - For BPM and Key, provide exact or highly accurate professional estimates.
+            - Provide COMPLETE lyrics.`,
           },
           {
             role: "user",
-            content: `Analyze the following content from a music page and extract all music information.\n\nURL: ${url}\n\nPage content:\n${pageContent ? pageContent.slice(0, 8000) : "Scraping failed or no content found. Please use the URL to identify the song and provide details based on your knowledge."}`,
+            content: `Analyze this music:
+            URL: ${url}
+            OEmbed Data: ${quickMeta ? JSON.stringify(quickMeta) : "None"}
+            Scraped Content: ${pageContent ? pageContent.slice(0, 5000) : "Scraping timed out or failed. Use your knowledge."}
+            
+            Return the data in a precise structured format.`,
           },
         ],
         tools: [
@@ -97,18 +131,18 @@ Deno.serve(async (req) => {
             type: "function",
             function: {
               name: "extract_music_info",
-              description: "Extract structured music information from a page",
+              description: "Extract structured music information",
               parameters: {
                 type: "object",
                 properties: {
-                  title: { type: "string", description: "Song title" },
-                  artist: { type: "string", description: "Main artist/singer name" },
-                  band: { type: "string", description: "Band name if applicable, empty string if solo artist" },
-                  genre: { type: "string", description: "Music genre/style (e.g. Pop, Rock, Sertanejo, Funk, etc.)" },
-                  bpm: { type: "number", description: "Beats per minute" },
-                  key: { type: "string", description: "Musical key" },
-                  lyrics: { type: "string", description: "Complete lyrics" },
-                  mp3Url: { type: "string", description: "MP3 link" },
+                  title: { type: "string" },
+                  artist: { type: "string" },
+                  band: { type: "string" },
+                  genre: { type: "string" },
+                  bpm: { type: "number" },
+                  key: { type: "string" },
+                  lyrics: { type: "string" },
+                  thumbnail: { type: "string" },
                 },
                 required: ["title", "artist", "genre", "bpm", "key", "lyrics"],
               },
@@ -120,34 +154,31 @@ Deno.serve(async (req) => {
     });
 
     if (!aiRes.ok) {
-      const errText = await aiRes.text();
-      console.error("AI error:", aiRes.status, errText);
-      return new Response(
-        JSON.stringify({ error: `AI analysis failed: ${aiRes.status}` }),
-        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+      throw new Error(`AI Gateway Error: ${aiRes.status}`);
     }
 
     const aiData = await aiRes.json();
-    const toolCall = aiData.choices?.[0]?.message?.tool_calls?.[0];
+    const args = aiData.choices?.[0]?.message?.tool_calls?.[0]?.function?.arguments;
 
-    if (!toolCall?.function?.arguments) {
-      return new Response(
-        JSON.stringify({ error: "AI could not extract music information" }),
-        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+    if (!args) {
+      throw new Error("AI failed to return structured data");
     }
 
-    const musicInfo = JSON.parse(toolCall.function.arguments);
+    const musicInfo = JSON.parse(args);
+
+    // Merge OEmbed thumbnail if AI didn't provide one
+    if (!musicInfo.thumbnail && quickMeta?.thumbnail) {
+      musicInfo.thumbnail = quickMeta.thumbnail;
+    }
 
     return new Response(
       JSON.stringify({ success: true, data: musicInfo }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   } catch (error) {
-    console.error("music-dna error:", error);
+    console.error("music-dna logic error:", error);
     return new Response(
-      JSON.stringify({ error: error instanceof Error ? error.message : "Unknown error" }),
+      JSON.stringify({ error: error instanceof Error ? error.message : "Internal Server Error" }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }
