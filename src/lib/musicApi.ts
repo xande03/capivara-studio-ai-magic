@@ -1,4 +1,3 @@
-import { supabase } from "@/integrations/supabase/client";
 
 export interface MusicInfo {
   title: string;
@@ -17,34 +16,41 @@ export async function analyzeMusicLink(url: string): Promise<{ data?: MusicInfo;
   try {
     console.log("Analyzing URL via Edge Function:", url);
 
-    // Try edge function first (Firecrawl + Gemini)
-    const { data, error } = await supabase.functions.invoke("music-dna", {
-      body: { url },
+    // Try edge function first (Firecrawl + Gemini) via Direct Fetch
+    const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/music-dna`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+      },
+      body: JSON.stringify({ url }),
+    }).catch(err => {
+      console.error("Direct fetch error:", err);
+      return null;
     });
 
-    if (!error && data?.success && data?.data) {
-      const d = data.data;
-      return {
-        data: {
-          title: d.title || "Desconhecido",
-          artist: d.artist || "Desconhecido",
-          band: d.band || "",
-          genre: d.genre || "Indefinido",
-          bpm: d.bpm || 0,
-          key: d.key || "N/A",
-          lyrics: d.lyrics || "Letra não disponível",
-          mp3Url: d.mp3Url,
-          thumbnail: d.thumbnail,
-          duration: d.duration,
-        },
-      };
+    if (response && response.ok) {
+      const data = await response.json();
+      if (data?.success && data?.data) {
+        const d = data.data;
+        return {
+          data: {
+            title: d.title || "Desconhecido",
+            artist: d.artist || "Desconhecido",
+            band: d.band || "",
+            genre: d.genre || "Indefinido",
+            bpm: d.bpm || 0,
+            key: d.key || "N/A",
+            lyrics: d.lyrics || "Letra não disponível",
+            mp3Url: d.mp3Url,
+            thumbnail: d.thumbnail,
+            duration: d.duration,
+          },
+        };
+      }
     }
 
-    if (data?.error) {
-      console.error("Music DNA Error:", data.error);
-    }
-
-    console.warn("Edge function failed, using OEmbed fallback:", error?.message || data?.error);
+    console.warn("Edge function failed or returned error, using OEmbed fallback");
 
     // Fallback: OEmbed metadata
     let title = "";

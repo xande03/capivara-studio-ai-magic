@@ -1,4 +1,3 @@
-import { supabase } from "@/integrations/supabase/client";
 
 export type ImageAction = "generate" | "upscale" | "remove-bg" | "edit";
 export type ModelType = "nano-banana" | "nano-banana-pro";
@@ -14,23 +13,27 @@ interface ProcessImageParams {
 }
 
 export async function processImage(params: ProcessImageParams): Promise<{ image?: string; text?: string; error?: string }> {
-  const { data, error } = await supabase.functions.invoke("image-process", {
-    body: params,
-    headers: {
-      Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+  try {
+    const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/image-process`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+      },
+      body: JSON.stringify(params),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      return { error: errorData.error || `Erro HTTP: ${response.status}` };
     }
-  });
 
-  if (error) {
-    console.error("Edge function error:", error);
-    return { error: error.message || "Erro ao processar imagem" };
+    const data = await response.json();
+    return { image: data?.image, text: data?.text };
+  } catch (err) {
+    console.error("Direct fetch error:", err);
+    return { error: "Falha na comunicação com o servidor de imagem" };
   }
-
-  if (data?.error) {
-    return { error: data.error };
-  }
-
-  return { image: data?.image, text: data?.text };
 }
 
 export function fileToBase64(file: File): Promise<string> {

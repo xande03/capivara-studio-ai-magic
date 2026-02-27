@@ -29,7 +29,6 @@ import {
     CardFooter
 } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
 
 type QrCategory = "link" | "text" | "pdf" | "music" | "image" | "file";
 
@@ -112,22 +111,28 @@ const QrCodePage = () => {
                 setProcessingStep("Enviando para armazenamento permanente...");
 
                 const fileName = `${Date.now()}-${file.name.replace(/[^a-zA-Z0-9._-]/g, '_')}`;
-                const { data, error } = await supabase.storage
-                    .from('qr-files')
-                    .upload(fileName, file, { upsert: false });
+                const uploadUrl = `${import.meta.env.VITE_SUPABASE_URL}/storage/v1/object/qr-files/${fileName}`;
 
-                if (error) {
-                    throw new Error(error.message);
+                const uploadRes = await fetch(uploadUrl, {
+                    method: "POST",
+                    headers: {
+                        "Authorization": `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+                        "x-upsert": "false",
+                        "Content-Type": file.type,
+                    },
+                    body: file,
+                });
+
+                if (!uploadRes.ok) {
+                    const errorText = await uploadRes.text();
+                    throw new Error(`Falha no upload (${uploadRes.status}): ${errorText}`);
                 }
 
                 setProcessingStep("Finalizando...");
                 await new Promise(r => setTimeout(r, 200));
 
-                const { data: urlData } = supabase.storage
-                    .from('qr-files')
-                    .getPublicUrl(data.path);
-
-                setQrValue(urlData.publicUrl);
+                const publicUrl = `${import.meta.env.VITE_SUPABASE_URL}/storage/v1/object/public/qr-files/${fileName}`;
+                setQrValue(publicUrl);
                 toast({
                     title: "Upload concluído!",
                     description: "Arquivo hospedado permanentemente e QR Code gerado com sucesso.",
