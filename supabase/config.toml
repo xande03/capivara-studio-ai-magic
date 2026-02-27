@@ -1,7 +1,7 @@
 project_id = "akixivyzmsbjsombypqg"
 
 [functions.image-process]
-verify_jwt = true
+verify_jwt = false
 
 [functions.music-dna]
 verify_jwt = false
