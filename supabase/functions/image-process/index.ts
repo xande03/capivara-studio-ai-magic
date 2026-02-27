@@ -41,12 +41,12 @@ serve(async (req) => {
       ? ` Output the image in ${aspectRatio} aspect ratio.`
       : "";
 
-    // Model selection: nano banana (flash-image) or nano banana pro (gemini-3-pro-image)
-    // Corrected to valid Google Gemini model names
+    // Model selection: nano banana (flash) or nano banana pro (pro)
+    // Using 1.5 models for maximum stability and compatibility
     const selectedModel =
       model === "nano-banana-pro"
         ? "google/gemini-1.5-pro"
-        : "google/gemini-2.0-flash";
+        : "google/gemini-1.5-flash";
 
     console.log(`Using model: ${selectedModel}`);
 
