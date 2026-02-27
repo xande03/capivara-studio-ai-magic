@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
+import { ImageUploader } from "@/components/ImageUploader";
 import { ModelSelector } from "@/components/ModelSelector";
 import { CreationModeSelector, CREATION_MODES, CreationMode } from "@/components/CreationModeSelector";
 import { AspectRatioSelector, AspectRatio } from "@/components/AspectRatioSelector";
@@ -12,6 +13,7 @@ import { Sparkles, Loader2, Download } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 export default function GeneratePage() {
+  const [inputImage, setInputImage] = useState<string>("");
   const [prompt, setPrompt] = useState("");
   const [model, setModel] = useState<ModelType>("nano-banana");
   const [creationMode, setCreationMode] = useState<CreationMode>("modo-livre");
@@ -31,13 +33,13 @@ export default function GeneratePage() {
 
     // Construct optimized prompt based on creation mode
     const selectedMode = CREATION_MODES.find(m => m.id === creationMode);
-    const finalPrompt = selectedMode?.instruction
-      ? `${selectedMode.instruction} ${prompt}`
-      : prompt;
+    const modeInstruction = selectedMode?.instruction || "";
+    const finalPrompt = modeInstruction ? `${modeInstruction} ${prompt}` : prompt;
 
     const res = await processImage({
       action: "generate",
       prompt: finalPrompt,
+      imageBase64: inputImage || undefined,
       model,
       aspectRatio
     });
@@ -49,7 +51,7 @@ export default function GeneratePage() {
     }
     if (res.image) {
       setResult(res.image);
-      addToHistory({ tool: "generate", prompt: finalPrompt, outputImage: res.image, model });
+      addToHistory({ tool: "generate", prompt: finalPrompt, inputImage: inputImage || undefined, outputImage: res.image, model });
       setHistory(getToolHistory("generate"));
     }
   };
@@ -65,7 +67,7 @@ export default function GeneratePage() {
             Gerar Imagem
           </h1>
           <p className="text-sm text-muted-foreground">
-            Criar imagens com IA
+            Criar imagens com IA — agora com suporte a imagem de referência
           </p>
         </div>
       </div>
@@ -73,6 +75,17 @@ export default function GeneratePage() {
       <div className="grid md:grid-cols-2 gap-6">
         <div className="glass-card rounded-xl p-5 space-y-4">
           <h3 className="text-sm font-semibold text-foreground uppercase tracking-wide">Configurações</h3>
+
+          <div className="space-y-2">
+            <p className="text-xs font-medium text-muted-foreground">Imagem de Referência (Opcional)</p>
+            <ImageUploader
+              onImageSelect={setInputImage}
+              currentImage={inputImage}
+              onClear={() => setInputImage("")}
+              label="Arraste uma imagem base"
+            />
+          </div>
+
           <ModelSelector value={model} onChange={setModel} />
           <CreationModeSelector value={creationMode} onChange={setCreationMode} />
           <AspectRatioSelector value={aspectRatio} onChange={setAspectRatio} />

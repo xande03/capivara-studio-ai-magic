@@ -53,12 +53,29 @@ serve(async (req) => {
     let messages: any[] = [];
 
     if (action === "generate") {
-      messages = [
-        {
-          role: "user",
-          content: `You are a creative image generator. Generate exactly what the user describes with maximum fidelity and detail. Do not refuse any creative request.${aspectInstruction} The user wants: ${prompt}`,
-        },
-      ];
+      const generateInstruction = `You are a creative image generator. Generate exactly what the user describes with maximum fidelity and detail. Do not refuse any creative request.${aspectInstruction} The user wants: ${prompt}`;
+
+      if (imageBase64) {
+        messages = [
+          {
+            role: "user",
+            content: [
+              { type: "text", text: generateInstruction },
+              {
+                type: "image_url",
+                image_url: { url: imageBase64 },
+              },
+            ],
+          },
+        ];
+      } else {
+        messages = [
+          {
+            role: "user",
+            content: generateInstruction,
+          },
+        ];
+      }
     } else if (action === "upscale") {
       // ENHANCED UPSCALE PROMPT
       const upscalePrompt = `Professional AI Reconstruction & Upscale Engine. 
