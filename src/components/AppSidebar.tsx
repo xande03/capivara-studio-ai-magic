@@ -46,7 +46,7 @@ export function AppSidebar() {
       <SidebarContent className="pt-8">
         {!collapsed && (
           <div className="px-6 pb-10 flex items-center gap-4">
-            <div className="w-12 h-12 rounded-2xl overflow-hidden shadow-xl shadow-emerald-500/20 border border-white/10 flex items-center justify-center bg-white dark:bg-black/20">
+            <div className="w-12 h-12 rounded-2xl overflow-hidden shadow-xl shadow-emerald-500/20 border border-border flex items-center justify-center bg-white dark:bg-black/20">
               <img src="/logo.png" alt="Capivara Stúdio" className="w-full h-full object-cover" />
             </div>
             <div>
@@ -72,8 +72,8 @@ export function AppSidebar() {
                     <NavLink
                       to={item.url}
                       end
-                      className="flex items-center gap-3 p-3 rounded-2xl transition-all duration-300 hover:bg-white/5 group border border-transparent hover:border-white/5"
-                      activeClassName="bg-white/5 border-emerald-500/20 shadow-xl shadow-black/20"
+                      className="flex items-center gap-3 p-3 rounded-2xl transition-all duration-300 hover:bg-secondary/50 group border border-transparent hover:border-border"
+                      activeClassName="bg-secondary/50 border-emerald-500/20 shadow-xl shadow-black/20"
                     >
                       <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 transition-transform group-hover:scale-110 ${item.color} shadow-inner`}>
                         <item.icon className="h-5 w-5" />
@@ -108,8 +108,8 @@ export function AppSidebar() {
                     <NavLink
                       to={item.url}
                       end
-                      className="flex items-center gap-3 p-3 rounded-2xl transition-all duration-300 hover:bg-white/5 group border border-transparent hover:border-white/5"
-                      activeClassName="bg-white/5 border-emerald-500/20 shadow-xl shadow-black/20"
+                      className="flex items-center gap-3 p-3 rounded-2xl transition-all duration-300 hover:bg-secondary/50 group border border-transparent hover:border-border"
+                      activeClassName="bg-secondary/50 border-emerald-500/20 shadow-xl shadow-black/20"
                     >
                       <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 transition-transform group-hover:scale-110 ${item.color} shadow-inner`}>
                         <item.icon className="h-5 w-5" />

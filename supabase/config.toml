@@ -4,4 +4,4 @@ project_id = "akixivyzmsbjsombypqg"
 verify_jwt = true
 
 [functions.music-dna]
-verify_jwt = true
+verify_jwt = false

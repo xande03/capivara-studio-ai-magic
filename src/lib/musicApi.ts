@@ -15,9 +15,34 @@ export interface MusicInfo {
 
 export async function analyzeMusicLink(url: string): Promise<{ data?: MusicInfo; error?: string }> {
   try {
-    console.log("Analyzing URL (Premium Mode):", url);
+    console.log("Analyzing URL via Edge Function:", url);
 
-    // 1. Get Metadata via OEmbed
+    // Try edge function first (Firecrawl + Gemini)
+    const { data, error } = await supabase.functions.invoke("music-dna", {
+      body: { url },
+    });
+
+    if (!error && data?.success && data?.data) {
+      const d = data.data;
+      return {
+        data: {
+          title: d.title || "Desconhecido",
+          artist: d.artist || "Desconhecido",
+          band: d.band || "",
+          genre: d.genre || "Indefinido",
+          bpm: d.bpm || 0,
+          key: d.key || "N/A",
+          lyrics: d.lyrics || "Letra não disponível",
+          mp3Url: d.mp3Url,
+          thumbnail: d.thumbnail,
+          duration: d.duration,
+        },
+      };
+    }
+
+    console.warn("Edge function failed, using OEmbed fallback:", error?.message || data?.error);
+
+    // Fallback: OEmbed metadata
     let title = "";
     let artist = "";
     let thumbnail = "";
@@ -46,7 +71,6 @@ export async function analyzeMusicLink(url: string): Promise<{ data?: MusicInfo;
       console.warn("OEmbed fetch failed:", e);
     }
 
-    // 2. Fallback: Parse URL for clues if title is missing
     if (!title) {
       try {
         const urlObj = new URL(url);
@@ -56,58 +80,20 @@ export async function analyzeMusicLink(url: string): Promise<{ data?: MusicInfo;
       }
     }
 
-    // 3. Premium DNA Engine (Advanced Heuristics)
-    // We use a more deterministic approach based on the title to ensure consistency
-    // The user wants "faithful" info, so we use a more granular mapping
-    const seed = title.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0);
-    const genres = [
-      "Synthwave", "Cyberpunk", "Neo-Sertanejo", "Trap-Soul", "Phonk",
-      "Classic Rock", "Lo-fi Hip Hop", "Indie Pop", "Nu-Jazz", "Techno",
-      "House", "Heavy Metal", "Bossanova", "MPB", "Reggaeton"
-    ];
-    const genre = genres[seed % genres.length];
-
-    // BPM Calculation: Using a wider range and more stable seed
-    const bpm = 75 + (seed % 105);
-
-    const keys = [
-      "C Major", "C# Major", "D Major", "D# Major", "E Major", "F Major",
-      "F# Major", "G Major", "G# Major", "A Major", "A# Major", "B Major",
-      "C minor", "C# minor", "D minor", "D# minor", "E minor", "F minor",
-      "F# minor", "G minor", "G# minor", "A minor", "A# minor", "B minor"
-    ];
-    const key = keys[seed % keys.length];
-
-    // Lyrics bridge & Simulation
-    let lyrics = "";
-    const cleanTitle = encodeURIComponent(title);
-    const geniusLink = `https://genius.com/search?q=${cleanTitle}`;
-
-    if (title.toLowerCase().includes("bohemian") || title.toLowerCase().includes("queen")) {
-      lyrics = "Is this the real life? Is this just fantasy?\nCaught in a landslide, no escape from reality...\n\nOpen your eyes, look up to the skies and see...";
-    } else if (title.toLowerCase().includes("capivara")) {
-      lyrics = "Lá vem a capivara, no meio da lagoa\nNadando tranquila, ela é muito boa!\n\nCapivara, capivara, a rainha do cerrado...";
-    } else {
-      lyrics = `[DETECÇÃO DE LETRA ATIVADA]\n\nA letra completa está sendo extraída de fontes externas.\nPara visualizar agora, acesse o link do Genius abaixo:\n\n${geniusLink}\n\n[SISTEMA EM MODO TEMPORÁRIO]`;
-    }
-
-    const data: MusicInfo = {
-      title,
-      artist: artist || "Artista Identificado",
-      band: (artist && (artist.includes("&") || artist.includes("feat"))) ? artist : "",
-      genre,
-      bpm,
-      key,
-      lyrics,
-      thumbnail,
-      duration: `${Math.floor(bpm / 30)}:${(bpm % 60).toString().padStart(2, '0')}` // Fake duration for logic
+    return {
+      data: {
+        title,
+        artist: artist || "Artista não identificado",
+        band: "",
+        genre: "Não identificado",
+        bpm: 0,
+        key: "N/A",
+        lyrics: `Não foi possível extrair a letra automaticamente.\n\nBusque no Genius:\nhttps://genius.com/search?q=${encodeURIComponent(title)}`,
+        thumbnail,
+      },
     };
-
-    // Note: We don't provide mp3Url here as handleDownloadMp3 handles it via cobalt.tools in the UI
-
-    return { data };
   } catch (error) {
     console.error("Analysis failed:", error);
-    return { error: error instanceof Error ? error.message : "Erro crítico na análise local" };
+    return { error: error instanceof Error ? error.message : "Erro crítico na análise" };
   }
 }

@@ -12,7 +12,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       <div className="min-h-screen flex w-full bg-background text-foreground animate-in fade-in duration-500">
         <AppSidebar />
         <main className="flex-1 flex flex-col">
-          <header className="h-14 flex items-center justify-between border-b border-white/5 px-4 glass-card">
+          <header className="h-14 flex items-center justify-between border-b border-border px-4 glass-card">
             <div className="flex items-center">
               <SidebarTrigger className="mr-4" />
               <span className="text-sm text-emerald-500/80 font-semibold tracking-wider uppercase">
