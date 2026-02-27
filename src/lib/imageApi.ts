@@ -16,6 +16,9 @@ interface ProcessImageParams {
 export async function processImage(params: ProcessImageParams): Promise<{ image?: string; text?: string; error?: string }> {
   const { data, error } = await supabase.functions.invoke("image-process", {
     body: params,
+    headers: {
+      Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+    }
   });
 
   if (error) {
