@@ -34,6 +34,7 @@ serve(async (req) => {
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
 
     const { action, prompt, imageBase64, imageBase64Second, model, aspectRatio } = await req.json();
+    console.log(`Processing action: ${action}, model: ${model}`);
 
     // Build aspect ratio instruction
     const aspectInstruction = aspectRatio && aspectRatio !== "1:1"
@@ -41,10 +42,13 @@ serve(async (req) => {
       : "";
 
     // Model selection: nano banana (flash-image) or nano banana pro (gemini-3-pro-image)
+    // Corrected to valid Google Gemini model names
     const selectedModel =
       model === "nano-banana-pro"
-        ? "google/gemini-3-pro-image-preview"
-        : "google/gemini-2.5-flash-image";
+        ? "google/gemini-1.5-pro"
+        : "google/gemini-2.0-flash";
+
+    console.log(`Using model: ${selectedModel}`);
 
     let messages: any[] = [];
 
