@@ -108,18 +108,20 @@ Deno.serve(async (req) => {
         messages: [
           {
             role: "system",
-            content: `You are a music analysis expert. Your goal is to provide HIGH FIDELITY music information.
-            Extract title, artist, genre, BPM, musical key, and lyrics.
-            - If scraping failed, use your internal knowledge of the song based on the URL and Title.
-            - BPM and Key must be accurate as per professional music theory.
-            - Provide COMPLETE lyrics.`,
+            content: `You are a high-level music analysis expert. Your goal is to provide TOTAL FIDELITY information.
+            - IDENTIFICATION: Use the URL and OEmbed Metadata as the "Ground Truth" to identify the EXACT song and artist.
+            - LYRICS: Provide the COMPLETE and VERIFIED lyrics for the identified song from your internal knowledge. Ignore scraped content if it contains irrelevant text, navigation, or is for a different song.
+            - DNA SPECS: BPM and Key must be accurate as per professional music theory for the identified track.
+            - FORMAT: Always return the data in the specified structured format.`,
           },
           {
             role: "user",
-            content: `Analyze this music:
+            content: `Expertly analyze this music:
             URL: ${url}
-            Metadata: ${quickMeta ? JSON.stringify(quickMeta) : "N/A"}
-            Scraped Content: ${pageContent ? pageContent.slice(0, 4000) : "Scraping failed. Identify the song from URL/Metadata and its content."}`,
+            OEmbed Metadata (Verified): ${quickMeta ? JSON.stringify(quickMeta) : "N/A"}
+            Scraped Context: ${pageContent ? pageContent.slice(0, 4000) : "Scraping timed out or failed. Rely on Metadata and your knowledge."}
+            
+            Identify the song and return accurate BPM, Key, Genre, and the COMPLETE lyrics.`,
           },
         ],
         tools: [
