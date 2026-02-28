@@ -1,5 +1,6 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useCallback } from "react";
 import { QRCodeSVG } from "qrcode.react";
+import { addToHistory } from "@/lib/sessionHistory";
 import {
     QrCode,
     Upload,
@@ -68,6 +69,35 @@ const QrCodePage = () => {
         }
     };
 
+    const saveQrToGallery = useCallback((value: string) => {
+        // Convert QR SVG to PNG data URL and save to gallery
+        setTimeout(() => {
+            const svg = qrRef.current?.querySelector("svg");
+            if (!svg) return;
+            const svgData = new XMLSerializer().serializeToString(svg);
+            const canvas = document.createElement("canvas");
+            const ctx = canvas.getContext("2d");
+            const img = new Image();
+            img.onload = () => {
+                canvas.width = 400;
+                canvas.height = 400;
+                if (ctx) {
+                    ctx.fillStyle = "white";
+                    ctx.fillRect(0, 0, 400, 400);
+                    ctx.drawImage(img, 20, 20, 360, 360);
+                }
+                const pngDataUrl = canvas.toDataURL("image/png");
+                addToHistory({
+                    tool: "qr-code",
+                    prompt: value.length > 60 ? value.slice(0, 60) + "..." : value,
+                    outputImage: pngDataUrl,
+                    model: "QR Engine",
+                });
+            };
+            img.src = "data:image/svg+xml;base64," + btoa(unescape(encodeURIComponent(svgData)));
+        }, 200); // small delay to ensure QR renders
+    }, []);
+
     const generateQrCode = async () => {
         if (category === "link" || category === "text") {
             if (!inputValue) {
@@ -86,6 +116,7 @@ const QrCodePage = () => {
 
             setTimeout(() => {
                 setQrValue(inputValue);
+                saveQrToGallery(inputValue);
                 setIsGenerating(false);
                 setProcessingStep("");
                 toast({
@@ -133,6 +164,7 @@ const QrCodePage = () => {
 
                 const publicUrl = `${import.meta.env.VITE_SUPABASE_URL}/storage/v1/object/public/qr-files/${fileName}`;
                 setQrValue(publicUrl);
+                saveQrToGallery(publicUrl);
                 toast({
                     title: "Upload concluído!",
                     description: "Arquivo hospedado permanentemente e QR Code gerado com sucesso.",

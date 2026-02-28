@@ -92,7 +92,7 @@ Deno.serve(async (req) => {
           }
         }
       } catch (err) {
-        console.warn("Scraping failed, will rely on AI knowledge:", err.message);
+        console.warn("Scraping failed, will rely on AI knowledge:", (err as Error).message);
       }
     }
 
@@ -104,7 +104,7 @@ Deno.serve(async (req) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "google/gemini-2.0-flash",
+        model: "google/gemini-2.5-flash",
         messages: [
           {
             role: "system",

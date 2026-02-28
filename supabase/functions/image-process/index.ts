@@ -26,11 +26,11 @@ serve(async (req) => {
       : "";
 
     // Model selection: nano banana (flash) or nano banana pro (pro)
-    // Using 1.5 models for maximum stability and compatibility
+    // Using models with native image generation capabilities
     const selectedModel =
       model === "nano-banana-pro"
-        ? "google/gemini-1.5-pro"
-        : "google/gemini-1.5-flash";
+        ? "google/gemini-3-pro-image-preview"
+        : "google/gemini-2.5-flash";
 
     console.log(`Using model: ${selectedModel}`);
 
@@ -165,8 +165,41 @@ serve(async (req) => {
     }
 
     const data = await response.json();
-    const resultImage = data.choices?.[0]?.message?.images?.[0]?.image_url?.url;
-    const resultText = data.choices?.[0]?.message?.content;
+    console.log("AI response structure:", JSON.stringify(data).slice(0, 500));
+    
+    // The gateway may return images in different formats depending on model
+    const message = data.choices?.[0]?.message;
+    let resultImage = null;
+    let resultText = null;
+
+    // Format 1: images array (some models)
+    if (message?.images?.[0]?.image_url?.url) {
+      resultImage = message.images[0].image_url.url;
+    }
+    // Format 2: content array with image_url parts (multimodal response)
+    if (!resultImage && Array.isArray(message?.content)) {
+      for (const part of message.content) {
+        if (part.type === "image_url" && part.image_url?.url) {
+          resultImage = part.image_url.url;
+        } else if (part.type === "text") {
+          resultText = part.text;
+        }
+      }
+    }
+    // Format 3: inline_data in content parts
+    if (!resultImage && Array.isArray(message?.content)) {
+      for (const part of message.content) {
+        if (part.inline_data?.data) {
+          resultImage = `data:${part.inline_data.mime_type || "image/png"};base64,${part.inline_data.data}`;
+        }
+      }
+    }
+    // Format 4: plain string content (text only)
+    if (!resultImage && typeof message?.content === "string") {
+      resultText = message.content;
+    }
+
+    console.log("Parsed result - hasImage:", !!resultImage, "hasText:", !!resultText);
 
     return new Response(
       JSON.stringify({ image: resultImage, text: resultText }),

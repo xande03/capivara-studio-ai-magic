@@ -1,17 +1,18 @@
 import { useState } from "react";
-import { getAllHistory, HistoryItem } from "@/lib/sessionHistory";
+import { getAllHistory, removeFromHistory, HistoryItem } from "@/lib/sessionHistory";
 import { Lightbox } from "@/components/Lightbox";
-import { LayoutGrid } from "lucide-react";
+import { LayoutGrid, Trash2 } from "lucide-react";
 
 const toolLabels: Record<string, string> = {
   upscale: "Upscale",
   generate: "Geração",
   edit: "Edição",
   "remove-bg": "Remover Fundo",
+  "qr-code": "QR Code",
 };
 
 export default function GalleryPage() {
-  const [allItems] = useState<HistoryItem[]>(() => getAllHistory());
+  const [allItems, setAllItems] = useState<HistoryItem[]>(() => getAllHistory());
   const [activeFilter, setActiveFilter] = useState("Todas");
   const [lightbox, setLightbox] = useState<string>("");
 
@@ -20,7 +21,13 @@ export default function GalleryPage() {
     { label: "Upscale", tool: "upscale" },
     { label: "Fundo", tool: "remove-bg" },
     { label: "Geradas", tool: "generate" },
+    { label: "QR Code", tool: "qr-code" },
   ];
+
+  const handleDelete = (id: string) => {
+    removeFromHistory(id);
+    setAllItems(prev => prev.filter(item => item.id !== id));
+  };
 
   const filteredItems = activeFilter === "Todas"
     ? allItems
@@ -71,9 +78,15 @@ export default function GalleryPage() {
           {filteredItems.map((item) => (
             <div
               key={item.id}
-              className="group cursor-pointer rounded-xl overflow-hidden border border-border hover:border-primary/50 transition-all hover:scale-[1.02]"
+              className="group cursor-pointer rounded-xl overflow-hidden border border-border hover:border-primary/50 transition-all hover:scale-[1.02] relative"
               onClick={() => setLightbox(item.outputImage)}
             >
+              <button
+                onClick={(e) => { e.stopPropagation(); handleDelete(item.id); }}
+                className="absolute top-2 right-2 z-10 p-1.5 rounded-full bg-destructive/80 text-destructive-foreground opacity-0 group-hover:opacity-100 transition-opacity hover:bg-destructive"
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+              </button>
               <img
                 src={item.outputImage}
                 alt={item.prompt}
