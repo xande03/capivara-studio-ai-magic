@@ -1,88 +1,43 @@
 
 
-# Plano de Correções: Temas, QR Code Permanente, Music DNA
+# Plano: Corrigir ferramentas de imagem, build error, e integrar QR na galeria
 
-## 1. Corrigir títulos encobertos no modo escuro
+## Problema raiz das ferramentas de imagem
 
-O problema está na classe `.emerald-text` em `src/index.css`. No modo escuro, o gradiente de texto com `-webkit-background-clip: text` funciona, mas no modo claro o gradiente usa cores muito escuras que se confundem com backgrounds. Além disso, a classe `emerald-gradient` / `blue-gradient` aplicada em botões tem `shadow-lg shadow-emerald-500/20` que pode criar barras visuais sobre texto.
+A edge function `image-process` usa modelos **inexistentes** (`google/gemini-1.5-pro` e `google/gemini-1.5-flash`). Os modelos corretos com capacidade de gerar/editar imagens são:
+- `google/gemini-2.5-flash` (nano-banana) — com `modalities: ["image", "text"]`
+- `google/gemini-3-pro-image-preview` (nano-banana-pro) — modelo avançado de imagem
 
-**Arquivos afetados:**
-- `src/index.css` — Ajustar `.emerald-text` para ter contraste adequado em ambos os temas; revisar `.glass-card` para modo claro
-- `src/pages/Index.tsx` — Título "Capivara Stúdio" usa `emerald-text`, garantir visibilidade
-- `src/pages/GalleryPage.tsx` — Título usa `emerald-text`
-- `src/pages/QrCodePage.tsx` — Título usa `emerald-text`, cards usam `border-white/5` e `bg-black/40` (ilegíveis no modo claro)
-- `src/components/AppSidebar.tsx` — `emerald-text` no nome, `hover:bg-white/5` não funciona no claro
-- `src/components/Layout.tsx` — Header com `border-white/5` invisível no claro
+## Etapas
 
-**Correções específicas:**
-- `.emerald-text` no modo claro: usar cores mais vibrantes/escuras que contrastem com fundo branco
-- `.glass-card` no modo claro: usar `bg-white/80` com `border` visível em vez de `border-white/5`
-- Substituir todas as referências `border-white/5`, `bg-white/5`, `bg-black/40` por variantes que funcionem em ambos os temas usando classes condicionais `dark:`
-- `blue-gradient` nos botões: garantir que o texto fique visível
+### 1. Corrigir build error em `music-dna/index.ts`
+- Linha 95: `err.message` → `(err as Error).message`
 
-## 2. QR Codes permanentes via Lovable Cloud Storage
+### 2. Corrigir modelos em `image-process/index.ts`
+- Trocar `google/gemini-1.5-pro` → `google/gemini-3-pro-image-preview`
+- Trocar `google/gemini-1.5-flash` → `google/gemini-2.5-flash`
+- Ambos já suportam `modalities: ["image", "text"]`
 
-Atualmente os arquivos são enviados para `tmpfiles.org` (temporário). Para links permanentes e acessíveis:
+### 3. Integrar QR Codes na galeria
+- Atualizar `src/lib/sessionHistory.ts` para suportar itens do tipo "qr-code"
+- Em `QrCodePage.tsx`, após gerar QR com sucesso, salvar no histórico de sessão com `tool: "qr-code"` e a imagem do QR (converter SVG para data URL)
+- Em `GalleryPage.tsx`:
+  - Adicionar filtro "QR Code" com `tool: "qr-code"`
+  - Adicionar label "QR Code" no `toolLabels`
+  - Adicionar botão de excluir em cada item da galeria (remove do sessionStorage)
 
-**Etapas:**
-- Criar um bucket público `qr-files` no Lovable Cloud Storage via migração SQL
-- Atualizar `src/pages/QrCodePage.tsx` para fazer upload via `supabase.storage` ao invés de `tmpfiles.org`
-- O QR Code apontará para a URL pública permanente do arquivo no storage
-- Links/textos continuam funcionando diretamente sem upload
-
-**Migração SQL:**
-```sql
-INSERT INTO storage.buckets (id, name, public) VALUES ('qr-files', 'qr-files', true);
-CREATE POLICY "Allow public read" ON storage.objects FOR SELECT USING (bucket_id = 'qr-files');
-CREATE POLICY "Allow anon upload" ON storage.objects FOR INSERT WITH CHECK (bucket_id = 'qr-files');
-```
-
-## 3. Music DNA — Correções de tema e funcionalidade
-
-**Problema atual:** `src/lib/musicApi.ts` usa heurísticas locais fake (seed-based) ao invés da edge function `music-dna` que usa Firecrawl + Gemini. A função `analyzeMusicLink` não chama a edge function.
-
-**Correções:**
-- `src/lib/musicApi.ts` — Reescrever para chamar a edge function `music-dna` via `supabase.functions.invoke` como fallback principal, mantendo OEmbed apenas como fallback secundário
-- `src/pages/MusicDnaPage.tsx` — Corrigir classes hardcoded `dark:bg-[#0a0a0c]`, `dark:bg-[#121215]`, `dark:bg-[#0c0c0e]`, `dark:bg-zinc-*` para usar variáveis do tema (`bg-card`, `bg-secondary`, etc.)
-- Garantir que badges de gênero, BPM e tom tenham texto legível no modo claro (trocar `text-purple-400` → `text-purple-600 dark:text-purple-400`)
-- Reforçar o botão de download MP3 para abrir `yout.com` de forma mais clara com label explícito
-
-## 4. Revisão global de tema claro/escuro
-
-**Páginas a revisar e corrigir:**
-
-- `src/pages/UpscalePage.tsx` — `blue-gradient` no botão pode ter texto ilegível; `border-white/5` invisível no claro
-- `src/pages/GeneratePage.tsx` — Mesmos problemas
-- `src/pages/EditPage.tsx` — Mesmos problemas  
-- `src/pages/RemoveBgPage.tsx` — Mesmos problemas
-- `src/pages/QrCodePage.tsx` — `bg-black/40` nos tabs, `border-white/5` nos cards, `bg-black/5` nos inputs — tudo precisa de variantes `dark:`
-- `src/pages/GalleryPage.tsx` — `bg-card/30`, `border-white/5` nos filtros
-- `src/components/AppSidebar.tsx` — `hover:bg-white/5`, `border-white/5`
-
-**Padrão de correção:**
-- `border-white/5` → `border-border`
-- `bg-white/5` → `bg-secondary/50`
-- `bg-black/40` → `bg-secondary dark:bg-secondary`
-- `hover:bg-white/5` → `hover:bg-secondary/50`
-- Textos com cor fixa → usar `text-foreground` / `text-muted-foreground`
+### 4. Adicionar exclusão na galeria
+- Adicionar função `removeFromHistory(id)` em `sessionHistory.ts`
+- Adicionar botão de lixeira em cada card da galeria
+- Ao excluir, atualizar o estado local
 
 ## Detalhes Técnicos
 
-**Storage upload no QR Code:**
-```typescript
-const { data, error } = await supabase.storage
-  .from('qr-files')
-  .upload(`${Date.now()}-${file.name}`, file, { upsert: false });
-const publicUrl = supabase.storage.from('qr-files').getPublicUrl(data.path).data.publicUrl;
-setQrValue(publicUrl);
+**Modelos de imagem (correção crítica):**
+```text
+nano-banana      → google/gemini-2.5-flash (rápido, bom custo-benefício)
+nano-banana-pro  → google/gemini-3-pro-image-preview (máxima qualidade)
 ```
 
-**Music API reescrita:**
-```typescript
-export async function analyzeMusicLink(url: string) {
-  const { data, error } = await supabase.functions.invoke("music-dna", { body: { url } });
-  if (error) return { error: error.message };
-  return { data: data.data };
-}
-```
+**QR na galeria:** O QR SVG será convertido para PNG data URL via canvas antes de salvar no histórico, garantindo que apareça como thumbnail na galeria.
 
