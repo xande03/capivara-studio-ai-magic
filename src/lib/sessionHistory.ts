@@ -43,6 +43,11 @@ export function getAllHistory(): HistoryItem[] {
   return getHistory();
 }
 
+export function removeFromHistory(id: string) {
+  const history = getHistory().filter((item) => item.id !== id);
+  saveHistory(history);
+}
+
 export function clearHistory() {
   sessionStorage.removeItem(STORAGE_KEY);
 }
