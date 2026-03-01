@@ -12,7 +12,7 @@ const STORAGE_KEY = "capivara-studio-history";
 
 function getHistory(): HistoryItem[] {
   try {
-    const data = sessionStorage.getItem(STORAGE_KEY);
+    const data = localStorage.getItem(STORAGE_KEY);
     return data ? JSON.parse(data) : [];
   } catch {
     return [];
@@ -20,7 +20,7 @@ function getHistory(): HistoryItem[] {
 }
 
 function saveHistory(items: HistoryItem[]) {
-  sessionStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
 }
 
 export function addToHistory(item: Omit<HistoryItem, "id" | "timestamp">): HistoryItem {
@@ -49,5 +49,5 @@ export function removeFromHistory(id: string) {
 }
 
 export function clearHistory() {
-  sessionStorage.removeItem(STORAGE_KEY);
+  localStorage.removeItem(STORAGE_KEY);
 }
