@@ -72,11 +72,11 @@ export function AppSidebar() {
                     <NavLink
                       to={item.url}
                       end
-                      className="flex items-center gap-3 p-3 rounded-2xl transition-all duration-300 hover:bg-secondary/50 group border border-transparent hover:border-border"
+                      className={`flex items-center ${collapsed ? 'justify-center p-2' : 'gap-3 p-3'} rounded-2xl transition-all duration-300 hover:bg-secondary/50 group border border-transparent hover:border-border`}
                       activeClassName="bg-secondary/50 border-emerald-500/20 shadow-xl shadow-black/20"
                     >
-                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 transition-transform group-hover:scale-110 ${item.color} shadow-inner`}>
-                        <item.icon className="h-5 w-5" />
+                      <div className={`${collapsed ? 'w-8 h-8' : 'w-10 h-10'} rounded-xl flex items-center justify-center shrink-0 transition-transform group-hover:scale-110 ${item.color} shadow-inner`}>
+                        <item.icon className={collapsed ? "h-4 w-4" : "h-5 w-5"} />
                       </div>
                       {!collapsed && (
                         <div className="flex flex-col min-w-0">
@@ -108,11 +108,11 @@ export function AppSidebar() {
                     <NavLink
                       to={item.url}
                       end
-                      className="flex items-center gap-3 p-3 rounded-2xl transition-all duration-300 hover:bg-secondary/50 group border border-transparent hover:border-border"
+                      className={`flex items-center ${collapsed ? 'justify-center p-2' : 'gap-3 p-3'} rounded-2xl transition-all duration-300 hover:bg-secondary/50 group border border-transparent hover:border-border`}
                       activeClassName="bg-secondary/50 border-emerald-500/20 shadow-xl shadow-black/20"
                     >
-                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 transition-transform group-hover:scale-110 ${item.color} shadow-inner`}>
-                        <item.icon className="h-5 w-5" />
+                      <div className={`${collapsed ? 'w-8 h-8' : 'w-10 h-10'} rounded-xl flex items-center justify-center shrink-0 transition-transform group-hover:scale-110 ${item.color} shadow-inner`}>
+                        <item.icon className={collapsed ? "h-4 w-4" : "h-5 w-5"} />
                       </div>
                       {!collapsed && (
                         <div className="flex flex-col min-w-0">

@@ -19,7 +19,10 @@ export default defineConfig(({ mode }) => ({
     mode === "development" && componentTagger(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['logo.png', 'robots.txt'],
+      includeAssets: ['logo.png', 'favicon.ico', 'robots.txt'],
+      workbox: {
+        navigateFallbackDenylist: [/^\/~oauth/],
+      },
       manifest: {
         name: 'Capivara Stúdio',
         short_name: 'Capivara',
