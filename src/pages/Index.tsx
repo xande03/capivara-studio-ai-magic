@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { ArrowUpCircle, Sparkles, Pencil, Scissors, Film, QrCode, Music } from "lucide-react";
+import { ArrowUpCircle, Sparkles, Pencil, Scissors, Film, QrCode, Music, FileText, MessageCircle } from "lucide-react";
 
 const tools = [
   {
@@ -44,6 +44,18 @@ const tools = [
     description: "Identifique BPM, Tom, Letras e muito mais com IA",
     icon: Music,
     path: "/music-dna",
+  },
+  {
+    title: "Conversor de Documentos",
+    description: "Converta imagens em PDF, PDF em Word e escaneie documentos",
+    icon: FileText,
+    path: "/converter",
+  },
+  {
+    title: "Chat IA",
+    description: "Converse com Claude 3.7 Sonnet e DeepSeek v3.2",
+    icon: MessageCircle,
+    path: "/chat",
   },
 ];
 

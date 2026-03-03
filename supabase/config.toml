@@ -5,3 +5,6 @@ verify_jwt = false
 
 [functions.music-dna]
 verify_jwt = false
+
+[functions.document-process]
+verify_jwt = false
