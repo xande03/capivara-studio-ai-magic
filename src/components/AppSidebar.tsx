@@ -7,6 +7,8 @@ import {
   Zap,
   QrCode,
   Music,
+  FileText,
+  MessageCircle,
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation } from "react-router-dom";
@@ -30,6 +32,8 @@ const tools = [
   { title: "Remover Fundo", description: "Recortar fundo automaticamente", url: "/remove-bg", icon: Scissors, color: "bg-orange-500/10 text-orange-600" },
   { title: "QR Code Magic", description: "Gerar QR Codes profissionais", url: "/qrcode", icon: QrCode, color: "bg-pink-500/10 text-pink-600" },
   { title: "Music DNA", description: "Análise profunda de áudio", url: "/music-dna", icon: Music, color: "bg-indigo-500/10 text-indigo-600" },
+  { title: "Conversor", description: "PDF, Word e OCR", url: "/converter", icon: FileText, color: "bg-cyan-500/10 text-cyan-600" },
+  { title: "Chat IA", description: "Claude & DeepSeek", url: "/chat", icon: MessageCircle, color: "bg-violet-500/10 text-violet-600" },
 ];
 
 const gallery = [

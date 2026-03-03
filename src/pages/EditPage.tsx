@@ -5,9 +5,10 @@ import { ImageUploader } from "@/components/ImageUploader";
 import { AspectRatioSelector, AspectRatio } from "@/components/AspectRatioSelector";
 import { HistoryPanel } from "@/components/HistoryPanel";
 import { Lightbox } from "@/components/Lightbox";
+import { TextOverlayEditor } from "@/components/TextOverlayEditor";
 import { processImage, ModelType } from "@/lib/imageApi";
 import { addToHistory, getToolHistory, HistoryItem } from "@/lib/sessionHistory";
-import { Pencil, Loader2, Download, Crown } from "lucide-react";
+import { Pencil, Loader2, Download, Crown, Type } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 export default function EditPage() {
@@ -20,6 +21,7 @@ export default function EditPage() {
   const [loading, setLoading] = useState(false);
   const [lightbox, setLightbox] = useState<string>("");
   const [history, setHistory] = useState<HistoryItem[]>(() => getToolHistory("edit"));
+  const [showTextOverlay, setShowTextOverlay] = useState(false);
   const { toast } = useToast();
 
   const handleEdit = async () => {
@@ -68,6 +70,18 @@ export default function EditPage() {
         </div>
       </div>
 
+      {showTextOverlay && inputImage ? (
+        <TextOverlayEditor
+          imageSrc={inputImage}
+          onConfirm={(dataUrl) => {
+            setResult(dataUrl);
+            setShowTextOverlay(false);
+            addToHistory({ tool: "edit", prompt: "Texto inserido na imagem", inputImage, outputImage: dataUrl, model });
+            setHistory(getToolHistory("edit"));
+          }}
+          onCancel={() => setShowTextOverlay(false)}
+        />
+      ) : (
       <div className="grid md:grid-cols-2 gap-6">
         <div className="glass-card rounded-xl p-5 space-y-4">
           <h3 className="text-sm font-semibold text-foreground uppercase tracking-wide">Imagem Original</h3>
@@ -91,6 +105,17 @@ export default function EditPage() {
             <Crown className="w-4 h-4 text-purple-600" />
             <span className="text-xs font-bold text-purple-700 uppercase tracking-tight">Utilizando Nano Banana Pro</span>
           </div>
+
+          {inputImage && (
+            <Button
+              variant="outline"
+              onClick={() => setShowTextOverlay(true)}
+              className="w-full"
+            >
+              <Type className="w-4 h-4 mr-2" />
+              Inserir Texto na Imagem
+            </Button>
+          )}
 
           <AspectRatioSelector value={aspectRatio} onChange={setAspectRatio} />
           <Textarea
@@ -133,6 +158,8 @@ export default function EditPage() {
           )}
         </div>
       </div>
+      )}
+
 
       <div>
         <h3 className="text-sm font-medium mb-3 text-foreground">Histórico desta sessão</h3>
