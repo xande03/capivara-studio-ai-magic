@@ -173,7 +173,8 @@ export function TextOverlayEditor({ imageSrc, onConfirm, onCancel }: TextOverlay
         <canvas
           ref={canvasRef}
           onClick={handleCanvasClick}
-          className="cursor-crosshair w-full"
+          className="cursor-crosshair block"
+          style={{ maxWidth: '100%' }}
         />
       </div>
 
