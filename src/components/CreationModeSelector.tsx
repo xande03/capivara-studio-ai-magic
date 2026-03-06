@@ -8,12 +8,14 @@ import {
     Laptop,
     MousePointer2,
     Image as ImageIcon,
-    BookOpen
+    BookOpen,
+    Tv
 } from "lucide-react";
 
 export type CreationMode =
     | "anime"
     | "caricatura"
+    | "cartoon"
     | "slide"
     | "logomarca"
     | "adesivo"
@@ -36,6 +38,13 @@ export const CREATION_MODES: { id: CreationMode; label: string; description: str
         description: "Estilo caricatura exagerada",
         icon: Smile,
         instruction: "Comic and exaggerated caricature style, artistic and expressive lines."
+    },
+    {
+        id: "cartoon",
+        label: "Cartoon",
+        description: "Estilo cartoon ocidental",
+        icon: Tv,
+        instruction: "Cartoon style, bold outlines, bright and saturated colors, playful and animated look, western animation aesthetic, smooth shading."
     },
     {
         id: "logomarca",
@@ -103,16 +112,16 @@ export function CreationModeSelector({ value, onChange }: Props) {
                         key={mode.id}
                         type="button"
                         onClick={() => onChange(mode.id)}
-                        className={`group relative flex flex-col items-center justify-center p-4 rounded-xl transition-all duration-300 border-2 overflow-hidden ${value === mode.id
+                        className={`group relative flex flex-col items-center justify-center p-3 md:p-4 rounded-xl transition-all duration-300 border-2 overflow-hidden ${value === mode.id
                             ? "bg-orange-500/10 border-orange-500 shadow-[0_0_20px_rgba(249,115,22,0.15)]"
                             : "bg-card/30 border-white/5 hover:border-white/10 hover:bg-card/50"
                             }`}
                     >
                         <div className={`mb-2 transition-transform duration-300 group-hover:scale-110 ${value === mode.id ? "text-orange-500" : "text-muted-foreground/80"
                             }`}>
-                            <mode.icon className="h-6 w-6" />
+                            <mode.icon className="h-5 w-5 md:h-6 md:w-6" />
                         </div>
-                        <span className={`text-sm font-bold mb-0.5 transition-colors ${value === mode.id ? "text-orange-500" : "text-foreground/90"
+                        <span className={`text-xs md:text-sm font-bold mb-0.5 transition-colors ${value === mode.id ? "text-orange-500" : "text-foreground/90"
                             }`}>
                             {mode.label}
                         </span>

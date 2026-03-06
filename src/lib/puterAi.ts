@@ -27,7 +27,10 @@ export function loadPuter(): Promise<void> {
       puterLoaded = true;
       resolve();
     };
-    script.onerror = () => reject(new Error("Failed to load Puter.js"));
+    script.onerror = () => {
+      puterLoadPromise = null; // allow retry
+      reject(new Error("Falha ao carregar Puter.js. Verifique sua conexão."));
+    };
     document.head.appendChild(script);
   });
 
@@ -66,7 +69,7 @@ export async function streamPuterChat(
     }
     onDone();
   } catch (err) {
-    console.error("Puter AI error:", err);
+    console.error("Puter AI streaming error:", err);
     throw err;
   }
 }
@@ -82,11 +85,16 @@ export async function sendPuterChat(
     content: m.content,
   }));
 
-  const response = await window.puter.ai.chat(formattedMessages, { model });
-  return (
-    response?.message?.content?.[0]?.text ||
-    response?.message?.content ||
-    response?.text ||
-    "Sem resposta"
-  );
+  try {
+    const response = await window.puter.ai.chat(formattedMessages, { model });
+    return (
+      response?.message?.content?.[0]?.text ||
+      response?.message?.content ||
+      response?.text ||
+      "Sem resposta"
+    );
+  } catch (err) {
+    console.error("Puter AI non-streaming error:", err);
+    throw err;
+  }
 }
