@@ -62,7 +62,7 @@ export default function ConverterPage() {
     setPdfLoading(false);
   };
 
-  // === PDF to Word ===
+  // === PDF to Word (client-side text extraction + AI OCR fallback) ===
   const handlePdfUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file && file.type === "application/pdf") {
@@ -77,39 +77,59 @@ export default function ConverterPage() {
     if (!pdfFile) return;
     setWordLoading(true);
     try {
-      const { PDFDocument } = await import("pdf-lib");
+      const pdfjsLib = await import("pdfjs-dist");
+      pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.mjs`;
+
       const arrayBuffer = await pdfFile.arrayBuffer();
-      const pdfDoc = await PDFDocument.load(arrayBuffer);
-      const pages = pdfDoc.getPages();
+      const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+      const totalPages = pdf.numPages;
+      let fullText = "";
 
-      // Convert first pages to images via canvas for AI OCR
-      const pageTexts: string[] = [];
+      for (let i = 1; i <= totalPages; i++) {
+        const page = await pdf.getPage(i);
+        const textContent = await page.getTextContent();
+        const pageText = textContent.items
+          .map((item: any) => item.str)
+          .join(" ");
 
-      // Use edge function with Lovable AI for text extraction
-      const base64 = btoa(
-        new Uint8Array(arrayBuffer).reduce((data, byte) => data + String.fromCharCode(byte), "")
-      );
+        if (pageText.trim()) {
+          fullText += `--- Página ${i} ---\n${pageText}\n\n`;
+        } else {
+          // Page has no extractable text — render as image and send to OCR
+          const viewport = page.getViewport({ scale: 2 });
+          const canvas = document.createElement("canvas");
+          canvas.width = viewport.width;
+          canvas.height = viewport.height;
+          const ctx = canvas.getContext("2d")!;
+          await page.render({ canvasContext: ctx, viewport }).promise;
+          const imageBase64 = canvas.toDataURL("image/png");
 
-      const response = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/document-process`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
-          },
-          body: JSON.stringify({
-            action: "pdf-to-text",
-            pdfBase64: base64,
-            pageCount: pages.length,
-          }),
+          try {
+            const response = await fetch(
+              `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/document-process`,
+              {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+                },
+                body: JSON.stringify({ action: "ocr", imageBase64 }),
+              }
+            );
+            if (response.ok) {
+              const data = await response.json();
+              fullText += `--- Página ${i} (OCR) ---\n${data.text || ""}\n\n`;
+            } else {
+              fullText += `--- Página ${i} ---\n[Não foi possível extrair texto desta página]\n\n`;
+            }
+          } catch {
+            fullText += `--- Página ${i} ---\n[Erro ao processar OCR desta página]\n\n`;
+          }
         }
-      );
+      }
 
-      if (!response.ok) throw new Error("Erro no servidor");
-      const data = await response.json();
-      const extractedText = data.text || "Não foi possível extrair texto.";
-      setWordText(extractedText);
+      setWordText(fullText.trim() || "Não foi possível extrair texto do PDF.");
+      toast({ title: "Texto extraído com sucesso!" });
     } catch (err) {
       console.error(err);
       toast({ title: "Erro ao processar PDF", variant: "destructive" });
@@ -192,8 +212,8 @@ export default function ConverterPage() {
           <FileText className="w-7 h-7 text-cyan-600" />
         </div>
         <div>
-          <h1 className="text-2xl font-bold text-foreground">Conversor de Documentos</h1>
-          <p className="text-sm text-muted-foreground">
+          <h1 className="text-xl md:text-2xl font-bold text-foreground">Conversor de Documentos</h1>
+          <p className="text-xs md:text-sm text-muted-foreground">
             Converta imagens em PDF, PDF em Word e escaneie documentos
           </p>
         </div>
@@ -201,20 +221,20 @@ export default function ConverterPage() {
 
       <Tabs value={tab} onValueChange={setTab}>
         <TabsList className="grid grid-cols-3 w-full">
-          <TabsTrigger value="img2pdf" className="flex items-center gap-2">
-            <Image className="w-4 h-4" /> Imagem → PDF
+          <TabsTrigger value="img2pdf" className="flex items-center gap-1 md:gap-2 text-xs md:text-sm">
+            <Image className="w-4 h-4" /> <span className="hidden sm:inline">Imagem →</span> PDF
           </TabsTrigger>
-          <TabsTrigger value="pdf2word" className="flex items-center gap-2">
-            <FileDown className="w-4 h-4" /> PDF → Word
+          <TabsTrigger value="pdf2word" className="flex items-center gap-1 md:gap-2 text-xs md:text-sm">
+            <FileDown className="w-4 h-4" /> <span className="hidden sm:inline">PDF →</span> Word
           </TabsTrigger>
-          <TabsTrigger value="scan" className="flex items-center gap-2">
+          <TabsTrigger value="scan" className="flex items-center gap-1 md:gap-2 text-xs md:text-sm">
             <ScanLine className="w-4 h-4" /> Escanear
           </TabsTrigger>
         </TabsList>
 
         {/* Image to PDF */}
         <TabsContent value="img2pdf">
-          <div className="glass-card rounded-xl p-5 space-y-4">
+          <div className="glass-card rounded-xl p-4 md:p-5 space-y-4">
             <h3 className="text-sm font-semibold text-foreground uppercase tracking-wide">
               Adicionar Imagens
             </h3>
@@ -238,7 +258,7 @@ export default function ConverterPage() {
                     </div>
                   ))}
                 </div>
-                <div className="flex gap-2">
+                <div className="flex flex-wrap gap-2">
                   <Button
                     variant="outline"
                     size="sm"
@@ -263,7 +283,7 @@ export default function ConverterPage() {
 
         {/* PDF to Word */}
         <TabsContent value="pdf2word">
-          <div className="glass-card rounded-xl p-5 space-y-4">
+          <div className="glass-card rounded-xl p-4 md:p-5 space-y-4">
             <h3 className="text-sm font-semibold text-foreground uppercase tracking-wide">
               Upload do PDF
             </h3>
@@ -296,7 +316,7 @@ export default function ConverterPage() {
                   rows={12}
                   className="font-mono text-sm"
                 />
-                <div className="flex gap-2">
+                <div className="flex flex-wrap gap-2">
                   <Button size="sm" className="blue-gradient text-white" onClick={handleDownloadWord}>
                     <Download className="w-4 h-4 mr-2" /> Baixar como .docx
                   </Button>
@@ -322,7 +342,7 @@ export default function ConverterPage() {
 
         {/* OCR / Scan */}
         <TabsContent value="scan">
-          <div className="glass-card rounded-xl p-5 space-y-4">
+          <div className="glass-card rounded-xl p-4 md:p-5 space-y-4">
             <h3 className="text-sm font-semibold text-foreground uppercase tracking-wide">
               Imagem do Documento
             </h3>
@@ -352,7 +372,7 @@ export default function ConverterPage() {
                   rows={10}
                   className="font-mono text-sm"
                 />
-                <div className="flex gap-2">
+                <div className="flex flex-wrap gap-2">
                   <Button size="sm" className="blue-gradient text-white" onClick={handleDownloadScanPdf}>
                     <Download className="w-4 h-4 mr-2" /> Salvar como PDF
                   </Button>

@@ -137,7 +137,7 @@ export default function MusicDnaPage() {
         description: "Abrindo conversão direta para MP3...",
       });
       // yout.com works best with the direct video conversion page
-      downloadUrl = `https://yout.com/video/${videoId}`;
+      downloadUrl = `https://yout.com/video/${videoId}/`;
     } else {
       toast({
         title: "Redirecionando para Downloader",

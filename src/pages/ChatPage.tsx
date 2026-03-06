@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { MessageCircle, Send, Loader2, Bot, User, Trash2, Copy, Check } from "lucide-react";
-import { streamPuterChat, type ChatMessage, type PuterModel } from "@/lib/puterAi";
+import { streamPuterChat, sendPuterChat, type ChatMessage, type PuterModel } from "@/lib/puterAi";
 import { useToast } from "@/hooks/use-toast";
 import ReactMarkdown from "react-markdown";
 
@@ -72,10 +72,23 @@ export default function ChatPage() {
         updateAssistant,
         () => setLoading(false)
       );
-    } catch (err) {
-      console.error(err);
-      setLoading(false);
-      toast({ title: "Erro ao gerar resposta", description: String(err), variant: "destructive" });
+    } catch (streamErr) {
+      console.warn("Streaming failed, trying non-streaming fallback:", streamErr);
+      try {
+        const fallbackResponse = await sendPuterChat(newMessages, model);
+        setMessages((prev) => {
+          const last = prev[prev.length - 1];
+          if (last?.role === "assistant") {
+            return prev.map((m, i) => (i === prev.length - 1 ? { ...m, content: fallbackResponse } : m));
+          }
+          return [...prev, { role: "assistant", content: fallbackResponse }];
+        });
+        setLoading(false);
+      } catch (fallbackErr) {
+        console.error("Both streaming and fallback failed:", fallbackErr);
+        setLoading(false);
+        toast({ title: "Erro ao gerar resposta", description: "Não foi possível conectar ao modelo. Tente novamente.", variant: "destructive" });
+      }
     }
   };
 
@@ -87,31 +100,33 @@ export default function ChatPage() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto flex flex-col h-[calc(100vh-6rem)]">
+    <div className="max-w-4xl mx-auto flex flex-col h-[calc(100dvh-6rem)]">
       {/* Header */}
-      <div className="flex items-center gap-4 pb-4">
+      <div className="flex flex-wrap items-center gap-3 md:gap-4 pb-4">
         <div className="tool-header-card glow-cyan">
           <MessageCircle className="w-7 h-7 text-cyan-600" />
         </div>
-        <div className="flex-1">
-          <h1 className="text-2xl font-bold text-foreground">Chat IA</h1>
-          <p className="text-sm text-muted-foreground">Converse com modelos de IA avançados</p>
+        <div className="flex-1 min-w-[120px]">
+          <h1 className="text-xl md:text-2xl font-bold text-foreground">Chat IA</h1>
+          <p className="text-xs md:text-sm text-muted-foreground">Converse com modelos de IA avançados</p>
         </div>
-        <Select value={model} onValueChange={(v) => setModel(v as PuterModel)}>
-          <SelectTrigger className="w-48">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            {MODELS.map((m) => (
-              <SelectItem key={m.value} value={m.value}>{m.label}</SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-        {messages.length > 0 && (
-          <Button variant="outline" size="icon" onClick={() => setMessages([])}>
-            <Trash2 className="w-4 h-4" />
-          </Button>
-        )}
+        <div className="flex items-center gap-2">
+          <Select value={model} onValueChange={(v) => setModel(v as PuterModel)}>
+            <SelectTrigger className="w-36 md:w-48">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {MODELS.map((m) => (
+                <SelectItem key={m.value} value={m.value}>{m.label}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          {messages.length > 0 && (
+            <Button variant="outline" size="icon" onClick={() => setMessages([])}>
+              <Trash2 className="w-4 h-4" />
+            </Button>
+          )}
+        </div>
       </div>
 
       {/* Messages */}
@@ -119,7 +134,6 @@ export default function ChatPage() {
         {messages.length === 0 && (
           <div className="flex-1 flex items-center justify-center h-full">
             <div className="text-center space-y-3 text-muted-foreground">
-
               <Bot className="w-16 h-16 mx-auto opacity-30" />
               <p className="text-lg font-medium">Comece uma conversa</p>
               <p className="text-sm">Escolha o modelo e digite sua mensagem abaixo</p>
@@ -136,9 +150,9 @@ export default function ChatPage() {
                 <Bot className="w-4 h-4 text-primary" />
               </div>
             )}
-            <div className="relative">
+            <div className="relative max-w-[85%] md:max-w-[80%]">
               <div
-                className={`max-w-[80%] rounded-2xl px-4 py-3 text-sm ${
+                className={`rounded-2xl px-4 py-3 text-sm ${
                   msg.role === "user"
                     ? "bg-primary text-primary-foreground"
                     : "glass-card"
