@@ -8,6 +8,7 @@ import { useToast } from "@/hooks/use-toast";
 import ReactMarkdown from "react-markdown";
 
 const MODELS: { value: PuterModel; label: string }[] = [
+  { value: "gemini-3-pro", label: "Gemini 3 Pro" },
   { value: "claude-3-7-sonnet", label: "Claude 3.7 Sonnet" },
   { value: "deepseek/deepseek-v3.2", label: "DeepSeek v3.2" },
 ];
@@ -33,7 +34,7 @@ function CopyButton({ text }: { text: string }) {
 export default function ChatPage() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
-  const [model, setModel] = useState<PuterModel>("claude-3-7-sonnet");
+  const [model, setModel] = useState<PuterModel>("gemini-3-pro");
   const [loading, setLoading] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();

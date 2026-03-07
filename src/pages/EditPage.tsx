@@ -8,6 +8,7 @@ import { Lightbox } from "@/components/Lightbox";
 import { TextOverlayEditor } from "@/components/TextOverlayEditor";
 import { processImage, ModelType } from "@/lib/imageApi";
 import { addToHistory, getToolHistory, HistoryItem } from "@/lib/sessionHistory";
+import { GeneratingAnimation } from "@/components/GeneratingAnimation";
 import { Pencil, Loader2, Download, Crown, Type } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
@@ -133,7 +134,9 @@ export default function EditPage() {
 
         <div className="glass-card rounded-xl p-5 space-y-4">
           <h3 className="text-sm font-semibold text-foreground uppercase tracking-wide">Resultado</h3>
-          {result ? (
+          {loading ? (
+            <GeneratingAnimation label="Editando imagem..." />
+          ) : result ? (
             <div className="space-y-3">
               <div
                 className="rounded-xl overflow-hidden border border-border cursor-pointer hover:border-primary/50 transition-colors"
@@ -157,6 +160,10 @@ export default function EditPage() {
             </div>
           )}
         </div>
+      </div>
+      )}
+
+
       </div>
       )}
 

@@ -136,8 +136,8 @@ export default function MusicDnaPage() {
         title: "Redirecionando para Yout.com",
         description: "Abrindo conversão direta para MP3...",
       });
-      // yout.com works best with the direct video conversion page
-      downloadUrl = `https://yout.com/video/${videoId}/`;
+      // Use the watch format which works more reliably
+      downloadUrl = `https://yout.com/watch?v=${videoId}`;
     } else {
       toast({
         title: "Redirecionando para Downloader",
@@ -146,7 +146,11 @@ export default function MusicDnaPage() {
       downloadUrl = `https://cobalt.tools/?u=${encodeURIComponent(url)}`;
     }
 
-    window.open(downloadUrl, "_blank");
+    // Use window.location.href as fallback if window.open is blocked
+    const newWindow = window.open(downloadUrl, "_blank", "noopener,noreferrer");
+    if (!newWindow) {
+      window.location.href = downloadUrl;
+    }
   };
 
   return (

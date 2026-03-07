@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
-import { Check, X, Type } from "lucide-react";
+import { Check, X, Type, Smile } from "lucide-react";
 
 interface TextOverlayEditorProps {
   imageSrc: string;
@@ -22,8 +22,15 @@ interface TextItem {
   fontFamily: string;
 }
 
-const FONTS = ["Arial", "Georgia", "Courier New", "Impact", "Comic Sans MS", "Verdana"];
+const FONTS = [
+  "Arial", "Georgia", "Courier New", "Impact", "Comic Sans MS", "Verdana",
+  "Lobster", "Pacifico", "Oswald", "Bangers", "Permanent Marker", "Caveat"
+];
 const COLORS = ["#ffffff", "#000000", "#ff0000", "#00ff00", "#0000ff", "#ffff00", "#ff6600", "#cc00ff"];
+const STICKERS = ["⭐", "❤️", "🔥", "😂", "👍", "🎉", "💯", "🌟", "✨", "💀", "🤖", "🎨"];
+
+// Load Google Fonts dynamically
+const GOOGLE_FONTS_URL = "https://fonts.googleapis.com/css2?family=Lobster&family=Pacifico&family=Oswald:wght@400;700&family=Bangers&family=Permanent+Marker&family=Caveat:wght@400;700&display=swap";
 
 export function TextOverlayEditor({ imageSrc, onConfirm, onCancel }: TextOverlayEditorProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -36,6 +43,18 @@ export function TextOverlayEditor({ imageSrc, onConfirm, onCancel }: TextOverlay
   const [fontColor, setFontColor] = useState("#ffffff");
   const [fontFamily, setFontFamily] = useState("Arial");
   const [scale, setScale] = useState(1);
+  const [mousePos, setMousePos] = useState<{ x: number; y: number } | null>(null);
+  const [showStickers, setShowStickers] = useState(false);
+
+  // Load Google Fonts
+  useEffect(() => {
+    if (!document.querySelector(`link[href*="Lobster"]`)) {
+      const link = document.createElement("link");
+      link.rel = "stylesheet";
+      link.href = GOOGLE_FONTS_URL;
+      document.head.appendChild(link);
+    }
+  }, []);
 
   useEffect(() => {
     const image = new Image();
@@ -44,7 +63,7 @@ export function TextOverlayEditor({ imageSrc, onConfirm, onCancel }: TextOverlay
     image.src = imageSrc;
   }, [imageSrc]);
 
-  const drawCanvas = useCallback(() => {
+  const drawCanvas = useCallback((ghostPos?: { x: number; y: number } | null) => {
     const canvas = canvasRef.current;
     if (!canvas || !img) return;
     const ctx = canvas.getContext("2d");
@@ -85,11 +104,48 @@ export function TextOverlayEditor({ imageSrc, onConfirm, onCancel }: TextOverlay
         ctx.setLineDash([]);
       }
     });
-  }, [img, texts, selectedId, scale]);
+
+    // Ghost preview at cursor position
+    if (ghostPos && currentText) {
+      ctx.globalAlpha = 0.5;
+      ctx.font = `${fontSize * s}px ${fontFamily}`;
+      ctx.fillStyle = fontColor;
+      ctx.strokeStyle = fontColor === "#000000" ? "#ffffff" : "#000000";
+      ctx.lineWidth = 1.5 * s;
+      ctx.strokeText(currentText, ghostPos.x * s, ghostPos.y * s);
+      ctx.fillText(currentText, ghostPos.x * s, ghostPos.y * s);
+      ctx.globalAlpha = 1;
+
+      // Crosshair
+      ctx.strokeStyle = "rgba(255,255,255,0.6)";
+      ctx.lineWidth = 1;
+      ctx.setLineDash([4, 4]);
+      ctx.beginPath();
+      ctx.moveTo(ghostPos.x * s, 0);
+      ctx.lineTo(ghostPos.x * s, canvas.height);
+      ctx.moveTo(0, ghostPos.y * s);
+      ctx.lineTo(canvas.width, ghostPos.y * s);
+      ctx.stroke();
+      ctx.setLineDash([]);
+    }
+  }, [img, texts, selectedId, currentText, fontSize, fontColor, fontFamily]);
 
   useEffect(() => {
-    drawCanvas();
-  }, [drawCanvas]);
+    drawCanvas(mousePos);
+  }, [drawCanvas, mousePos]);
+
+  const handleCanvasMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const rect = canvas.getBoundingClientRect();
+    const x = (e.clientX - rect.left) / scale;
+    const y = (e.clientY - rect.top) / scale;
+    setMousePos({ x, y });
+  };
+
+  const handleCanvasMouseLeave = () => {
+    setMousePos(null);
+  };
 
   const handleCanvasClick = (e: React.MouseEvent<HTMLCanvasElement>) => {
     const canvas = canvasRef.current;
@@ -139,6 +195,12 @@ export function TextOverlayEditor({ imageSrc, onConfirm, onCancel }: TextOverlay
     setSelectedId(null);
   };
 
+  const insertSticker = (sticker: string) => {
+    setCurrentText(sticker);
+    setFontSize(64);
+    setShowStickers(false);
+  };
+
   const handleConfirm = () => {
     if (!img) return;
     const exportCanvas = document.createElement("canvas");
@@ -162,24 +224,26 @@ export function TextOverlayEditor({ imageSrc, onConfirm, onCancel }: TextOverlay
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between flex-wrap gap-2">
         <h3 className="text-sm font-semibold text-foreground uppercase tracking-wide flex items-center gap-2">
           <Type className="w-4 h-4" /> Inserir Texto na Imagem
         </h3>
-        <p className="text-xs text-muted-foreground">Clique na imagem para posicionar o texto</p>
+        <p className="text-xs text-muted-foreground">Mova o mouse sobre a imagem para posicionar — clique para inserir</p>
       </div>
 
       <div ref={containerRef} className="rounded-xl overflow-hidden border border-border bg-muted/30">
         <canvas
           ref={canvasRef}
           onClick={handleCanvasClick}
+          onMouseMove={handleCanvasMouseMove}
+          onMouseLeave={handleCanvasMouseLeave}
           className="cursor-crosshair block"
           style={{ maxWidth: '100%' }}
         />
       </div>
 
       <div className="glass-card rounded-xl p-4 space-y-3">
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
             <Label className="text-xs">Texto</Label>
             <Input
@@ -226,7 +290,7 @@ export function TextOverlayEditor({ imageSrc, onConfirm, onCancel }: TextOverlay
 
         <div>
           <Label className="text-xs">Cor</Label>
-          <div className="flex gap-2 mt-1">
+          <div className="flex gap-2 mt-1 flex-wrap">
             {COLORS.map((c) => (
               <button
                 key={c}
@@ -241,7 +305,33 @@ export function TextOverlayEditor({ imageSrc, onConfirm, onCancel }: TextOverlay
           </div>
         </div>
 
-        <div className="flex gap-2 pt-2">
+        {/* Stickers */}
+        <div>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setShowStickers(!showStickers)}
+            className="gap-1"
+          >
+            <Smile className="w-4 h-4" />
+            Figurinhas / Emojis
+          </Button>
+          {showStickers && (
+            <div className="flex flex-wrap gap-2 mt-2 p-3 bg-secondary/50 rounded-lg border border-border animate-fade-in">
+              {STICKERS.map((s) => (
+                <button
+                  key={s}
+                  onClick={() => insertSticker(s)}
+                  className="text-2xl hover:scale-125 transition-transform p-1"
+                >
+                  {s}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+
+        <div className="flex gap-2 pt-2 flex-wrap">
           {selectedId && (
             <Button variant="destructive" size="sm" onClick={deleteSelected}>
               <X className="w-4 h-4 mr-1" /> Remover
