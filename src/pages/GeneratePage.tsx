@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { ImageUploader } from "@/components/ImageUploader";
@@ -7,6 +7,7 @@ import { CreationModeSelector, CREATION_MODES, CreationMode } from "@/components
 import { AspectRatioSelector, AspectRatio } from "@/components/AspectRatioSelector";
 import { HistoryPanel } from "@/components/HistoryPanel";
 import { Lightbox } from "@/components/Lightbox";
+import { GeneratingAnimation } from "@/components/GeneratingAnimation";
 import { processImage, ModelType } from "@/lib/imageApi";
 import { addToHistory, getToolHistory, HistoryItem } from "@/lib/sessionHistory";
 import { Sparkles, Loader2, Download } from "lucide-react";
@@ -15,26 +16,49 @@ import { useToast } from "@/hooks/use-toast";
 export default function GeneratePage() {
   const [inputImage, setInputImage] = useState<string>("");
   const [prompt, setPrompt] = useState("");
-  const [model, setModel] = useState<ModelType>("nano-banana");
+  const [model, setModel] = useState<ModelType>("nano-banana-pro");
   const [creationMode, setCreationMode] = useState<CreationMode>("modo-livre");
   const [aspectRatio, setAspectRatio] = useState<AspectRatio>("1:1");
   const [result, setResult] = useState<string>("");
   const [loading, setLoading] = useState(false);
   const [lightbox, setLightbox] = useState<string>("");
   const [history, setHistory] = useState<HistoryItem[]>(() => getToolHistory("generate"));
+  const previousModeRef = useRef<CreationMode>("modo-livre");
   const { toast } = useToast();
 
+  const handleModeChange = (newMode: CreationMode) => {
+    const prevMode = previousModeRef.current;
+    const prevInstruction = CREATION_MODES.find(m => m.id === prevMode)?.instruction || "";
+    const newInstruction = CREATION_MODES.find(m => m.id === newMode)?.instruction || "";
+
+    // Auto-fill prompt if empty or still matches previous mode's instruction
+    if (!prompt.trim() || prompt.trim() === prevInstruction.trim()) {
+      setPrompt(newInstruction);
+    }
+
+    previousModeRef.current = newMode;
+    setCreationMode(newMode);
+  };
+
   const handleGenerate = async () => {
-    if (!prompt.trim()) {
+    // Allow generating without prompt if there's an image + a non-free mode (especially avatar)
+    const selectedMode = CREATION_MODES.find(m => m.id === creationMode);
+    const modeInstruction = selectedMode?.instruction || "";
+
+    if (!prompt.trim() && !inputImage) {
+      toast({ title: "Digite um prompt ou adicione uma imagem", variant: "destructive" });
+      return;
+    }
+    if (!prompt.trim() && !modeInstruction && !inputImage) {
       toast({ title: "Digite um prompt", variant: "destructive" });
       return;
     }
+
     setLoading(true);
 
-    // Construct optimized prompt based on creation mode
-    const selectedMode = CREATION_MODES.find(m => m.id === creationMode);
-    const modeInstruction = selectedMode?.instruction || "";
-    const finalPrompt = modeInstruction ? `${modeInstruction} ${prompt}` : prompt;
+    const finalPrompt = modeInstruction
+      ? `${modeInstruction} ${prompt}`.trim()
+      : prompt;
 
     const res = await processImage({
       action: "generate",
@@ -90,16 +114,23 @@ export default function GeneratePage() {
             <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Modelo de IA</p>
             <ModelSelector value={model} onChange={setModel} />
           </div>
-          <CreationModeSelector value={creationMode} onChange={setCreationMode} />
+          <CreationModeSelector value={creationMode} onChange={handleModeChange} />
           <AspectRatioSelector value={aspectRatio} onChange={setAspectRatio} />
           <Textarea
-            placeholder="Descreva o que deseja criar..."
+            placeholder={creationMode === "avatar"
+              ? "Descreva o avatar desejado ou deixe vazio para usar a imagem..."
+              : "Descreva o que deseja criar..."
+            }
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
             className="resize-none"
             rows={4}
           />
-          <Button onClick={handleGenerate} disabled={loading || !prompt.trim()} className="w-full blue-gradient text-white font-semibold">
+          <Button
+            onClick={handleGenerate}
+            disabled={loading || (!prompt.trim() && !inputImage)}
+            className="w-full blue-gradient text-white font-semibold"
+          >
             {loading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Sparkles className="w-4 h-4 mr-2" />}
             {loading ? "Gerando..." : "Gerar Imagem"}
           </Button>
@@ -107,7 +138,9 @@ export default function GeneratePage() {
 
         <div className="glass-card rounded-xl p-5 space-y-4">
           <h3 className="text-sm font-semibold text-foreground uppercase tracking-wide">Resultado</h3>
-          {result ? (
+          {loading ? (
+            <GeneratingAnimation label="Gerando imagem..." />
+          ) : result ? (
             <div className="space-y-3">
               <div
                 className="rounded-xl overflow-hidden border border-border cursor-pointer hover:border-primary/50 transition-colors"

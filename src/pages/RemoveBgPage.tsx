@@ -6,6 +6,7 @@ import { HistoryPanel } from "@/components/HistoryPanel";
 import { Lightbox } from "@/components/Lightbox";
 import { processImage, ModelType } from "@/lib/imageApi";
 import { addToHistory, getToolHistory, HistoryItem } from "@/lib/sessionHistory";
+import { GeneratingAnimation } from "@/components/GeneratingAnimation";
 import { Scissors, Loader2, Download, Crown } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
@@ -77,7 +78,9 @@ export default function RemoveBgPage() {
 
         <div className="glass-card rounded-xl p-5 space-y-4">
           <h3 className="text-sm font-semibold text-foreground uppercase tracking-wide">Resultado</h3>
-          {result ? (
+          {loading ? (
+            <GeneratingAnimation label="Removendo fundo..." />
+          ) : result ? (
             <div className="space-y-3">
               <div
                 className="rounded-xl overflow-hidden border border-border cursor-pointer hover:border-primary/50 transition-colors"
