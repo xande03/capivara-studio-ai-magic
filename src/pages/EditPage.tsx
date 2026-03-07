@@ -162,12 +162,6 @@ export default function EditPage() {
         </div>
       </div>
       )}
-
-
-      </div>
-      )}
-
-
       <div>
         <h3 className="text-sm font-medium mb-3 text-foreground">Histórico desta sessão</h3>
         <HistoryPanel items={history} onSelect={(item) => setLightbox(item.outputImage)} />
