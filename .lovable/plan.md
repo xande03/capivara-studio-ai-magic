@@ -1,35 +1,73 @@
 
 
-# Plano: Corrigir texto na imagem, copiar no chat, testar conversor
+# Plano: Resumidor de PDF/Texto com IA + Gerador de Assinatura Digital
 
-## 1. TextOverlayEditor — bug de coordenadas
+Duas novas ferramentas independentes, cada uma com sua própria página e rota.
 
-**Problema**: O canvas tem `className="cursor-crosshair w-full"` que aplica CSS `width: 100%`, mas o canvas já tem dimensões definidas via JS (`canvas.width = img.width * s`). O CSS estica o canvas novamente, causando dupla escala — os cliques não correspondem à posição real e o texto fica em lugar errado ou invisível.
+---
 
-**Correção em `src/components/TextOverlayEditor.tsx`**:
-- Remover `w-full` do className do canvas
-- Adicionar `style={{ maxWidth: '100%' }}` para que o canvas respeite suas dimensões reais mas não ultrapasse o container
-- Isso garante que `getBoundingClientRect()` retorna dimensões que correspondem exatamente ao canvas, e os cliques mapeiam corretamente
+## 1. Resumidor de PDF/Texto com IA
 
-## 2. Botão de copiar texto no Chat
+### Nova página: `src/pages/SummarizerPage.tsx`
+- **Input**: Upload de PDF (extrai texto via `document-process` existente) OU colar texto longo em textarea
+- **Modos de saída** (seletor com 3 opções):
+  - **Resumo** — texto condensado
+  - **Pontos-chave** — lista bullet points
+  - **Flashcards** — pares pergunta/resposta para estudo
+- Botão "Resumir com IA" → chama edge function
+- Resultado renderizado com react-markdown, botão copiar e botão baixar como TXT/PDF
 
-**Adicionar em `src/pages/ChatPage.tsx`**:
-- Importar `Copy` e `Check` do lucide-react
-- Em cada bolha de mensagem (tanto user quanto assistant), adicionar um botão de copiar que aparece no hover
-- Usar `navigator.clipboard.writeText()` para copiar
-- Feedback visual: trocar ícone para Check por 2 segundos após copiar
-- Componente inline com estado local para o feedback
+### Nova edge function: `supabase/functions/summarize/index.ts`
+- Recebe `{ text, mode }` (mode = "summary" | "keypoints" | "flashcards")
+- System prompt específico por modo:
+  - summary: "Gere um resumo conciso e fiel ao conteúdo..."
+  - keypoints: "Extraia os pontos-chave em bullet points..."
+  - flashcards: "Crie flashcards no formato Pergunta: / Resposta:..."
+- Usa Lovable AI Gateway com `google/gemini-3-flash-preview`
+- Streaming SSE para resposta progressiva
 
-## 3. Testar conversor
+### Config: adicionar ao `supabase/config.toml`
+```toml
+[functions.summarize]
+verify_jwt = false
+```
 
-Vou testar a edge function `document-process` para verificar se está respondendo. As 3 funções do conversor dependem de:
-- **Imagem→PDF**: client-side com jsPDF (deve funcionar)
-- **PDF→Word**: edge function `document-process` com action `pdf-to-text`
-- **Escanear**: edge function `document-process` com action `ocr`
+---
 
-Vou fazer um curl na edge function para confirmar que está deployada e respondendo.
+## 2. Gerador de Assinatura Digital
 
-## Arquivos a editar
-1. `src/components/TextOverlayEditor.tsx` — remover `w-full`, corrigir escala
-2. `src/pages/ChatPage.tsx` — adicionar botão copiar em cada mensagem
+### Nova página: `src/pages/SignaturePage.tsx`
+- **Canvas** de desenho com mouse/touch (pointer events)
+- Controles:
+  - **Cor da caneta**: preto, azul, vermelho (seletor)
+  - **Espessura**: slider (1-5px)
+  - **Limpar**: reset do canvas
+- **Preview** em tempo real sobre fundo quadriculado (transparência)
+- **Exportar como PNG transparente**: `canvas.toDataURL("image/png")` → download automático
+- Implementação: `useRef<HTMLCanvasElement>`, drawing via `onPointerDown/Move/Up`, linhas com `ctx.lineTo()`
+
+---
+
+## 3. Integração no App
+
+### `src/App.tsx`
+- Importar e adicionar rotas `/summarizer` e `/signature`
+
+### `src/components/AppSidebar.tsx`
+- Adicionar ao array `tools`:
+  - `{ title: "Resumidor IA", description: "Resumos e flashcards", url: "/summarizer", icon: BookOpen, color: "bg-amber-500/10 text-amber-600" }`
+  - `{ title: "Assinatura", description: "Criar assinatura digital", url: "/signature", icon: PenTool, color: "bg-rose-500/10 text-rose-600" }`
+
+---
+
+## Arquivos
+
+| Arquivo | Ação |
+|---|---|
+| `src/pages/SummarizerPage.tsx` | Criar |
+| `src/pages/SignaturePage.tsx` | Criar |
+| `supabase/functions/summarize/index.ts` | Criar |
+| `src/App.tsx` | Editar — 2 novas rotas |
+| `src/components/AppSidebar.tsx` | Editar — 2 novos itens no sidebar |
+| `supabase/config.toml` | Editar — adicionar function summarize |
 
