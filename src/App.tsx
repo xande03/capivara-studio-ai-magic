@@ -15,6 +15,8 @@ import MusicDnaPage from "./pages/MusicDnaPage";
 import QrCodePage from "./pages/QrCodePage";
 import ConverterPage from "./pages/ConverterPage";
 import ChatPage from "./pages/ChatPage";
+import SummarizerPage from "./pages/SummarizerPage";
+import SignaturePage from "./pages/SignaturePage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -38,6 +40,8 @@ const App = () => (
               <Route path="/qrcode" element={<QrCodePage />} />
               <Route path="/converter" element={<ConverterPage />} />
               <Route path="/chat" element={<ChatPage />} />
+              <Route path="/summarizer" element={<SummarizerPage />} />
+              <Route path="/signature" element={<SignaturePage />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Layout>

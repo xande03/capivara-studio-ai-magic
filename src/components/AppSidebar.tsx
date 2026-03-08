@@ -9,6 +9,8 @@ import {
   Music,
   FileText,
   MessageCircle,
+  BookOpen,
+  PenTool,
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation } from "react-router-dom";
@@ -34,6 +36,8 @@ const tools = [
   { title: "Music DNA", description: "Análise profunda de áudio", url: "/music-dna", icon: Music, color: "bg-indigo-500/10 text-indigo-600" },
   { title: "Conversor", description: "PDF, Word e OCR", url: "/converter", icon: FileText, color: "bg-cyan-500/10 text-cyan-600" },
   { title: "Chat IA", description: "Claude & DeepSeek", url: "/chat", icon: MessageCircle, color: "bg-violet-500/10 text-violet-600" },
+  { title: "Resumidor IA", description: "Resumos e flashcards", url: "/summarizer", icon: BookOpen, color: "bg-amber-500/10 text-amber-600" },
+  { title: "Assinatura", description: "Criar assinatura digital", url: "/signature", icon: PenTool, color: "bg-rose-500/10 text-rose-600" },
 ];
 
 const gallery = [
