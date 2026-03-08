@@ -114,9 +114,24 @@ OUTPUT: The identical image at dramatically higher resolution and clarity. It mu
       ];
     } else if (action === "edit") {
       const hasSecondImage = !!imageBase64Second;
+      
+      const editPreservationRules = `
+STRICT PRESERVATION RULES (apply to ALL edits):
+- Under NO circumstances change ANY face, facial expression, skin tone, eye color, hair style, body proportion, or identifying characteristic that the user did NOT explicitly ask to modify.
+- ALL untouched areas must remain PIXEL-PERFECT — no color drift, no texture smoothing, no subtle alterations.
+- Preserve the EXACT lighting direction, color temperature, white balance, and shadow/highlight balance of the original image.
+- Preserve the EXACT perspective, lens distortion, and depth of field of the original image.
+- When ADDING elements: match the existing lighting, perspective, color grading, and resolution seamlessly. Added elements must look native to the scene.
+- When REMOVING elements: fill the area with contextually appropriate background that matches surrounding textures, colors, and patterns perfectly.
+- DO NOT "enhance", "improve", or "clean up" any part of the image that was not mentioned in the user's request.`;
+
       const editInstruction = hasSecondImage
-        ? `You are a professional image editor. You have TWO images. Use the second image as reference material and apply the user's instructions to modify the first image. Combine elements from both images as the user describes. Keep the original image intact except for the specific changes requested.${aspectInstruction} The user wants: ${prompt}`
-        : `You are a professional image editor. Edit this image exactly as the user requests. You can ADD new objects, elements, or details to the image. You can REMOVE existing objects by seamlessly filling the area with appropriate background. You can MODIFY colors, lighting, style, or any visual aspect. Keep everything else in the original image perfectly intact — only change what the user explicitly asks for.${aspectInstruction} The user wants: ${prompt}`;
+        ? `You are a surgical-precision image editor. You have TWO images. Use the second image ONLY as reference material. Apply the user's instructions to modify the first image. Change ONLY what the user explicitly requests — nothing more.${editPreservationRules}${aspectInstruction}
+
+The user wants: ${prompt}`
+        : `You are a surgical-precision image editor. Edit this image with ABSOLUTE MINIMAL intervention. Change ONLY what the user explicitly requests — nothing else.${editPreservationRules}${aspectInstruction}
+
+The user wants: ${prompt}`;
 
       const contentParts: any[] = [
         { type: "text", text: editInstruction },
