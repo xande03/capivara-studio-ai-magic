@@ -4,7 +4,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { ImageUploader } from "@/components/ImageUploader";
 import { Lightbox } from "@/components/Lightbox";
-import { FileText, Image, ScanLine, Loader2, Download, FileDown } from "lucide-react";
+import { PerspectiveScanner } from "@/components/PerspectiveScanner";
+import { FileText, Image, ScanLine, Loader2, Download, FileDown, Focus, Type } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import jsPDF from "jspdf";
 
