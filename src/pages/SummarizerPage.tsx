@@ -49,7 +49,8 @@ export default function SummarizerPage() {
       try {
         const reader = new FileReader();
         reader.onload = async () => {
-          const base64 = (reader.result as string);
+          const fullDataUrl = reader.result as string;
+          const pdfBase64 = fullDataUrl.split(",")[1];
           const resp = await fetch(
             `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/document-process`,
             {
@@ -58,7 +59,7 @@ export default function SummarizerPage() {
                 "Content-Type": "application/json",
                 Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
               },
-              body: JSON.stringify({ action: "ocr", imageBase64: base64 }),
+              body: JSON.stringify({ action: "pdf-to-text", pdfBase64, pageCount: 1 }),
             }
           );
           const data = await resp.json();
