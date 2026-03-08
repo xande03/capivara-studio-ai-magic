@@ -40,6 +40,8 @@ const App = () => (
               <Route path="/qrcode" element={<QrCodePage />} />
               <Route path="/converter" element={<ConverterPage />} />
               <Route path="/chat" element={<ChatPage />} />
+              <Route path="/summarizer" element={<SummarizerPage />} />
+              <Route path="/signature" element={<SignaturePage />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Layout>
