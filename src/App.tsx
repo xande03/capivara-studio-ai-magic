@@ -15,6 +15,8 @@ import MusicDnaPage from "./pages/MusicDnaPage";
 import QrCodePage from "./pages/QrCodePage";
 import ConverterPage from "./pages/ConverterPage";
 import ChatPage from "./pages/ChatPage";
+import SummarizerPage from "./pages/SummarizerPage";
+import SignaturePage from "./pages/SignaturePage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
