@@ -10,7 +10,8 @@ import {
     Image as ImageIcon,
     BookOpen,
     Tv,
-    UserCircle
+    UserCircle,
+    Box
 } from "lucide-react";
 
 export type CreationMode =
