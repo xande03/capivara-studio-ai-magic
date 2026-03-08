@@ -1,34 +1,35 @@
 
 
-# Plano: Melhorar prompts e apresentação do Resumidor IA
+# Plano: Corrigir texto na imagem, copiar no chat, testar conversor
 
-O problema é que os system prompts da edge function são genéricos demais, resultando em saídas mal formatadas. A solução é refinar os prompts e melhorar a renderização no frontend para cada modo.
+## 1. TextOverlayEditor — bug de coordenadas
 
-## 1. Edge Function `supabase/functions/summarize/index.ts` — Refinar prompts
+**Problema**: O canvas tem `className="cursor-crosshair w-full"` que aplica CSS `width: 100%`, mas o canvas já tem dimensões definidas via JS (`canvas.width = img.width * s`). O CSS estica o canvas novamente, causando dupla escala — os cliques não correspondem à posição real e o texto fica em lugar errado ou invisível.
 
-Atualizar os 3 system prompts:
+**Correção em `src/components/TextOverlayEditor.tsx`**:
+- Remover `w-full` do className do canvas
+- Adicionar `style={{ maxWidth: '100%' }}` para que o canvas respeite suas dimensões reais mas não ultrapasse o container
+- Isso garante que `getBoundingClientRect()` retorna dimensões que correspondem exatamente ao canvas, e os cliques mapeiam corretamente
 
-- **summary**: Instruir a IA a gerar resumo em parágrafos contínuos com subtítulos (##), separando seções lógicas, descrevendo detalhes, aspectos e informações pertinentes. Manter formatação markdown com quebras de parágrafo claras.
+## 2. Botão de copiar texto no Chat
 
-- **keypoints**: Instruir a IA a organizar por categorias com títulos (### Categoria), cada ponto como bullet resumido (- **Título do ponto:** descrição breve). Agrupar tópicos relacionados.
+**Adicionar em `src/pages/ChatPage.tsx`**:
+- Importar `Copy` e `Check` do lucide-react
+- Em cada bolha de mensagem (tanto user quanto assistant), adicionar um botão de copiar que aparece no hover
+- Usar `navigator.clipboard.writeText()` para copiar
+- Feedback visual: trocar ícone para Check por 2 segundos após copiar
+- Componente inline com estado local para o feedback
 
-- **flashcards**: Instruir a IA a gerar cards numerados no formato estruturado:
-  ```
-  ### Card 1
-  **Pergunta:** ...
-  **Resposta:** ...
-  ```
-  Garantir que perguntas sejam específicas e respostas completas e coerentes ao conteúdo.
+## 3. Testar conversor
 
-## 2. Frontend `src/pages/SummarizerPage.tsx` — Melhorar renderização de flashcards
+Vou testar a edge function `document-process` para verificar se está respondendo. As 3 funções do conversor dependem de:
+- **Imagem→PDF**: client-side com jsPDF (deve funcionar)
+- **PDF→Word**: edge function `document-process` com action `pdf-to-text`
+- **Escanear**: edge function `document-process` com action `ocr`
 
-- Para o modo `flashcards`, renderizar o resultado dividindo por `### Card` e apresentando cada card em um componente visual estilizado (card com frente/verso ou pergunta destacada + resposta abaixo) em vez de markdown puro.
-- Para `summary` e `keypoints`, manter ReactMarkdown (já funciona bem com prompts melhores).
+Vou fazer um curl na edge function para confirmar que está deployada e respondendo.
 
-## Arquivos
-
-| Arquivo | Ação |
-|---|---|
-| `supabase/functions/summarize/index.ts` | Editar — refinar os 3 system prompts |
-| `src/pages/SummarizerPage.tsx` | Editar — renderização especial para flashcards |
+## Arquivos a editar
+1. `src/components/TextOverlayEditor.tsx` — remover `w-full`, corrigir escala
+2. `src/pages/ChatPage.tsx` — adicionar botão copiar em cada mensagem
 

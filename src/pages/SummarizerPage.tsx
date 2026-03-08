@@ -20,6 +20,42 @@ import {
 
 type Mode = "summary" | "keypoints" | "flashcards";
 
+function FlashcardsRenderer({ content }: { content: string }) {
+  const cards = content.split(/### Card \d+/i).filter((c) => c.trim());
+
+  if (cards.length === 0) {
+    return (
+      <div className="prose prose-sm dark:prose-invert max-w-none bg-secondary/30 rounded-xl p-4 overflow-auto max-h-[500px]">
+        <ReactMarkdown>{content}</ReactMarkdown>
+      </div>
+    );
+  }
+
+  return (
+    <div className="grid gap-3 sm:grid-cols-2 max-h-[500px] overflow-auto p-1">
+      {cards.map((card, i) => {
+        const qMatch = card.match(/\*\*Pergunta:\*\*\s*(.*)/i);
+        const aMatch = card.match(/\*\*Resposta:\*\*\s*([\s\S]*?)(?=$|\n\n)/i);
+        const question = qMatch?.[1]?.trim() || "Pergunta";
+        const answer = aMatch?.[1]?.trim() || card.trim();
+
+        return (
+          <Card key={i} className="border-border/50 overflow-hidden">
+            <div className="bg-primary/10 px-4 py-3 border-b border-border/30">
+              <p className="text-xs font-bold text-muted-foreground mb-1">Card {i + 1} — Pergunta</p>
+              <p className="text-sm font-semibold text-foreground">{question}</p>
+            </div>
+            <CardContent className="px-4 py-3">
+              <p className="text-xs font-bold text-muted-foreground mb-1">Resposta</p>
+              <p className="text-sm text-foreground/90">{answer}</p>
+            </CardContent>
+          </Card>
+        );
+      })}
+    </div>
+  );
+}
+
 const modes: { value: Mode; label: string; icon: React.ElementType; desc: string }[] = [
   { value: "summary", label: "Resumo", icon: BookOpen, desc: "Texto condensado" },
   { value: "keypoints", label: "Pontos-chave", icon: List, desc: "Bullet points" },
@@ -295,9 +331,14 @@ export default function SummarizerPage() {
                 </Button>
               </div>
             </div>
-            <div className="prose prose-sm dark:prose-invert max-w-none bg-secondary/30 rounded-xl p-4 overflow-auto max-h-[500px]">
-              <ReactMarkdown>{result}</ReactMarkdown>
-            </div>
+
+            {mode === "flashcards" ? (
+              <FlashcardsRenderer content={result} />
+            ) : (
+              <div className="prose prose-sm dark:prose-invert max-w-none bg-secondary/30 rounded-xl p-4 overflow-auto max-h-[500px]">
+                <ReactMarkdown>{result}</ReactMarkdown>
+              </div>
+            )}
           </CardContent>
         </Card>
       )}
