@@ -84,30 +84,24 @@ export default function SummarizerPage() {
     if (file.type === "application/pdf") {
       toast({ title: "Extraindo texto do PDF..." });
       try {
-        const reader = new FileReader();
-        reader.onload = async () => {
-          const fullDataUrl = reader.result as string;
-          const pdfBase64 = fullDataUrl.split(",")[1];
-          const resp = await fetch(
-            `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/document-process`,
-            {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
-              },
-              body: JSON.stringify({ action: "pdf-to-text", pdfBase64, pageCount: 1 }),
-            }
-          );
-          const data = await resp.json();
-          if (data.text) {
-            setText(data.text);
-            toast({ title: "Texto extraído com sucesso!" });
-          } else {
-            toast({ title: "Não foi possível extrair texto", variant: "destructive" });
-          }
-        };
-        reader.readAsDataURL(file);
+        pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
+        const arrayBuffer = await file.arrayBuffer();
+        const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+        let fullText = "";
+        for (let i = 1; i <= pdf.numPages; i++) {
+          const page = await pdf.getPage(i);
+          const content = await page.getTextContent();
+          const pageText = content.items
+            .map((item: any) => item.str)
+            .join(" ");
+          fullText += pageText + "\n\n";
+        }
+        if (fullText.trim()) {
+          setText(fullText.trim());
+          toast({ title: "Texto extraído com sucesso!" });
+        } else {
+          toast({ title: "Não foi possível extrair texto do PDF", variant: "destructive" });
+        }
       } catch {
         toast({ title: "Erro ao processar PDF", variant: "destructive" });
       }
