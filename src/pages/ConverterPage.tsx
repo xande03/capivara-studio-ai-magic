@@ -11,6 +11,7 @@ import jsPDF from "jspdf";
 
 export default function ConverterPage() {
   const [tab, setTab] = useState("img2pdf");
+  const [scanMode, setScanMode] = useState<"ocr" | "perspective">("ocr");
   const { toast } = useToast();
 
   // Image to PDF
