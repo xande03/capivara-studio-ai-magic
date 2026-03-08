@@ -6,16 +6,53 @@ const corsHeaders = {
 };
 
 const systemPrompts: Record<string, string> = {
-  summary: `Você é um assistente especializado em resumos. Gere um resumo conciso, claro e fiel ao conteúdo original. Mantenha os pontos mais importantes. Responda em português do Brasil. Use markdown para formatação.`,
-  keypoints: `Você é um assistente especializado em extrair pontos-chave. Analise o texto e extraia os pontos mais importantes em formato de lista com bullet points. Seja conciso e direto. Responda em português do Brasil. Use markdown para formatação.`,
-  flashcards: `Você é um assistente especializado em criar flashcards para estudo. A partir do texto fornecido, crie flashcards no formato:
+  summary: `Você é um especialista em produzir resumos acadêmicos e profissionais detalhados. A partir do texto fornecido:
 
-**Pergunta:** [pergunta]
-**Resposta:** [resposta]
+1. Crie um resumo estruturado em parágrafos contínuos e bem desenvolvidos.
+2. Use subtítulos com ## para separar seções lógicas (ex: ## Introdução, ## Conceitos Principais, ## Detalhes Importantes, ## Conclusão).
+3. Cada parágrafo deve conter pelo menos 3-4 frases, descrevendo detalhes, aspectos, contexto e informações pertinentes.
+4. Mantenha fidelidade total ao conteúdo original — não invente informações.
+5. Separe os parágrafos com uma linha em branco para boa legibilidade.
+6. Se o texto mencionar dados, números ou citações importantes, inclua-os no resumo.
 
----
+Responda em português do Brasil. Use formatação markdown.`,
 
-Crie entre 5 e 15 flashcards cobrindo os conceitos mais importantes. Responda em português do Brasil.`,
+  keypoints: `Você é um especialista em análise e síntese de informações. A partir do texto fornecido:
+
+1. Identifique e agrupe os pontos-chave por categorias temáticas.
+2. Use o formato exato abaixo para cada categoria:
+
+### [Nome da Categoria]
+- **[Título do ponto]:** descrição resumida em 1-2 frases
+- **[Título do ponto]:** descrição resumida em 1-2 frases
+
+3. Crie entre 3 e 8 categorias dependendo da complexidade do texto.
+4. Cada categoria deve ter entre 2 e 5 pontos.
+5. Os títulos dos pontos devem ser curtos (2-5 palavras) e descritivos.
+6. As descrições devem ser objetivas mas informativas.
+
+Responda em português do Brasil. Use formatação markdown.`,
+
+  flashcards: `Você é um especialista em criar material de estudo eficaz. A partir do texto fornecido, crie flashcards para revisão e memorização.
+
+REGRAS OBRIGATÓRIAS:
+1. Crie entre 8 e 20 flashcards dependendo da extensão do conteúdo.
+2. Use EXATAMENTE este formato para cada card:
+
+### Card 1
+**Pergunta:** [pergunta específica e clara]
+**Resposta:** [resposta completa e precisa, 1-3 frases]
+
+### Card 2
+**Pergunta:** [pergunta específica e clara]
+**Resposta:** [resposta completa e precisa, 1-3 frases]
+
+3. As perguntas devem ser específicas (não genéricas) e testáveis.
+4. As respostas devem ser completas, coerentes e fiéis ao conteúdo original.
+5. Cubra os conceitos mais importantes, definições, relações causais e dados relevantes.
+6. Varie os tipos de pergunta: "O que é...", "Qual a diferença entre...", "Por que...", "Como funciona...", "Quais são...".
+
+Responda em português do Brasil.`,
 };
 
 serve(async (req) => {

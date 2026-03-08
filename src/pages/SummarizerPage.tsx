@@ -295,9 +295,14 @@ export default function SummarizerPage() {
                 </Button>
               </div>
             </div>
-            <div className="prose prose-sm dark:prose-invert max-w-none bg-secondary/30 rounded-xl p-4 overflow-auto max-h-[500px]">
-              <ReactMarkdown>{result}</ReactMarkdown>
-            </div>
+
+            {mode === "flashcards" ? (
+              <FlashcardsRenderer content={result} />
+            ) : (
+              <div className="prose prose-sm dark:prose-invert max-w-none bg-secondary/30 rounded-xl p-4 overflow-auto max-h-[500px]">
+                <ReactMarkdown>{result}</ReactMarkdown>
+              </div>
+            )}
           </CardContent>
         </Card>
       )}
