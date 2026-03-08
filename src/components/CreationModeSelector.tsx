@@ -106,6 +106,13 @@ export const CREATION_MODES: { id: CreationMode; label: string; description: str
         icon: StickyNote,
         instruction: "Sticker style, sharp white outline, pop colors, modern look."
     },
+    {
+        id: "lego",
+        label: "LEGO",
+        description: "Estilo blocos LEGO",
+        icon: Box,
+        instruction: "LEGO brick style, everything made of LEGO bricks and minifigures, plastic toy aesthetic, blocky shapes, bright primary colors, LEGO set box art quality, 3D rendered look."
+    },
 ];
 
 interface Props {
