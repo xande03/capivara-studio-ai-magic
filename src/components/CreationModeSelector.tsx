@@ -25,7 +25,8 @@ export type CreationMode =
     | "web-ui"
     | "modo-livre"
     | "hq"
-    | "poster";
+    | "poster"
+    | "lego";
 
 export const CREATION_MODES: { id: CreationMode; label: string; description: string; icon: any; instruction: string }[] = [
     {
