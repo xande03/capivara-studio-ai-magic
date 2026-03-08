@@ -1,25 +1,35 @@
 
 
-# Plano: Potencializar prompts de Upscale e Edição para preservação de fidelidade
+# Plano: Corrigir texto na imagem, copiar no chat, testar conversor
 
-O objetivo é reforçar as instruções enviadas ao modelo de IA no edge function `image-process` para que o upscale e a edição preservem rigorosamente texturas, rostos, identidade e elementos originais.
+## 1. TextOverlayEditor — bug de coordenadas
 
-## Mudanças no `supabase/functions/image-process/index.ts`
+**Problema**: O canvas tem `className="cursor-crosshair w-full"` que aplica CSS `width: 100%`, mas o canvas já tem dimensões definidas via JS (`canvas.width = img.width * s`). O CSS estica o canvas novamente, causando dupla escala — os cliques não correspondem à posição real e o texto fica em lugar errado ou invisível.
 
-### 1. Upscale (linhas 65-77) — Reforçar preservação
-Reescrever o prompt de upscale com ênfase em:
-- **Zero alteração de identidade**: rostos, expressões, poses, proporções corporais devem permanecer idênticos
-- **Preservação de texturas originais**: não inventar texturas inexistentes, apenas refinar as existentes
-- **Fidelidade cromática**: manter paleta de cores, iluminação e tom exatos
-- **Anti-hallucination**: instruir explicitamente para NÃO adicionar, remover ou modificar elementos que não estão no original
-- **Instrução negativa**: "DO NOT alter facial features, skin tone, eye color, hair style, clothing patterns, or any identifying characteristics"
+**Correção em `src/components/TextOverlayEditor.tsx`**:
+- Remover `w-full` do className do canvas
+- Adicionar `style={{ maxWidth: '100%' }}` para que o canvas respeite suas dimensões reais mas não ultrapasse o container
+- Isso garante que `getBoundingClientRect()` retorna dimensões que correspondem exatamente ao canvas, e os cliques mapeiam corretamente
 
-### 2. Edit (linhas 107-122) — Reforçar cirurgia precisa
-Reescrever o prompt de edição com ênfase em:
-- **Mudança cirúrgica**: alterar SOMENTE o que foi explicitamente pedido
-- **Preservação total do resto**: rostos, texturas, cores, iluminação, perspectiva de tudo que não foi mencionado deve permanecer pixel-perfect
-- **Consistência de iluminação**: elementos adicionados devem respeitar a iluminação existente
-- **Anti-drift**: "Under NO circumstances should you change any face, body proportion, skin tone, background detail, or texture that the user did not explicitly ask to modify"
+## 2. Botão de copiar texto no Chat
 
-**Arquivo único a editar**: `supabase/functions/image-process/index.ts`
+**Adicionar em `src/pages/ChatPage.tsx`**:
+- Importar `Copy` e `Check` do lucide-react
+- Em cada bolha de mensagem (tanto user quanto assistant), adicionar um botão de copiar que aparece no hover
+- Usar `navigator.clipboard.writeText()` para copiar
+- Feedback visual: trocar ícone para Check por 2 segundos após copiar
+- Componente inline com estado local para o feedback
+
+## 3. Testar conversor
+
+Vou testar a edge function `document-process` para verificar se está respondendo. As 3 funções do conversor dependem de:
+- **Imagem→PDF**: client-side com jsPDF (deve funcionar)
+- **PDF→Word**: edge function `document-process` com action `pdf-to-text`
+- **Escanear**: edge function `document-process` com action `ocr`
+
+Vou fazer um curl na edge function para confirmar que está deployada e respondendo.
+
+## Arquivos a editar
+1. `src/components/TextOverlayEditor.tsx` — remover `w-full`, corrigir escala
+2. `src/pages/ChatPage.tsx` — adicionar botão copiar em cada mensagem
 

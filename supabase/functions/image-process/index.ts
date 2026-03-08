@@ -62,19 +62,27 @@ serve(async (req) => {
       }
     } else if (action === "upscale") {
       // ENHANCED UPSCALE PROMPT
-      const upscalePrompt = `Professional AI Reconstruction & Upscale Engine. 
-      TASK: IDENTIFY AND ENHANCE ALL ELEMENTS (PEOPLE, CHARACTERS, ANIMALS, OBJECTS, ENVIRONMENTS).
-      
-      INSTRUCTIONS:
-      1. FINE DETAILS: Restore and reconstruct lost textures with ultra-high precision (skin pores, fabric weaves, hair strands, biological micro-textures, environmental surfaces like stone, wood, water).
-      2. SUBJECT IDENTIFICATION: Perfectly recognize and refine faces, anatomy, character features, and animal fur/scales, ensuring they look biologically or design-consistent.
-      3. SHARPNESS & CLARITY: Drastically improve edge definition and internal detail sharpness. Eliminate artifacts, blur, and noise while maintaining a natural, non-plastic look.
-      4. FIDELITY: Preserve the essence, lighting, and original proportions of the image. DO NOT CHANGE the identity of subjects, just increase their definition to cinematic quality.
-      5. ENVIRONMENT: Reconstruct background elements with depth and clarity, ensuring they match the foreground's enhanced quality.
-      
-      User Guidance/Style: ${prompt || "Professional photorealistic restoration"}.${aspectInstruction}
-      
-      OUTPUT: A result that looks like it was captured with a high-end professional camera, with infinite detail and perfect textures.`;
+      const upscalePrompt = `STRICT FIDELITY UPSCALE ENGINE — ZERO ALTERATION MODE.
+
+ABSOLUTE RULES (VIOLATION = FAILURE):
+- DO NOT alter, modify, or reinterpret ANY facial feature: eyes, nose, mouth, ears, jawline, skin tone, freckles, wrinkles, scars, moles, facial hair — EVERYTHING must remain PIXEL-IDENTICAL in identity.
+- DO NOT change eye color, hair color, hair style, hair texture, or hair length.
+- DO NOT modify body proportions, pose, posture, hand positions, or clothing fit.
+- DO NOT change clothing patterns, logos, text, symbols, or any graphic elements on garments or objects.
+- DO NOT add, remove, or relocate ANY element that exists (or doesn't exist) in the original image.
+- DO NOT shift the color palette, white balance, color temperature, or tonal range. The output must have the EXACT SAME color grading as the input.
+- DO NOT hallucinate textures. Only REFINE textures that already exist — sharpen what is there, never invent what is not.
+
+WHAT YOU MUST DO:
+1. ENHANCE RESOLUTION: Increase sharpness, clarity, and edge definition of ALL existing elements.
+2. REFINE EXISTING TEXTURES: Bring out micro-details already present — skin pores, fabric weaves, hair strands, surface grain, environmental textures (stone, wood, metal, water).
+3. REDUCE ARTIFACTS: Remove compression artifacts, noise, banding, and blur while preserving the natural look.
+4. PRESERVE LIGHTING: Keep the exact same lighting direction, intensity, shadows, highlights, and ambient occlusion.
+5. MAINTAIN DEPTH OF FIELD: If the original has bokeh or selective focus, preserve it exactly.
+
+User Guidance: ${prompt || "Maximum fidelity photorealistic enhancement"}.${aspectInstruction}
+
+OUTPUT: The identical image at dramatically higher resolution and clarity. It must be indistinguishable in identity and content from the original — only sharper and more detailed.`;
 
       messages = [
         {
@@ -106,9 +114,24 @@ serve(async (req) => {
       ];
     } else if (action === "edit") {
       const hasSecondImage = !!imageBase64Second;
+      
+      const editPreservationRules = `
+STRICT PRESERVATION RULES (apply to ALL edits):
+- Under NO circumstances change ANY face, facial expression, skin tone, eye color, hair style, body proportion, or identifying characteristic that the user did NOT explicitly ask to modify.
+- ALL untouched areas must remain PIXEL-PERFECT — no color drift, no texture smoothing, no subtle alterations.
+- Preserve the EXACT lighting direction, color temperature, white balance, and shadow/highlight balance of the original image.
+- Preserve the EXACT perspective, lens distortion, and depth of field of the original image.
+- When ADDING elements: match the existing lighting, perspective, color grading, and resolution seamlessly. Added elements must look native to the scene.
+- When REMOVING elements: fill the area with contextually appropriate background that matches surrounding textures, colors, and patterns perfectly.
+- DO NOT "enhance", "improve", or "clean up" any part of the image that was not mentioned in the user's request.`;
+
       const editInstruction = hasSecondImage
-        ? `You are a professional image editor. You have TWO images. Use the second image as reference material and apply the user's instructions to modify the first image. Combine elements from both images as the user describes. Keep the original image intact except for the specific changes requested.${aspectInstruction} The user wants: ${prompt}`
-        : `You are a professional image editor. Edit this image exactly as the user requests. You can ADD new objects, elements, or details to the image. You can REMOVE existing objects by seamlessly filling the area with appropriate background. You can MODIFY colors, lighting, style, or any visual aspect. Keep everything else in the original image perfectly intact — only change what the user explicitly asks for.${aspectInstruction} The user wants: ${prompt}`;
+        ? `You are a surgical-precision image editor. You have TWO images. Use the second image ONLY as reference material. Apply the user's instructions to modify the first image. Change ONLY what the user explicitly requests — nothing more.${editPreservationRules}${aspectInstruction}
+
+The user wants: ${prompt}`
+        : `You are a surgical-precision image editor. Edit this image with ABSOLUTE MINIMAL intervention. Change ONLY what the user explicitly requests — nothing else.${editPreservationRules}${aspectInstruction}
+
+The user wants: ${prompt}`;
 
       const contentParts: any[] = [
         { type: "text", text: editInstruction },
