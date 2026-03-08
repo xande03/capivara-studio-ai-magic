@@ -1,47 +1,35 @@
 
 
-# Fix: PDF text extraction returning "about:blank"
+# Plano: Corrigir texto na imagem, copiar no chat, testar conversor
 
-## Root Cause
+## 1. TextOverlayEditor — bug de coordenadas
 
-The current approach sends raw PDF base64 data as a **text message** to the AI model. The model cannot actually parse binary PDF content from a text string — it sees gibberish and returns "about:blank" with empty table placeholders.
+**Problema**: O canvas tem `className="cursor-crosshair w-full"` que aplica CSS `width: 100%`, mas o canvas já tem dimensões definidas via JS (`canvas.width = img.width * s`). O CSS estica o canvas novamente, causando dupla escala — os cliques não correspondem à posição real e o texto fica em lugar errado ou invisível.
 
-## Solution
+**Correção em `src/components/TextOverlayEditor.tsx`**:
+- Remover `w-full` do className do canvas
+- Adicionar `style={{ maxWidth: '100%' }}` para que o canvas respeite suas dimensões reais mas não ultrapasse o container
+- Isso garante que `getBoundingClientRect()` retorna dimensões que correspondem exatamente ao canvas, e os cliques mapeiam corretamente
 
-Extract text from the PDF **client-side** using `pdfjs-dist` (already installed in the project) instead of relying on the AI to decode raw base64. This is far more reliable.
+## 2. Botão de copiar texto no Chat
 
-### Changes to `src/pages/SummarizerPage.tsx`
+**Adicionar em `src/pages/ChatPage.tsx`**:
+- Importar `Copy` e `Check` do lucide-react
+- Em cada bolha de mensagem (tanto user quanto assistant), adicionar um botão de copiar que aparece no hover
+- Usar `navigator.clipboard.writeText()` para copiar
+- Feedback visual: trocar ícone para Check por 2 segundos após copiar
+- Componente inline com estado local para o feedback
 
-Replace the PDF upload handler:
-1. Use `pdfjs-dist` to load the PDF from the ArrayBuffer
-2. Iterate through all pages, calling `page.getTextContent()`
-3. Concatenate all text items into a single string with proper line breaks
-4. Set the extracted text directly into the textarea — no edge function call needed for extraction
+## 3. Testar conversor
 
-This removes the dependency on `document-process` for PDF text extraction in the summarizer, making it faster and more accurate.
+Vou testar a edge function `document-process` para verificar se está respondendo. As 3 funções do conversor dependem de:
+- **Imagem→PDF**: client-side com jsPDF (deve funcionar)
+- **PDF→Word**: edge function `document-process` com action `pdf-to-text`
+- **Escanear**: edge function `document-process` com action `ocr`
 
-### Technical detail
+Vou fazer um curl na edge function para confirmar que está deployada e respondendo.
 
-```typescript
-import * as pdfjsLib from "pdfjs-dist";
-pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
-
-// In handleFileUpload for PDF:
-const arrayBuffer = await file.arrayBuffer();
-const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
-let fullText = "";
-for (let i = 1; i <= pdf.numPages; i++) {
-  const page = await pdf.getPage(i);
-  const content = await page.getTextContent();
-  const pageText = content.items.map(item => item.str).join(" ");
-  fullText += pageText + "\n\n";
-}
-setText(fullText);
-```
-
-### Files
-
-| File | Action |
-|---|---|
-| `src/pages/SummarizerPage.tsx` | Edit — replace PDF handler with pdfjs-dist client-side extraction |
+## Arquivos a editar
+1. `src/components/TextOverlayEditor.tsx` — remover `w-full`, corrigir escala
+2. `src/pages/ChatPage.tsx` — adicionar botão copiar em cada mensagem
 
