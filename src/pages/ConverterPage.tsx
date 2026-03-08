@@ -4,12 +4,14 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { ImageUploader } from "@/components/ImageUploader";
 import { Lightbox } from "@/components/Lightbox";
-import { FileText, Image, ScanLine, Loader2, Download, FileDown } from "lucide-react";
+import { PerspectiveScanner } from "@/components/PerspectiveScanner";
+import { FileText, Image, ScanLine, Loader2, Download, FileDown, Focus, Type } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import jsPDF from "jspdf";
 
 export default function ConverterPage() {
   const [tab, setTab] = useState("img2pdf");
+  const [scanMode, setScanMode] = useState<"ocr" | "perspective">("ocr");
   const { toast } = useToast();
 
   // Image to PDF
@@ -343,61 +345,87 @@ export default function ConverterPage() {
         {/* OCR / Scan */}
         <TabsContent value="scan">
           <div className="glass-card rounded-xl p-4 md:p-5 space-y-4">
-            <h3 className="text-sm font-semibold text-foreground uppercase tracking-wide">
-              Imagem do Documento
-            </h3>
-            <ImageUploader
-              onImageSelect={setScanImage}
-              currentImage={scanImage}
-              onClear={() => { setScanImage(""); setScanResult(""); }}
-              label="Upload da imagem do documento"
-            />
-            <Button
-              onClick={handleScan}
-              disabled={!scanImage || scanLoading}
-              className="blue-gradient text-white"
-            >
-              {scanLoading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <ScanLine className="w-4 h-4 mr-2" />}
-              Escanear Documento
-            </Button>
+            {/* Sub-mode selector */}
+            <div className="flex gap-2">
+              <Button
+                variant={scanMode === "ocr" ? "default" : "outline"}
+                size="sm"
+                onClick={() => setScanMode("ocr")}
+                className={scanMode === "ocr" ? "blue-gradient text-white" : ""}
+              >
+                <Type className="w-4 h-4 mr-1.5" /> OCR Direto
+              </Button>
+              <Button
+                variant={scanMode === "perspective" ? "default" : "outline"}
+                size="sm"
+                onClick={() => setScanMode("perspective")}
+                className={scanMode === "perspective" ? "blue-gradient text-white" : ""}
+              >
+                <Focus className="w-4 h-4 mr-1.5" /> Corrigir & Escanear
+              </Button>
+            </div>
 
-            {scanResult && (
-              <div className="space-y-3">
+            {scanMode === "ocr" ? (
+              <>
                 <h3 className="text-sm font-semibold text-foreground uppercase tracking-wide">
-                  Texto Escaneado (edite se necessário)
+                  Imagem do Documento
                 </h3>
-                <Textarea
-                  value={scanResult}
-                  onChange={(e) => setScanResult(e.target.value)}
-                  rows={10}
-                  className="font-mono text-sm"
+                <ImageUploader
+                  onImageSelect={setScanImage}
+                  currentImage={scanImage}
+                  onClear={() => { setScanImage(""); setScanResult(""); }}
+                  label="Upload da imagem do documento"
                 />
-                <div className="flex flex-wrap gap-2">
-                  <Button size="sm" className="blue-gradient text-white" onClick={handleDownloadScanPdf}>
-                    <Download className="w-4 h-4 mr-2" /> Salvar como PDF
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={async () => {
-                      const { Document, Packer, Paragraph, TextRun } = await import("docx");
-                      const { saveAs } = await import("file-saver");
-                      const doc = new Document({
-                        sections: [{
-                          children: scanResult.split("\n").map(
-                            (line) => new Paragraph({ children: [new TextRun({ text: line, size: 24 })] })
-                          ),
-                        }],
-                      });
-                      const blob = await Packer.toBlob(doc);
-                      saveAs(blob, `scan-${Date.now()}.docx`);
-                      toast({ title: "Arquivo .docx salvo!" });
-                    }}
-                  >
-                    <Download className="w-4 h-4 mr-2" /> Salvar como .docx
-                  </Button>
-                </div>
-              </div>
+                <Button
+                  onClick={handleScan}
+                  disabled={!scanImage || scanLoading}
+                  className="blue-gradient text-white"
+                >
+                  {scanLoading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <ScanLine className="w-4 h-4 mr-2" />}
+                  Escanear Documento
+                </Button>
+
+                {scanResult && (
+                  <div className="space-y-3">
+                    <h3 className="text-sm font-semibold text-foreground uppercase tracking-wide">
+                      Texto Escaneado (edite se necessário)
+                    </h3>
+                    <Textarea
+                      value={scanResult}
+                      onChange={(e) => setScanResult(e.target.value)}
+                      rows={10}
+                      className="font-mono text-sm"
+                    />
+                    <div className="flex flex-wrap gap-2">
+                      <Button size="sm" className="blue-gradient text-white" onClick={handleDownloadScanPdf}>
+                        <Download className="w-4 h-4 mr-2" /> Salvar como PDF
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={async () => {
+                          const { Document, Packer, Paragraph, TextRun } = await import("docx");
+                          const { saveAs } = await import("file-saver");
+                          const doc = new Document({
+                            sections: [{
+                              children: scanResult.split("\n").map(
+                                (line) => new Paragraph({ children: [new TextRun({ text: line, size: 24 })] })
+                              ),
+                            }],
+                          });
+                          const blob = await Packer.toBlob(doc);
+                          saveAs(blob, `scan-${Date.now()}.docx`);
+                          toast({ title: "Arquivo .docx salvo!" });
+                        }}
+                      >
+                        <Download className="w-4 h-4 mr-2" /> Salvar como .docx
+                      </Button>
+                    </div>
+                  </div>
+                )}
+              </>
+            ) : (
+              <PerspectiveScanner />
             )}
           </div>
         </TabsContent>

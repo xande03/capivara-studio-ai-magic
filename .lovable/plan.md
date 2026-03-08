@@ -1,47 +1,35 @@
 
 
-# Plano: Scanner com correção de perspectiva (estilo iPhone Notes)
+# Plano: Corrigir texto na imagem, copiar no chat, testar conversor
 
-Adicionar ao módulo "Escanear" uma nova funcionalidade de **correção de perspectiva** — o usuário faz upload de uma foto torta de um documento, arrasta 4 pontos nos cantos da folha, e o sistema corrige a perspectiva gerando um PDF limpo.
+## 1. TextOverlayEditor — bug de coordenadas
 
-## Novo componente: `src/components/PerspectiveScanner.tsx`
+**Problema**: O canvas tem `className="cursor-crosshair w-full"` que aplica CSS `width: 100%`, mas o canvas já tem dimensões definidas via JS (`canvas.width = img.width * s`). O CSS estica o canvas novamente, causando dupla escala — os cliques não correspondem à posição real e o texto fica em lugar errado ou invisível.
 
-### Interface
-- Imagem exibida em um container com 4 **handles arrastáveis** (círculos nos cantos) posicionados sobre a imagem
-- Handles conectados por linhas formando um quadrilátero (overlay SVG)
-- Auto-detecção inicial: posicionar handles com margem de 10% dos cantos da imagem
-- Botões: "Corrigir Perspectiva" → "Baixar PDF"
+**Correção em `src/components/TextOverlayEditor.tsx`**:
+- Remover `w-full` do className do canvas
+- Adicionar `style={{ maxWidth: '100%' }}` para que o canvas respeite suas dimensões reais mas não ultrapasse o container
+- Isso garante que `getBoundingClientRect()` retorna dimensões que correspondem exatamente ao canvas, e os cliques mapeiam corretamente
 
-### Interação de arrastar
-- Cada handle é um `div` arrastável via `onPointerDown/Move/Up`
-- Ao arrastar, as linhas do quadrilátero atualizam em tempo real
-- Coordenadas normalizadas (0-1) para funcionar em qualquer tamanho de tela
+## 2. Botão de copiar texto no Chat
 
-### Correção de perspectiva (homografia)
-- Implementar transformação projetiva 2D no canvas:
-  1. Os 4 pontos de origem (corners do usuário) mapeiam para um retângulo destino (A4 proporção)
-  2. Calcular matriz homográfica 3x3 resolvendo sistema linear 8x8
-  3. Para cada pixel do destino, aplicar transformação inversa para amostrar o pixel de origem
-  4. Usar `canvas.getImageData()` / `putImageData()` — tudo client-side, sem servidor
-- Aplicar filtro de contraste/brilho para simular efeito "scan" (branco mais limpo, texto mais nítido)
+**Adicionar em `src/pages/ChatPage.tsx`**:
+- Importar `Copy` e `Check` do lucide-react
+- Em cada bolha de mensagem (tanto user quanto assistant), adicionar um botão de copiar que aparece no hover
+- Usar `navigator.clipboard.writeText()` para copiar
+- Feedback visual: trocar ícone para Check por 2 segundos após copiar
+- Componente inline com estado local para o feedback
 
-### Saída
-- Preview da imagem corrigida
-- Botão "Baixar como PDF" usando jsPDF
-- Botão "Escanear Texto (OCR)" que envia a imagem corrigida para o edge function existente `document-process`
+## 3. Testar conversor
 
-## Alteração em `src/pages/ConverterPage.tsx`
+Vou testar a edge function `document-process` para verificar se está respondendo. As 3 funções do conversor dependem de:
+- **Imagem→PDF**: client-side com jsPDF (deve funcionar)
+- **PDF→Word**: edge function `document-process` com action `pdf-to-text`
+- **Escanear**: edge function `document-process` com action `ocr`
 
-Na aba "Escanear", adicionar um **sub-seletor** com dois modos:
-1. **OCR Direto** (comportamento atual)
-2. **Corrigir & Escanear** (novo — abre o `PerspectiveScanner`)
+Vou fazer um curl na edge function para confirmar que está deployada e respondendo.
 
-Usar um toggle ou botões de modo dentro da tab `scan`.
-
-## Arquivos
-
-| Arquivo | Ação |
-|---|---|
-| `src/components/PerspectiveScanner.tsx` | Criar — componente completo com drag handles + homografia + export |
-| `src/pages/ConverterPage.tsx` | Editar — adicionar sub-modo na aba Escanear |
+## Arquivos a editar
+1. `src/components/TextOverlayEditor.tsx` — remover `w-full`, corrigir escala
+2. `src/pages/ChatPage.tsx` — adicionar botão copiar em cada mensagem
 
