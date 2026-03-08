@@ -62,19 +62,27 @@ serve(async (req) => {
       }
     } else if (action === "upscale") {
       // ENHANCED UPSCALE PROMPT
-      const upscalePrompt = `Professional AI Reconstruction & Upscale Engine. 
-      TASK: IDENTIFY AND ENHANCE ALL ELEMENTS (PEOPLE, CHARACTERS, ANIMALS, OBJECTS, ENVIRONMENTS).
-      
-      INSTRUCTIONS:
-      1. FINE DETAILS: Restore and reconstruct lost textures with ultra-high precision (skin pores, fabric weaves, hair strands, biological micro-textures, environmental surfaces like stone, wood, water).
-      2. SUBJECT IDENTIFICATION: Perfectly recognize and refine faces, anatomy, character features, and animal fur/scales, ensuring they look biologically or design-consistent.
-      3. SHARPNESS & CLARITY: Drastically improve edge definition and internal detail sharpness. Eliminate artifacts, blur, and noise while maintaining a natural, non-plastic look.
-      4. FIDELITY: Preserve the essence, lighting, and original proportions of the image. DO NOT CHANGE the identity of subjects, just increase their definition to cinematic quality.
-      5. ENVIRONMENT: Reconstruct background elements with depth and clarity, ensuring they match the foreground's enhanced quality.
-      
-      User Guidance/Style: ${prompt || "Professional photorealistic restoration"}.${aspectInstruction}
-      
-      OUTPUT: A result that looks like it was captured with a high-end professional camera, with infinite detail and perfect textures.`;
+      const upscalePrompt = `STRICT FIDELITY UPSCALE ENGINE — ZERO ALTERATION MODE.
+
+ABSOLUTE RULES (VIOLATION = FAILURE):
+- DO NOT alter, modify, or reinterpret ANY facial feature: eyes, nose, mouth, ears, jawline, skin tone, freckles, wrinkles, scars, moles, facial hair — EVERYTHING must remain PIXEL-IDENTICAL in identity.
+- DO NOT change eye color, hair color, hair style, hair texture, or hair length.
+- DO NOT modify body proportions, pose, posture, hand positions, or clothing fit.
+- DO NOT change clothing patterns, logos, text, symbols, or any graphic elements on garments or objects.
+- DO NOT add, remove, or relocate ANY element that exists (or doesn't exist) in the original image.
+- DO NOT shift the color palette, white balance, color temperature, or tonal range. The output must have the EXACT SAME color grading as the input.
+- DO NOT hallucinate textures. Only REFINE textures that already exist — sharpen what is there, never invent what is not.
+
+WHAT YOU MUST DO:
+1. ENHANCE RESOLUTION: Increase sharpness, clarity, and edge definition of ALL existing elements.
+2. REFINE EXISTING TEXTURES: Bring out micro-details already present — skin pores, fabric weaves, hair strands, surface grain, environmental textures (stone, wood, metal, water).
+3. REDUCE ARTIFACTS: Remove compression artifacts, noise, banding, and blur while preserving the natural look.
+4. PRESERVE LIGHTING: Keep the exact same lighting direction, intensity, shadows, highlights, and ambient occlusion.
+5. MAINTAIN DEPTH OF FIELD: If the original has bokeh or selective focus, preserve it exactly.
+
+User Guidance: ${prompt || "Maximum fidelity photorealistic enhancement"}.${aspectInstruction}
+
+OUTPUT: The identical image at dramatically higher resolution and clarity. It must be indistinguishable in identity and content from the original — only sharper and more detailed.`;
 
       messages = [
         {
