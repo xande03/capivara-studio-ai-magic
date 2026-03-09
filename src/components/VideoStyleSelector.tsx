@@ -36,7 +36,7 @@ export function VideoStyleSelector({ value, onChange }: Props) {
             variant={value === s ? "default" : "outline"}
             size="sm"
             onClick={() => onChange(s)}
-            className={value === s ? "bg-fuchsia-600 text-white hover:bg-fuchsia-700" : ""}
+            className={value === s ? "bg-primary text-primary-foreground hover:bg-primary/90" : ""}
           >
             {s}
           </Button>

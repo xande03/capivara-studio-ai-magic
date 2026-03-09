@@ -12,7 +12,14 @@ interface ProcessImageParams {
   aspectRatio?: AspectRatioType;
 }
 
-export async function processImage(params: ProcessImageParams): Promise<{ image?: string; text?: string; error?: string }> {
+export interface ImageResult {
+  image?: string;
+  text?: string;
+  error?: string;
+  errorCode?: "CREDITS_EXHAUSTED" | "RATE_LIMITED" | "GENERIC";
+}
+
+export async function processImage(params: ProcessImageParams): Promise<ImageResult> {
   try {
     const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/image-process`, {
       method: "POST",
@@ -25,14 +32,29 @@ export async function processImage(params: ProcessImageParams): Promise<{ image?
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
-      return { error: errorData.error || `Erro HTTP: ${response.status}` };
+      if (response.status === 402) {
+        return {
+          error: errorData.error || "Créditos insuficientes para processar imagens.",
+          errorCode: "CREDITS_EXHAUSTED",
+        };
+      }
+      if (response.status === 429) {
+        return {
+          error: errorData.error || "Limite de requisições excedido. Aguarde alguns instantes.",
+          errorCode: "RATE_LIMITED",
+        };
+      }
+      return {
+        error: errorData.error || `Erro HTTP: ${response.status}`,
+        errorCode: "GENERIC",
+      };
     }
 
     const data = await response.json();
     return { image: data?.image, text: data?.text };
   } catch (err) {
     console.error("Direct fetch error:", err);
-    return { error: "Falha na comunicação com o servidor de imagem" };
+    return { error: "Falha na comunicação com o servidor de imagem", errorCode: "GENERIC" };
   }
 }
 

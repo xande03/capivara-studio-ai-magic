@@ -8,6 +8,7 @@ import { AspectRatioSelector, AspectRatio } from "@/components/AspectRatioSelect
 import { HistoryPanel } from "@/components/HistoryPanel";
 import { Lightbox } from "@/components/Lightbox";
 import { GeneratingAnimation } from "@/components/GeneratingAnimation";
+import { CreditsBanner } from "@/components/CreditsBanner";
 import { processImage, ModelType } from "@/lib/imageApi";
 import { addToHistory, getToolHistory, HistoryItem } from "@/lib/sessionHistory";
 import { Sparkles, Loader2, Download } from "lucide-react";
@@ -23,6 +24,7 @@ export default function GeneratePage() {
   const [loading, setLoading] = useState(false);
   const [lightbox, setLightbox] = useState<string>("");
   const [history, setHistory] = useState<HistoryItem[]>(() => getToolHistory("generate"));
+  const [creditsExhausted, setCreditsExhausted] = useState(false);
   const previousModeRef = useRef<CreationMode>("modo-livre");
   const { toast } = useToast();
 
@@ -31,7 +33,6 @@ export default function GeneratePage() {
     const prevInstruction = CREATION_MODES.find(m => m.id === prevMode)?.instruction || "";
     const newInstruction = CREATION_MODES.find(m => m.id === newMode)?.instruction || "";
 
-    // Auto-fill prompt if empty or still matches previous mode's instruction
     if (!prompt.trim() || prompt.trim() === prevInstruction.trim()) {
       setPrompt(newInstruction);
     }
@@ -41,16 +42,11 @@ export default function GeneratePage() {
   };
 
   const handleGenerate = async () => {
-    // Allow generating without prompt if there's an image + a non-free mode (especially avatar)
     const selectedMode = CREATION_MODES.find(m => m.id === creationMode);
     const modeInstruction = selectedMode?.instruction || "";
 
     if (!prompt.trim() && !inputImage) {
       toast({ title: "Digite um prompt ou adicione uma imagem", variant: "destructive" });
-      return;
-    }
-    if (!prompt.trim() && !modeInstruction && !inputImage) {
-      toast({ title: "Digite um prompt", variant: "destructive" });
       return;
     }
 
@@ -70,6 +66,7 @@ export default function GeneratePage() {
 
     setLoading(false);
     if (res.error) {
+      if (res.errorCode === "CREDITS_EXHAUSTED") setCreditsExhausted(true);
       toast({ title: "Erro", description: res.error, variant: "destructive" });
       return;
     }
@@ -87,14 +84,12 @@ export default function GeneratePage() {
           <Sparkles className="w-7 h-7 text-blue-600" />
         </div>
         <div>
-          <h1 className="text-2xl font-bold text-foreground">
-            Gerar Imagem
-          </h1>
-          <p className="text-sm text-muted-foreground">
-            Criar imagens com IA — agora com suporte a imagem de referência
-          </p>
+          <h1 className="text-2xl font-bold text-foreground">Gerar Imagem</h1>
+          <p className="text-sm text-muted-foreground">Criar imagens com IA — agora com suporte a imagem de referência</p>
         </div>
       </div>
+
+      <CreditsBanner visible={creditsExhausted} />
 
       <div className="grid md:grid-cols-2 gap-6">
         <div className="glass-card rounded-xl p-5 space-y-4">
@@ -102,12 +97,7 @@ export default function GeneratePage() {
 
           <div className="space-y-2">
             <p className="text-xs font-medium text-muted-foreground">Imagem de Referência (Opcional)</p>
-            <ImageUploader
-              onImageSelect={setInputImage}
-              currentImage={inputImage}
-              onClear={() => setInputImage("")}
-              label="Arraste uma imagem base"
-            />
+            <ImageUploader onImageSelect={setInputImage} currentImage={inputImage} onClear={() => setInputImage("")} label="Arraste uma imagem base" />
           </div>
 
           <div className="space-y-2">
@@ -117,10 +107,7 @@ export default function GeneratePage() {
           <CreationModeSelector value={creationMode} onChange={handleModeChange} />
           <AspectRatioSelector value={aspectRatio} onChange={setAspectRatio} />
           <Textarea
-            placeholder={creationMode === "avatar"
-              ? "Descreva o avatar desejado ou deixe vazio para usar a imagem..."
-              : "Descreva o que deseja criar..."
-            }
+            placeholder={creationMode === "avatar" ? "Descreva o avatar desejado ou deixe vazio para usar a imagem..." : "Descreva o que deseja criar..."}
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
             className="resize-none"
@@ -128,11 +115,11 @@ export default function GeneratePage() {
           />
           <Button
             onClick={handleGenerate}
-            disabled={loading || (!prompt.trim() && !inputImage)}
+            disabled={loading || creditsExhausted || (!prompt.trim() && !inputImage)}
             className="w-full blue-gradient text-white font-semibold"
           >
             {loading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Sparkles className="w-4 h-4 mr-2" />}
-            {loading ? "Gerando..." : "Gerar Imagem"}
+            {creditsExhausted ? "Créditos Insuficientes" : loading ? "Gerando..." : "Gerar Imagem"}
           </Button>
         </div>
 
@@ -142,26 +129,15 @@ export default function GeneratePage() {
             <GeneratingAnimation label="Gerando imagem..." />
           ) : result ? (
             <div className="space-y-3">
-              <div
-                className="rounded-xl overflow-hidden border border-border cursor-pointer hover:border-primary/50 transition-colors"
-                onClick={() => setLightbox(result)}
-              >
+              <div className="rounded-xl overflow-hidden border border-border cursor-pointer hover:border-primary/50 transition-colors" onClick={() => setLightbox(result)}>
                 <img src={result} alt="Imagem gerada" className="w-full object-contain max-h-96" loading="lazy" />
               </div>
-              <Button variant="outline" size="sm" onClick={() => {
-                const a = document.createElement("a");
-                a.href = result;
-                a.download = `generated-${Date.now()}.png`;
-                a.click();
-              }}>
-                <Download className="w-4 h-4 mr-2" />
-                Download
+              <Button variant="outline" size="sm" onClick={() => { const a = document.createElement("a"); a.href = result; a.download = `generated-${Date.now()}.png`; a.click(); }}>
+                <Download className="w-4 h-4 mr-2" /> Download
               </Button>
             </div>
           ) : (
-            <div className="h-64 rounded-xl checkerboard flex items-center justify-center text-muted-foreground text-sm">
-              A imagem gerada aparecerá aqui
-            </div>
+            <div className="h-64 rounded-xl checkerboard flex items-center justify-center text-muted-foreground text-sm">A imagem gerada aparecerá aqui</div>
           )}
         </div>
       </div>
