@@ -43,6 +43,7 @@ const App = () => (
               <Route path="/chat" element={<ChatPage />} />
               <Route path="/summarizer" element={<SummarizerPage />} />
               <Route path="/signature" element={<SignaturePage />} />
+              <Route path="/video-frames" element={<VideoFramesPage />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Layout>
