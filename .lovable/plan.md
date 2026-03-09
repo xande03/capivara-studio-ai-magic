@@ -1,46 +1,73 @@
 
-## Análise da Funcionalidade "Frames de Vídeo"
 
-Após revisar o código, confirmo que a funcionalidade **já está correta** - ela gera um conjunto de imagens sequenciais (frames) que podem ser usadas para criar vídeos, não um vídeo propriamente dito.
+## Plano: Corrigir todas as ferramentas e melhorar Frames de Vídeo
 
-### Estado Atual ✅
-- Gera múltiplas imagens em sequência (4, 6, 8, ou 12 frames)
-- Cada frame recebe prompt com "frame X of Y showing progression in the sequence"
-- Interface permite download individual de cada imagem
-- Sidebar já descreve como "Sequências de imagens"
+### Problema Principal
+Todas as ferramentas que dependem do AI Gateway (imagem, chat, resumo, conversor OCR) estão falhando com erro **402 - Créditos insuficientes**. A assinatura digital é client-side pura e deve funcionar normalmente.
 
-### Melhorias Propostas
+### Diagnóstico por Ferramenta
 
-**1. Interface Mais Clara**
-- Atualizar textos e labels para enfatizar que são "frames/imagens sequenciais"
-- Adicionar explicação sobre o uso dos frames para criação de vídeos
-- Melhorar o placeholder do prompt com exemplo mais claro
+| Ferramenta | Depende de AI Gateway? | Status |
+|---|---|---|
+| Gerar Imagem | Sim (image-process) | 402 |
+| Upscale | Sim (image-process) | 402 |
+| Editar Imagem | Sim (image-process) | 402 |
+| Remover Fundo | Sim (image-process) | 402 |
+| Chat IA | Sim (chat) + Puter.js | 402 para Gemini; Puter pode funcionar |
+| Conversor PDF | Parcial (document-process para OCR) | img2pdf funciona; OCR falha com 402 |
+| Resumidor IA | Sim (summarize) | 402 |
+| Assinatura | Não (client-side canvas) | Deve funcionar |
+| Frames de Vídeo | Sim (image-process) | 402 |
 
-**2. Funcionalidades Adicionais**
-- **Download em lote**: Botão para baixar todos os frames de uma vez em ZIP
-- **Visualização sequencial**: Preview tipo slideshow dos frames gerados
-- **Numeração visual**: Indicadores mais claros da ordem/sequência dos frames
+### Solução
 
-**3. Melhor Geração de Sequência**
-- Prompts mais inteligentes para garantir continuidade narrativa
-- Opções de tipo de sequência (ação contínua, transições, storyboard)
-- Sugestões de prompts específicos para frames sequenciais
+**A causa raiz é falta de créditos no workspace.** O código está correto - todos os edge functions tratam 402/429 adequadamente. Para resolver sem depender de créditos, vou implementar:
 
-**4. UX Aprimorada**
-- Grid responsivo melhor para diferentes quantidades de frames
-- Loading state mais informativo mostrando qual frame está sendo gerado
-- Preview em miniatura durante a geração
+#### 1. Melhorar tratamento de erro 402 em todas as páginas
+- Mostrar mensagem clara e amigável quando créditos acabam
+- Adicionar banner/alerta persistente informando sobre créditos insuficientes
+- Desabilitar botões de ação quando 402 é detectado, com mensagem explicativa
 
-### Implementação
+#### 2. Atualizar o Chat para ser mais resiliente
+- O Chat usa Puter.js para Claude e DeepSeek (funciona sem créditos)
+- Apenas Gemini 3 Pro depende do gateway - marcar como indisponível quando sem créditos
+- Garantir fallback para modelos Puter.js funcione corretamente
 
-1. **Clarificar textos e interface** - melhorar labels, descrições e help text
-2. **Adicionar download em lote** - funcionalidade ZIP para todos os frames
-3. **Implementar preview sequencial** - visualizador tipo carrossel/slideshow
-4. **Melhorar sistema de prompts** - garantir melhor continuidade entre frames
-5. **Aprimorar responsividade** - grid que se adapta ao número de frames
+#### 3. Conversor de Documentos
+- img2pdf é 100% client-side (jsPDF) - não depende de AI, já funciona
+- PDF-to-Word extrai texto com pdfjs-dist client-side, só usa OCR como fallback - funciona parcialmente
+- OCR/Scan depende do gateway - mostrar erro claro
+
+#### 4. Melhorias nos Frames de Vídeo (plano aprovado anteriormente)
+- Atualizar textos e labels para "Sequência de Frames" / storyboard
+- Melhorar placeholders e descrições
+- Adicionar download em lote (ZIP) com jszip
+- Criar componente FrameSequenceViewer (slideshow/carrossel)
+- Melhorar prompts para continuidade narrativa entre frames
+- Grid responsivo adaptado ao número de frames
+- Loading state mostrando qual frame está sendo gerado (já existe parcialmente)
 
 ### Arquivos a Modificar
-- `src/pages/VideoFramesPage.tsx` - interface principal e lógica
-- `src/components/VideoStyleSelector.tsx` - possíveis novos estilos
-- Criar novo componente `FrameSequenceViewer` para visualização
-- Adicionar utilitário para download em lote (ZIP)
+
+1. **`src/lib/imageApi.ts`** - Adicionar detecção de erro 402 e tipo de erro específico
+2. **`src/pages/GeneratePage.tsx`** - Banner de créditos insuficientes
+3. **`src/pages/UpscalePage.tsx`** - Mesmo tratamento
+4. **`src/pages/EditPage.tsx`** - Mesmo tratamento  
+5. **`src/pages/RemoveBgPage.tsx`** - Mesmo tratamento
+6. **`src/pages/ChatPage.tsx`** - Marcar Gemini como indisponível; manter Puter models
+7. **`src/pages/ConverterPage.tsx`** - Tratamento para OCR; img2pdf já ok
+8. **`src/pages/SummarizerPage.tsx`** - Banner de créditos
+9. **`src/pages/VideoFramesPage.tsx`** - Reescrever com melhorias do plano de frames
+10. **`src/components/FrameSequenceViewer.tsx`** - Novo componente slideshow
+11. **`src/components/VideoStyleSelector.tsx`** - Adicionar tipos de sequência
+
+### Detalhes Técnicos
+
+**Detecção de 402**: Modificar `processImage` em `imageApi.ts` para retornar `error` com código identificável (ex: `"CREDITS_EXHAUSTED: ..."`) para que as páginas possam reagir diferentemente.
+
+**FrameSequenceViewer**: Carrossel com play/pause, navegação manual, controle de velocidade (100-900ms), e modo fullscreen.
+
+**Download ZIP**: Usar jszip (já instalado) para empacotar todos os frames gerados.
+
+**Prompts de frames melhorados**: Adicionar contexto narrativo por posição (início/meio/fim da cena) para melhor continuidade visual.
+
