@@ -2,15 +2,16 @@ import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { MessageCircle, Send, Loader2, Bot, User, Trash2, Copy, Check } from "lucide-react";
+import { CreditsBanner } from "@/components/CreditsBanner";
+import { MessageCircle, Send, Loader2, Bot, User, Trash2, Copy, Check, AlertTriangle } from "lucide-react";
 import { streamPuterChat, sendPuterChat, type ChatMessage, type PuterModel } from "@/lib/puterAi";
 import { useToast } from "@/hooks/use-toast";
 import ReactMarkdown from "react-markdown";
 
-const MODELS: { value: PuterModel; label: string }[] = [
-  { value: "gemini-3-pro", label: "Gemini 3 Pro" },
-  { value: "claude-3-7-sonnet", label: "Claude 3.7 Sonnet" },
-  { value: "deepseek/deepseek-v3.2", label: "DeepSeek v3.2" },
+const MODELS: { value: PuterModel; label: string; requiresCredits: boolean }[] = [
+  { value: "gemini-3-pro", label: "Gemini 3 Pro", requiresCredits: true },
+  { value: "claude-3-7-sonnet", label: "Claude 3.7 Sonnet", requiresCredits: false },
+  { value: "deepseek/deepseek-v3.2", label: "DeepSeek v3.2", requiresCredits: false },
 ];
 
 function CopyButton({ text }: { text: string }) {
@@ -21,11 +22,7 @@ function CopyButton({ text }: { text: string }) {
     setTimeout(() => setCopied(false), 2000);
   };
   return (
-    <button
-      onClick={handleCopy}
-      className="absolute -bottom-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity bg-background border border-border rounded-md p-1 shadow-sm"
-      title="Copiar"
-    >
+    <button onClick={handleCopy} className="absolute -bottom-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity bg-background border border-border rounded-md p-1 shadow-sm" title="Copiar">
       {copied ? <Check className="w-3.5 h-3.5 text-green-500" /> : <Copy className="w-3.5 h-3.5 text-muted-foreground" />}
     </button>
   );
@@ -34,8 +31,9 @@ function CopyButton({ text }: { text: string }) {
 export default function ChatPage() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
-  const [model, setModel] = useState<PuterModel>("gemini-3-pro");
+  const [model, setModel] = useState<PuterModel>("claude-3-7-sonnet");
   const [loading, setLoading] = useState(false);
+  const [geminiUnavailable, setGeminiUnavailable] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
 
@@ -67,13 +65,21 @@ export default function ChatPage() {
     };
 
     try {
-      await streamPuterChat(
-        newMessages,
-        model,
-        updateAssistant,
-        () => setLoading(false)
-      );
-    } catch (streamErr) {
+      await streamPuterChat(newMessages, model, updateAssistant, () => setLoading(false));
+    } catch (streamErr: any) {
+      const errorMsg = streamErr?.message || "";
+      // Detect credit exhaustion for Gemini
+      if (model === "gemini-3-pro" && (errorMsg.includes("402") || errorMsg.includes("Créditos") || errorMsg.includes("créditos"))) {
+        setGeminiUnavailable(true);
+        setModel("claude-3-7-sonnet");
+        toast({ title: "Gemini indisponível", description: "Créditos insuficientes. Alternando para Claude 3.7 Sonnet.", variant: "destructive" });
+        // Retry with Claude
+        try {
+          await streamPuterChat(newMessages, "claude-3-7-sonnet", updateAssistant, () => setLoading(false));
+          return;
+        } catch { /* fall through */ }
+      }
+
       console.warn("Streaming failed, trying non-streaming fallback:", streamErr);
       try {
         const fallbackResponse = await sendPuterChat(newMessages, model);
@@ -118,7 +124,12 @@ export default function ChatPage() {
             </SelectTrigger>
             <SelectContent>
               {MODELS.map((m) => (
-                <SelectItem key={m.value} value={m.value}>{m.label}</SelectItem>
+                <SelectItem key={m.value} value={m.value} disabled={m.requiresCredits && geminiUnavailable}>
+                  <span className="flex items-center gap-1.5">
+                    {m.label}
+                    {m.requiresCredits && geminiUnavailable && <AlertTriangle className="w-3 h-3 text-destructive" />}
+                  </span>
+                </SelectItem>
               ))}
             </SelectContent>
           </Select>
@@ -129,6 +140,10 @@ export default function ChatPage() {
           )}
         </div>
       </div>
+
+      {geminiUnavailable && (
+        <CreditsBanner visible message="Gemini 3 Pro está indisponível por falta de créditos. Use Claude ou DeepSeek." />
+      )}
 
       {/* Messages */}
       <div className="flex-1 overflow-y-auto space-y-4 pb-4 min-h-0">
@@ -142,23 +157,14 @@ export default function ChatPage() {
           </div>
         )}
         {messages.map((msg, i) => (
-          <div
-            key={i}
-            className={`group flex gap-3 ${msg.role === "user" ? "justify-end" : "justify-start"}`}
-          >
+          <div key={i} className={`group flex gap-3 ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
             {msg.role === "assistant" && (
               <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0 mt-1">
                 <Bot className="w-4 h-4 text-primary" />
               </div>
             )}
             <div className="relative max-w-[85%] md:max-w-[80%]">
-              <div
-                className={`rounded-2xl px-4 py-3 text-sm ${
-                  msg.role === "user"
-                    ? "bg-primary text-primary-foreground"
-                    : "glass-card"
-                }`}
-              >
+              <div className={`rounded-2xl px-4 py-3 text-sm ${msg.role === "user" ? "bg-primary text-primary-foreground" : "glass-card"}`}>
                 {msg.role === "assistant" ? (
                   <div className="prose prose-sm dark:prose-invert max-w-none [&>p]:mb-2 [&>ul]:mb-2 [&>ol]:mb-2 [&>pre]:bg-muted [&>pre]:rounded-lg [&>pre]:p-3">
                     <ReactMarkdown>{msg.content}</ReactMarkdown>
@@ -191,20 +197,8 @@ export default function ChatPage() {
 
       {/* Input */}
       <div className="glass-card rounded-2xl p-3 flex gap-2 items-end">
-        <Textarea
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyDown={handleKeyDown}
-          placeholder="Digite sua mensagem..."
-          rows={1}
-          className="resize-none border-0 bg-transparent focus-visible:ring-0 min-h-[40px] max-h-[120px]"
-        />
-        <Button
-          size="icon"
-          className="blue-gradient text-white shrink-0"
-          onClick={handleSend}
-          disabled={loading || !input.trim()}
-        >
+        <Textarea value={input} onChange={(e) => setInput(e.target.value)} onKeyDown={handleKeyDown} placeholder="Digite sua mensagem..." rows={1} className="resize-none border-0 bg-transparent focus-visible:ring-0 min-h-[40px] max-h-[120px]" />
+        <Button size="icon" className="blue-gradient text-white shrink-0" onClick={handleSend} disabled={loading || !input.trim()}>
           <Send className="w-4 h-4" />
         </Button>
       </div>
