@@ -29,6 +29,7 @@ import {
 } from "@/components/ui/sidebar";
 
 const tools = [
+  { title: "Chat IA", description: "Claude & DeepSeek", url: "/chat", icon: MessageCircle, color: "bg-violet-500/10 text-violet-600" },
   { title: "Upscale", description: "Aumentar resolução com IA", url: "/upscale", icon: ArrowUpCircle, color: "bg-purple-500/10 text-purple-600" },
   { title: "Gerar Imagem", description: "Criar imagens com IA", url: "/generate", icon: Sparkles, color: "bg-emerald-500/10 text-emerald-600" },
   { title: "Editar Imagem", description: "Modificar e combinar imagens", url: "/edit", icon: Pencil, color: "bg-blue-500/10 text-blue-600" },
@@ -36,7 +37,6 @@ const tools = [
   { title: "QR Code Magic", description: "Gerar QR Codes profissionais", url: "/qrcode", icon: QrCode, color: "bg-pink-500/10 text-pink-600" },
   { title: "Music DNA", description: "Análise profunda de áudio", url: "/music-dna", icon: Music, color: "bg-indigo-500/10 text-indigo-600" },
   { title: "Conversor", description: "PDF, Word e OCR", url: "/converter", icon: FileText, color: "bg-cyan-500/10 text-cyan-600" },
-  { title: "Chat IA", description: "Claude & DeepSeek", url: "/chat", icon: MessageCircle, color: "bg-violet-500/10 text-violet-600" },
   { title: "Resumidor IA", description: "Resumos e flashcards", url: "/summarizer", icon: BookOpen, color: "bg-amber-500/10 text-amber-600" },
   { title: "Assinatura", description: "Criar assinatura digital", url: "/signature", icon: PenTool, color: "bg-rose-500/10 text-rose-600" },
   { title: "Frames de Vídeo", description: "Sequências de imagens", url: "/video-frames", icon: Film, color: "bg-fuchsia-500/10 text-fuchsia-600" },
