@@ -1,35 +1,46 @@
 
+## Análise da Funcionalidade "Frames de Vídeo"
 
-# Plano: Corrigir texto na imagem, copiar no chat, testar conversor
+Após revisar o código, confirmo que a funcionalidade **já está correta** - ela gera um conjunto de imagens sequenciais (frames) que podem ser usadas para criar vídeos, não um vídeo propriamente dito.
 
-## 1. TextOverlayEditor — bug de coordenadas
+### Estado Atual ✅
+- Gera múltiplas imagens em sequência (4, 6, 8, ou 12 frames)
+- Cada frame recebe prompt com "frame X of Y showing progression in the sequence"
+- Interface permite download individual de cada imagem
+- Sidebar já descreve como "Sequências de imagens"
 
-**Problema**: O canvas tem `className="cursor-crosshair w-full"` que aplica CSS `width: 100%`, mas o canvas já tem dimensões definidas via JS (`canvas.width = img.width * s`). O CSS estica o canvas novamente, causando dupla escala — os cliques não correspondem à posição real e o texto fica em lugar errado ou invisível.
+### Melhorias Propostas
 
-**Correção em `src/components/TextOverlayEditor.tsx`**:
-- Remover `w-full` do className do canvas
-- Adicionar `style={{ maxWidth: '100%' }}` para que o canvas respeite suas dimensões reais mas não ultrapasse o container
-- Isso garante que `getBoundingClientRect()` retorna dimensões que correspondem exatamente ao canvas, e os cliques mapeiam corretamente
+**1. Interface Mais Clara**
+- Atualizar textos e labels para enfatizar que são "frames/imagens sequenciais"
+- Adicionar explicação sobre o uso dos frames para criação de vídeos
+- Melhorar o placeholder do prompt com exemplo mais claro
 
-## 2. Botão de copiar texto no Chat
+**2. Funcionalidades Adicionais**
+- **Download em lote**: Botão para baixar todos os frames de uma vez em ZIP
+- **Visualização sequencial**: Preview tipo slideshow dos frames gerados
+- **Numeração visual**: Indicadores mais claros da ordem/sequência dos frames
 
-**Adicionar em `src/pages/ChatPage.tsx`**:
-- Importar `Copy` e `Check` do lucide-react
-- Em cada bolha de mensagem (tanto user quanto assistant), adicionar um botão de copiar que aparece no hover
-- Usar `navigator.clipboard.writeText()` para copiar
-- Feedback visual: trocar ícone para Check por 2 segundos após copiar
-- Componente inline com estado local para o feedback
+**3. Melhor Geração de Sequência**
+- Prompts mais inteligentes para garantir continuidade narrativa
+- Opções de tipo de sequência (ação contínua, transições, storyboard)
+- Sugestões de prompts específicos para frames sequenciais
 
-## 3. Testar conversor
+**4. UX Aprimorada**
+- Grid responsivo melhor para diferentes quantidades de frames
+- Loading state mais informativo mostrando qual frame está sendo gerado
+- Preview em miniatura durante a geração
 
-Vou testar a edge function `document-process` para verificar se está respondendo. As 3 funções do conversor dependem de:
-- **Imagem→PDF**: client-side com jsPDF (deve funcionar)
-- **PDF→Word**: edge function `document-process` com action `pdf-to-text`
-- **Escanear**: edge function `document-process` com action `ocr`
+### Implementação
 
-Vou fazer um curl na edge function para confirmar que está deployada e respondendo.
+1. **Clarificar textos e interface** - melhorar labels, descrições e help text
+2. **Adicionar download em lote** - funcionalidade ZIP para todos os frames
+3. **Implementar preview sequencial** - visualizador tipo carrossel/slideshow
+4. **Melhorar sistema de prompts** - garantir melhor continuidade entre frames
+5. **Aprimorar responsividade** - grid que se adapta ao número de frames
 
-## Arquivos a editar
-1. `src/components/TextOverlayEditor.tsx` — remover `w-full`, corrigir escala
-2. `src/pages/ChatPage.tsx` — adicionar botão copiar em cada mensagem
-
+### Arquivos a Modificar
+- `src/pages/VideoFramesPage.tsx` - interface principal e lógica
+- `src/components/VideoStyleSelector.tsx` - possíveis novos estilos
+- Criar novo componente `FrameSequenceViewer` para visualização
+- Adicionar utilitário para download em lote (ZIP)
