@@ -11,6 +11,7 @@ import {
   MessageCircle,
   BookOpen,
   PenTool,
+  Film,
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation } from "react-router-dom";
@@ -38,6 +39,7 @@ const tools = [
   { title: "Chat IA", description: "Claude & DeepSeek", url: "/chat", icon: MessageCircle, color: "bg-violet-500/10 text-violet-600" },
   { title: "Resumidor IA", description: "Resumos e flashcards", url: "/summarizer", icon: BookOpen, color: "bg-amber-500/10 text-amber-600" },
   { title: "Assinatura", description: "Criar assinatura digital", url: "/signature", icon: PenTool, color: "bg-rose-500/10 text-rose-600" },
+  { title: "Frames de Vídeo", description: "Sequências de imagens", url: "/video-frames", icon: Film, color: "bg-fuchsia-500/10 text-fuchsia-600" },
 ];
 
 const gallery = [

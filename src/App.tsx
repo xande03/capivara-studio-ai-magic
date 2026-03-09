@@ -17,6 +17,7 @@ import ConverterPage from "./pages/ConverterPage";
 import ChatPage from "./pages/ChatPage";
 import SummarizerPage from "./pages/SummarizerPage";
 import SignaturePage from "./pages/SignaturePage";
+import VideoFramesPage from "./pages/VideoFramesPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -42,6 +43,7 @@ const App = () => (
               <Route path="/chat" element={<ChatPage />} />
               <Route path="/summarizer" element={<SummarizerPage />} />
               <Route path="/signature" element={<SignaturePage />} />
+              <Route path="/video-frames" element={<VideoFramesPage />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Layout>

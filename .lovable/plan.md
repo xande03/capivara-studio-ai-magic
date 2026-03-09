@@ -1,33 +1,35 @@
 
 
-# Plano: Ferramenta de Frames de Vídeo
+# Plano: Corrigir texto na imagem, copiar no chat, testar conversor
 
-Nova ferramenta para gerar múltiplos frames de vídeo via IA a partir de prompt.
+## 1. TextOverlayEditor — bug de coordenadas
 
-## Funcionalidades
+**Problema**: O canvas tem `className="cursor-crosshair w-full"` que aplica CSS `width: 100%`, mas o canvas já tem dimensões definidas via JS (`canvas.width = img.width * s`). O CSS estica o canvas novamente, causando dupla escala — os cliques não correspondem à posição real e o texto fica em lugar errado ou invisível.
 
-- **Input de prompt**: descrição da cena/vídeo desejado
-- **Seletor de proporção**: 16:9, 9:16, 1:1, 4:3
-- **Seletor de frames**: quantidade (4, 6, 8, 12)
-- **Seletor de estilo** (baseado na imagem):
-  - Realista, Cinematográfico, Anime, Pixar 3D, Cyberpunk, Fantasia
-  - Câmera Lenta, Timelapse, Film Noir, Vintage, Onírico, Épico
-- **Botão "Gerar Vídeo"**: gera os frames sequencialmente
-- **Exibição**: grid com os frames gerados + opção de download
+**Correção em `src/components/TextOverlayEditor.tsx`**:
+- Remover `w-full` do className do canvas
+- Adicionar `style={{ maxWidth: '100%' }}` para que o canvas respeite suas dimensões reais mas não ultrapasse o container
+- Isso garante que `getBoundingClientRect()` retorna dimensões que correspondem exatamente ao canvas, e os cliques mapeiam corretamente
 
-## Implementação
+## 2. Botão de copiar texto no Chat
 
-| Arquivo | Ação |
-|---|---|
-| `src/pages/VideoFramesPage.tsx` | Criar — página completa com UI e lógica |
-| `src/components/VideoStyleSelector.tsx` | Criar — seletor de estilos visuais |
-| `src/App.tsx` | Editar — adicionar rota `/video-frames` |
-| `src/components/AppSidebar.tsx` | Editar — adicionar item no menu |
+**Adicionar em `src/pages/ChatPage.tsx`**:
+- Importar `Copy` e `Check` do lucide-react
+- Em cada bolha de mensagem (tanto user quanto assistant), adicionar um botão de copiar que aparece no hover
+- Usar `navigator.clipboard.writeText()` para copiar
+- Feedback visual: trocar ícone para Check por 2 segundos após copiar
+- Componente inline com estado local para o feedback
 
-## Fluxo técnico
+## 3. Testar conversor
 
-1. Usuário preenche prompt, escolhe proporção, número de frames e estilo
-2. Ao clicar em "Gerar", chama `processImage` com action `generate` para cada frame
-3. O prompt inclui instrução do estilo + "frame N of N" para progressão
-4. Frames são exibidos em grid conforme gerados
+Vou testar a edge function `document-process` para verificar se está respondendo. As 3 funções do conversor dependem de:
+- **Imagem→PDF**: client-side com jsPDF (deve funcionar)
+- **PDF→Word**: edge function `document-process` com action `pdf-to-text`
+- **Escanear**: edge function `document-process` com action `ocr`
+
+Vou fazer um curl na edge function para confirmar que está deployada e respondendo.
+
+## Arquivos a editar
+1. `src/components/TextOverlayEditor.tsx` — remover `w-full`, corrigir escala
+2. `src/pages/ChatPage.tsx` — adicionar botão copiar em cada mensagem
 
