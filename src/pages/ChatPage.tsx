@@ -4,7 +4,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { CreditsBanner } from "@/components/CreditsBanner";
 import { MessageCircle, Send, Loader2, Bot, User, Trash2, Copy, Check, AlertTriangle } from "lucide-react";
-import { streamPuterChat, sendPuterChat, type ChatMessage, type PuterModel } from "@/lib/puterAi";
+import { streamPuterChat, sendPuterChat, type ChatMessage, type PuterModel, type FallbackInfo } from "@/lib/puterAi";
 import { useToast } from "@/hooks/use-toast";
 import ReactMarkdown from "react-markdown";
 
@@ -64,25 +64,18 @@ export default function ChatPage() {
       });
     };
 
-    try {
-      await streamPuterChat(newMessages, model, updateAssistant, () => setLoading(false));
-    } catch (streamErr: any) {
-      const errorMsg = streamErr?.message || "";
-      // Detect credit exhaustion for Gemini
-      if (model === "gemini-3-pro" && (errorMsg.includes("402") || errorMsg.includes("Créditos") || errorMsg.includes("créditos"))) {
-        setGeminiUnavailable(true);
-        setModel("claude-3-7-sonnet");
-        toast({ title: "Gemini indisponível", description: "Créditos insuficientes. Alternando para Claude 3.7 Sonnet.", variant: "destructive" });
-        // Retry with Claude
-        try {
-          await streamPuterChat(newMessages, "claude-3-7-sonnet", updateAssistant, () => setLoading(false));
-          return;
-        } catch { /* fall through */ }
-      }
+    const handleFallback = (info: FallbackInfo) => {
+      setGeminiUnavailable(true);
+      setModel(info.to);
+      toast({ title: "Gemini indisponível", description: "Créditos insuficientes. Alternando para Claude 3.7 Sonnet automaticamente.", variant: "destructive" });
+    };
 
+    try {
+      await streamPuterChat(newMessages, model, updateAssistant, () => setLoading(false), handleFallback);
+    } catch (streamErr) {
       console.warn("Streaming failed, trying non-streaming fallback:", streamErr);
       try {
-        const fallbackResponse = await sendPuterChat(newMessages, model);
+        const fallbackResponse = await sendPuterChat(newMessages, model, handleFallback);
         setMessages((prev) => {
           const last = prev[prev.length - 1];
           if (last?.role === "assistant") {

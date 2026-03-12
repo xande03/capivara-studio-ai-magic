@@ -1,27 +1,35 @@
 
 
-## Plano: Fallback automático Gemini → Claude via Puter.js
+# Plano: Corrigir texto na imagem, copiar no chat, testar conversor
 
-### Problema
-Quando o usuário seleciona Gemini 3 Pro e o gateway retorna 402, o erro é capturado mas o fallback depende de retry manual no `ChatPage`. O fallback deveria ser **transparente e automático**, dentro da própria camada `puterAi.ts`.
+## 1. TextOverlayEditor — bug de coordenadas
 
-### Solução
+**Problema**: O canvas tem `className="cursor-crosshair w-full"` que aplica CSS `width: 100%`, mas o canvas já tem dimensões definidas via JS (`canvas.width = img.width * s`). O CSS estica o canvas novamente, causando dupla escala — os cliques não correspondem à posição real e o texto fica em lugar errado ou invisível.
 
-Mover a lógica de fallback para **`src/lib/puterAi.ts`** — tanto `streamPuterChat` quanto `sendPuterChat`. Quando Gemini falhar com 402/créditos, automaticamente re-executar com Claude 3.7 Sonnet via Puter.js, emitindo um callback opcional para notificar a UI.
+**Correção em `src/components/TextOverlayEditor.tsx`**:
+- Remover `w-full` do className do canvas
+- Adicionar `style={{ maxWidth: '100%' }}` para que o canvas respeite suas dimensões reais mas não ultrapasse o container
+- Isso garante que `getBoundingClientRect()` retorna dimensões que correspondem exatamente ao canvas, e os cliques mapeiam corretamente
 
-### Mudanças
+## 2. Botão de copiar texto no Chat
 
-**1. `src/lib/puterAi.ts`**
-- Adicionar parâmetro opcional `onFallback?: (fromModel, toModel) => void` em `streamPuterChat` e `sendPuterChat`
-- Em `streamGeminiChat`, detectar erro 402 e lançar erro tipado (ex: `CreditExhaustedError`)
-- Em `streamPuterChat`: se modelo é `gemini-3-pro` e erro é 402, chamar `onFallback`, depois re-executar com `claude-3-7-sonnet` via Puter.js automaticamente
-- Mesmo tratamento em `sendPuterChat`
+**Adicionar em `src/pages/ChatPage.tsx`**:
+- Importar `Copy` e `Check` do lucide-react
+- Em cada bolha de mensagem (tanto user quanto assistant), adicionar um botão de copiar que aparece no hover
+- Usar `navigator.clipboard.writeText()` para copiar
+- Feedback visual: trocar ícone para Check por 2 segundos após copiar
+- Componente inline com estado local para o feedback
 
-**2. `src/pages/ChatPage.tsx`**
-- Simplificar o `handleSend` — remover a lógica manual de retry com Claude (linhas 72-80)
-- Passar callback `onFallback` que mostra toast e atualiza o modelo selecionado + `geminiUnavailable`
-- O fallback agora é transparente na camada de API
+## 3. Testar conversor
 
-### Resultado
-O usuário pode selecionar Gemini livremente. Se falhar com 402, a resposta chega automaticamente via Claude sem nenhuma intervenção.
+Vou testar a edge function `document-process` para verificar se está respondendo. As 3 funções do conversor dependem de:
+- **Imagem→PDF**: client-side com jsPDF (deve funcionar)
+- **PDF→Word**: edge function `document-process` com action `pdf-to-text`
+- **Escanear**: edge function `document-process` com action `ocr`
+
+Vou fazer um curl na edge function para confirmar que está deployada e respondendo.
+
+## Arquivos a editar
+1. `src/components/TextOverlayEditor.tsx` — remover `w-full`, corrigir escala
+2. `src/pages/ChatPage.tsx` — adicionar botão copiar em cada mensagem
 

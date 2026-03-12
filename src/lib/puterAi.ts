@@ -1,4 +1,5 @@
 // Puter.js AI wrapper + Lovable AI Gateway for Gemini models
+// Automatic fallback: Gemini 402 → Claude 3.7 Sonnet via Puter.js
 
 let puterLoaded = false;
 let puterLoadPromise: Promise<void> | null = null;
@@ -44,7 +45,18 @@ export interface ChatMessage {
   content: string;
 }
 
+export interface FallbackInfo {
+  from: PuterModel;
+  to: PuterModel;
+}
+
+const FALLBACK_MODEL: PuterModel = "claude-3-7-sonnet";
 const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/chat`;
+
+function isCreditError(error: any): boolean {
+  const msg = error?.message || String(error);
+  return msg.includes("402") || msg.includes("Créditos") || msg.includes("créditos") || msg.includes("insufficient");
+}
 
 async function streamGeminiChat(
   messages: ChatMessage[],
@@ -60,10 +72,12 @@ async function streamGeminiChat(
     body: JSON.stringify({ messages, model: "google/gemini-3-pro-preview" }),
   });
 
-  if (!resp.ok || !resp.body) {
+  if (!resp.ok) {
     const errorData = await resp.json().catch(() => ({}));
     throw new Error(errorData.error || `Erro ${resp.status}`);
   }
+
+  if (!resp.body) throw new Error("No response body");
 
   const reader = resp.body.getReader();
   const decoder = new TextDecoder();
@@ -121,35 +135,44 @@ async function streamGeminiChat(
   onDone();
 }
 
+async function streamViaPuter(
+  messages: ChatMessage[],
+  model: string,
+  onDelta: (text: string) => void,
+  onDone: () => void
+) {
+  await loadPuter();
+  const formattedMessages = messages.map((m) => ({ role: m.role, content: m.content }));
+
+  const response = await window.puter.ai.chat(formattedMessages, { model, stream: true });
+  for await (const part of response) {
+    const text = part?.text || part?.message?.content?.[0]?.text || "";
+    if (text) onDelta(text);
+  }
+  onDone();
+}
+
 export async function streamPuterChat(
   messages: ChatMessage[],
   model: PuterModel,
   onDelta: (text: string) => void,
-  onDone: () => void
+  onDone: () => void,
+  onFallback?: (info: FallbackInfo) => void
 ) {
-  // Route Gemini to Lovable AI Gateway
   if (model === "gemini-3-pro") {
-    return streamGeminiChat(messages, onDelta, onDone);
+    try {
+      return await streamGeminiChat(messages, onDelta, onDone);
+    } catch (err) {
+      if (isCreditError(err)) {
+        onFallback?.({ from: "gemini-3-pro", to: FALLBACK_MODEL });
+        return await streamViaPuter(messages, FALLBACK_MODEL, onDelta, onDone);
+      }
+      throw err;
+    }
   }
 
-  await loadPuter();
-
-  const formattedMessages = messages.map((m) => ({
-    role: m.role,
-    content: m.content,
-  }));
-
   try {
-    const response = await window.puter.ai.chat(formattedMessages, {
-      model,
-      stream: true,
-    });
-
-    for await (const part of response) {
-      const text = part?.text || part?.message?.content?.[0]?.text || "";
-      if (text) onDelta(text);
-    }
-    onDone();
+    return await streamViaPuter(messages, model, onDelta, onDone);
   } catch (err) {
     console.error("Puter AI streaming error:", err);
     throw err;
@@ -158,47 +181,52 @@ export async function streamPuterChat(
 
 export async function sendPuterChat(
   messages: ChatMessage[],
-  model: PuterModel
+  model: PuterModel,
+  onFallback?: (info: FallbackInfo) => void
 ): Promise<string> {
-  // Non-streaming fallback for Gemini
   if (model === "gemini-3-pro") {
-    const resp = await fetch(CHAT_URL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
-      },
-      body: JSON.stringify({ messages, model: "google/gemini-3-pro-preview" }),
-    });
-    if (!resp.ok) {
-      const errorData = await resp.json().catch(() => ({}));
-      throw new Error(errorData.error || `Erro ${resp.status}`);
+    try {
+      const resp = await fetch(CHAT_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+        },
+        body: JSON.stringify({ messages, model: "google/gemini-3-pro-preview" }),
+      });
+      if (!resp.ok) {
+        const errorData = await resp.json().catch(() => ({}));
+        throw new Error(errorData.error || `Erro ${resp.status}`);
+      }
+      const text = await resp.text();
+      let full = "";
+      for (const line of text.split("\n")) {
+        if (!line.startsWith("data: ")) continue;
+        const jsonStr = line.slice(6).trim();
+        if (jsonStr === "[DONE]") break;
+        try {
+          const parsed = JSON.parse(jsonStr);
+          const content = parsed.choices?.[0]?.delta?.content;
+          if (content) full += content;
+        } catch { /* ignore */ }
+      }
+      return full || "Sem resposta";
+    } catch (err) {
+      if (isCreditError(err)) {
+        onFallback?.({ from: "gemini-3-pro", to: FALLBACK_MODEL });
+        // Fall through to Puter with Claude
+      } else {
+        throw err;
+      }
     }
-    // Parse SSE to collect full response
-    const text = await resp.text();
-    let full = "";
-    for (const line of text.split("\n")) {
-      if (!line.startsWith("data: ")) continue;
-      const jsonStr = line.slice(6).trim();
-      if (jsonStr === "[DONE]") break;
-      try {
-        const parsed = JSON.parse(jsonStr);
-        const content = parsed.choices?.[0]?.delta?.content;
-        if (content) full += content;
-      } catch { /* ignore */ }
-    }
-    return full || "Sem resposta";
   }
 
   await loadPuter();
-
-  const formattedMessages = messages.map((m) => ({
-    role: m.role,
-    content: m.content,
-  }));
+  const actualModel = model === "gemini-3-pro" ? FALLBACK_MODEL : model;
+  const formattedMessages = messages.map((m) => ({ role: m.role, content: m.content }));
 
   try {
-    const response = await window.puter.ai.chat(formattedMessages, { model });
+    const response = await window.puter.ai.chat(formattedMessages, { model: actualModel });
     return (
       response?.message?.content?.[0]?.text ||
       response?.message?.content ||
