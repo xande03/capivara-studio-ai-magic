@@ -4,7 +4,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { CreditsBanner } from "@/components/CreditsBanner";
 import { MessageCircle, Send, Loader2, Bot, User, Trash2, Copy, Check, AlertTriangle } from "lucide-react";
-import { streamPuterChat, sendPuterChat, type ChatMessage, type PuterModel } from "@/lib/puterAi";
+import { streamPuterChat, sendPuterChat, type ChatMessage, type PuterModel, type FallbackInfo } from "@/lib/puterAi";
 import { useToast } from "@/hooks/use-toast";
 import ReactMarkdown from "react-markdown";
 
