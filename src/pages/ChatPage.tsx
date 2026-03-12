@@ -64,25 +64,18 @@ export default function ChatPage() {
       });
     };
 
-    try {
-      await streamPuterChat(newMessages, model, updateAssistant, () => setLoading(false));
-    } catch (streamErr: any) {
-      const errorMsg = streamErr?.message || "";
-      // Detect credit exhaustion for Gemini
-      if (model === "gemini-3-pro" && (errorMsg.includes("402") || errorMsg.includes("Créditos") || errorMsg.includes("créditos"))) {
-        setGeminiUnavailable(true);
-        setModel("claude-3-7-sonnet");
-        toast({ title: "Gemini indisponível", description: "Créditos insuficientes. Alternando para Claude 3.7 Sonnet.", variant: "destructive" });
-        // Retry with Claude
-        try {
-          await streamPuterChat(newMessages, "claude-3-7-sonnet", updateAssistant, () => setLoading(false));
-          return;
-        } catch { /* fall through */ }
-      }
+    const handleFallback = (info: FallbackInfo) => {
+      setGeminiUnavailable(true);
+      setModel(info.to);
+      toast({ title: "Gemini indisponível", description: "Créditos insuficientes. Alternando para Claude 3.7 Sonnet automaticamente.", variant: "destructive" });
+    };
 
+    try {
+      await streamPuterChat(newMessages, model, updateAssistant, () => setLoading(false), handleFallback);
+    } catch (streamErr) {
       console.warn("Streaming failed, trying non-streaming fallback:", streamErr);
       try {
-        const fallbackResponse = await sendPuterChat(newMessages, model);
+        const fallbackResponse = await sendPuterChat(newMessages, model, handleFallback);
         setMessages((prev) => {
           const last = prev[prev.length - 1];
           if (last?.role === "assistant") {
