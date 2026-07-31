@@ -29,8 +29,8 @@ serve(async (req) => {
     // Using models with native image generation capabilities
     const selectedModel =
       model === "nano-banana-pro"
-        ? "google/gemini-3-pro-image-preview"
-        : "google/gemini-2.5-flash";
+        ? "google/gemini-3-pro-image"
+        : "google/gemini-2.5-flash-image";
 
     console.log(`Using model: ${selectedModel}`);
 
