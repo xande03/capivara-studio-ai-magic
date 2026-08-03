@@ -160,7 +160,7 @@
 
           let downloadUrl = url;
           // Extract YouTube ID for more reliable redirection to yout.com
-          const ytMatch = url.match(/(?:youtube.com/(?:[^/]+/.+/|(?:v|e(?:mbed)?)/|.*[?&]v=)|youtu.be/)([^"&?/s]{11})/);
+          const ytMatch = url.match(/(?:youtube\.com\/(?:[^/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?/\s]{11})/);
           const videoId = ytMatch ? ytMatch[1] : null;
 
           if (videoId) {
