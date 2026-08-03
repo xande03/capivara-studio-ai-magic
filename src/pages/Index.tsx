@@ -1,4 +1,5 @@
-import { useNavigate, useEffect, useState } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ArrowUpCircle, Sparkles, Pencil, Scissors, Film, QrCode, Music, FileText, MessageCircle } from "lucide-react";
 

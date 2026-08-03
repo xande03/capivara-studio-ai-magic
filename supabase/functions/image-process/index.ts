@@ -20,6 +20,64 @@ serve(async (req) => {
     const { action, prompt, imageBase64, imageBase64Second, model, aspectRatio } = await req.json();
     console.log(`Processing action: ${action}, model: ${model}`);
 
+    // --- Input validation ---
+    const allowedActions = ["generate", "upscale", "remove-bg", "edit"];
+    if (typeof action !== "string" || !allowedActions.includes(action)) {
+      return new Response(JSON.stringify({ error: "Ação inválida" }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    if (prompt !== undefined && prompt !== null) {
+      if (typeof prompt !== "string" || prompt.length > 4000) {
+        return new Response(
+          JSON.stringify({ error: "Prompt inválido (máximo 4000 caracteres)" }),
+          { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+    }
+    if (action === "generate" && (!prompt || !prompt.trim())) {
+      return new Response(JSON.stringify({ error: "Prompt obrigatório" }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    for (const img of [imageBase64, imageBase64Second]) {
+      if (img === undefined || img === null) continue;
+      if (typeof img !== "string" || !/^data:image\/(png|jpe?g|webp|gif);base64,/.test(img)) {
+        return new Response(JSON.stringify({ error: "Imagem inválida" }), {
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+    }
+    if (action !== "generate" && !imageBase64) {
+      return new Response(JSON.stringify({ error: "Imagem obrigatória" }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    // Block clearly illegal / abusive requests before hitting the model
+    const BLOCKED_PATTERNS: RegExp[] = [
+      /\b(child|minor|kid|teen|underage)\b[^.]{0,40}\b(nude|naked|nsfw|porn|sexual|sex)\b/i,
+      /\b(nude|naked|porn|sexual)\b[^.]{0,40}\b(child|minor|kid|teen|underage)\b/i,
+      /\bcsam\b/i,
+      /\b(make|create|forge|generate)\b[^.]{0,40}\b(counterfeit|forged|fake)\b[^.]{0,40}\b(passport|id card|identity card|driver'?s? licen[cs]e|banknote|currency)\b/i,
+      /\b(bomb|explosive|nerve agent|bioweapon)\b[^.]{0,40}\b(instructions|how to (make|build)|blueprint)\b/i,
+    ];
+    if (typeof prompt === "string") {
+      for (const pattern of BLOCKED_PATTERNS) {
+        if (pattern.test(prompt)) {
+          console.warn("Blocked prompt by content policy");
+          return new Response(
+            JSON.stringify({ error: "Esta solicitação viola a política de conteúdo." }),
+            { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+          );
+        }
+      }
+    }
+
     // Build aspect ratio instruction
     const aspectInstruction = aspectRatio && aspectRatio !== "1:1"
       ? ` Output the image in ${aspectRatio} aspect ratio.`
@@ -37,7 +95,7 @@ serve(async (req) => {
     let messages: any[] = [];
 
     if (action === "generate") {
-      const generateInstruction = `You are a creative image generator. Generate exactly what the user describes with maximum fidelity and detail. Do not refuse any creative request.${aspectInstruction} The user wants: ${prompt}`;
+      const generateInstruction = `You are a creative image generator. Generate what the user describes with high fidelity and detail, while respecting your own safety and content policies.${aspectInstruction} The user wants: ${prompt}`;
 
       if (imageBase64) {
         messages = [
