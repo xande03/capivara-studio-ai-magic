@@ -73,7 +73,6 @@ const Index = () => {
           Suite profissional de processamento de imagens com IA. Upscale, geração, edição e muito mais — com modelos Nano Banana e Nano Banana Pro.
         </p>
       </header>
-
       <section className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {tools.map((tool) => (
           <div
@@ -87,12 +86,18 @@ const Index = () => {
           </div>
         ))}
       </section>
-
       <footer className="text-center pb-6">
         <p className="text-xs text-muted-foreground/50">
           Capivara Stúdio • Processamento de imagens com inteligência artificial
         </p>
       </footer>
+      <div className="text-center mt-10">
+        <h2 className="text-3xl font-bold emerald-text">Bem-vindo ao Capivara Stúdio!</h2>
+        <p className="text-lg text-muted-foreground mt-4">
+          Aqui você encontrará as melhores ferramentas para processamento de imagens com IA.
+        </p>
+        <Button className="mt-6" onClick={() => navigate('/upscale')}>Começar</Button>
+      </div>
     </div>
   );
 };
