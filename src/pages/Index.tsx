@@ -1,11 +1,11 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useEffect, useState } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ArrowUpCircle, Sparkles, Pencil, Scissors, Film, QrCode, Music, FileText, MessageCircle } from "lucide-react";
 
 const tools = [
   {
-    title: "Upscale & Restauração",
-    description: "Aumente resolução e restaure detalhes escondidos com IA",
+    title: "Upscale & Restauraçãoo",
+    description: "Aumente resoluçãoo e restaure detalhes escondidos com IA",
     icon: ArrowUpCircle,
     path: "/upscale",
   },
@@ -61,43 +61,64 @@ const tools = [
 
 const Index = () => {
   const navigate = useNavigate();
+  const [showWelcome, setShowWelcome] = useState(true);
+  const [loginTime, setLoginTime] = useState(0);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowWelcome(false);
+    }, 3000);
+    return () => clearTimeout(timer);
+  }, []);
 
   return (
     <div className="max-w-5xl mx-auto space-y-10">
-      <header className="text-center space-y-4 py-8">
-        <div className="w-16 h-16 rounded-2xl overflow-hidden flex items-center justify-center mx-auto shadow-lg shadow-emerald-500/10">
-          <img src="/logo.png" alt="Capivara Stúdio" className="w-full h-full object-cover" />
+      {showWelcome && (
+        <div className="text-center py-10">
+          <h1 className="text-5xl font-bold emerald-text">Olá, Alexandre!</h1>
+          <p className="text-lg text-muted-foreground mt-4">
+            Bem-vindo ao Capivara Stúdio!
+          </p>
         </div>
-        <h1 className="text-4xl font-bold emerald-text">Capivara Stúdio</h1>
-        <p className="text-muted-foreground max-w-lg mx-auto">
-          Suite profissional de processamento de imagens com IA. Upscale, geração, edição e muito mais — com modelos Nano Banana e Nano Banana Pro.
-        </p>
-      </header>
-      <section className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {tools.map((tool) => (
-          <div
-            key={tool.path}
-            className="glass-card rounded-xl p-6 cursor-pointer hover:border-primary/40 transition-all hover:scale-[1.02] group"
-            onClick={() => navigate(tool.path)}
-          >
-            <tool.icon className="w-8 h-8 text-primary mb-3 group-hover:scale-110 transition-transform" />
-            <h3 className="font-semibold text-foreground mb-1">{tool.title}</h3>
-            <p className="text-xs text-muted-foreground">{tool.description}</p>
+      )}
+      {!showWelcome && (
+        <>
+          <header className="text-center space-y-4 py-8">
+            <div className="w-16 h-16 rounded-2xl overflow-hidden flex items-center justify-center mx-auto shadow-lg shadow-emerald-500/10">
+              <img src="/logo.png" alt="Capivara Stúdio" className="w-full h-full object-cover" />
+            </div>
+            <h1 className="text-4xl font-bold emerald-text">Capivara Stúdio</h1>
+            <p className="text-muted-foreground max-w-lg mx-auto">
+              Suite profissional de processamento de imagens com IA. Upscale, geração, edição e muito mais — com modelos Nano Banana e Nano Banana Pro.
+            </p>
+          </header>
+          <section className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {tools.map((tool) => (
+              <div
+                key={tool.path}
+                className="glass-card rounded-xl p-6 cursor-pointer hover:border-primary/40 transition-all hover:scale-[1.02] group"
+                onClick={() => navigate(tool.path)}
+              >
+                <tool.icon className="w-8 h-8 text-primary mb-3 group-hover:scale-110 transition-transform" />
+                <h3 className="font-semibold text-foreground mb-1">{tool.title}</h3>
+                <p className="text-xs text-muted-foreground">{tool.description}</p>
+              </div>
+            ))}
+          </section>
+          <footer className="text-center pb-6">
+            <p className="text-xs text-muted-foreground/50">
+              Capivara Stúdio • Processamento de imagens com inteligência artificial
+            </p>
+          </footer>
+          <div className="text-center mt-10">
+            <h2 className="text-3xl font-bold emerald-text">Bem-vindo ao Capivara Stúdio!</h2>
+            <p className="text-lg text-muted-foreground mt-4">
+              Aqui você encontrará as melhores ferramentas para processamento de imagens com IA.
+            </p>
+            <Button className="mt-6" onClick={() => navigate('/upscale')}>Começar</Button>
           </div>
-        ))}
-      </section>
-      <footer className="text-center pb-6">
-        <p className="text-xs text-muted-foreground/50">
-          Capivara Stúdio • Processamento de imagens com inteligência artificial
-        </p>
-      </footer>
-      <div className="text-center mt-10">
-        <h2 className="text-3xl font-bold emerald-text">Bem-vindo ao Capivara Stúdio!</h2>
-        <p className="text-lg text-muted-foreground mt-4">
-          Aqui você encontrará as melhores ferramentas para processamento de imagens com IA.
-        </p>
-        <Button className="mt-6" onClick={() => navigate('/upscale')}>Começar</Button>
-      </div>
+        </>
+      )}
     </div>
   );
 };
