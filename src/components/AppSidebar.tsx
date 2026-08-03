@@ -35,7 +35,7 @@ export function AppSidebar() {
               <img src='/logo.png' alt='Capivara Stúdio' className='w-full h-full object-cover' />
             </div>
             <div>
-              <h1 className='text-xl font-black emerald-text font-['Space_Grotesk'] tracking-tighter leading-none'>
+              <h1 className="text-xl font-black emerald-text font-['Space_Grotesk'] tracking-tighter leading-none">
                 Capivara Stúdio
               </h1>
               <p className='text-[11px] text-foreground/50 font-black tracking-[0.2em] uppercase mt-1'>
