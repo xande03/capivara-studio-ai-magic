@@ -213,6 +213,7 @@ export default function VideoFramesPage() {
               <p className="text-[10px] mt-2 opacity-60">Cada frame \u00e9 gerado com contexto narrativo para manter continuidade visual</p>
             </div>
           )}
+          </div>
         </div>
       </div>
     </div>
