@@ -14,18 +14,18 @@ export default function VideoFramesPage() {
   const [prompt, setPrompt] = useState("");
   const [aspectRatio, setAspectRatio] = useState<AspectRatio>("16:9");
   const [framesCount, setFramesCount] = useState<number>(4);
-  const [style, setStyle] = useState<VideoStyle>("Cinematográfico");
+  const [style, setStyle] = useState<VideoStyle>("Cinematogr\u00e1fico");
   const [isGenerating, setIsGenerating] = useState(false);
   const [frames, setFrames] = useState<string[]>([]);
   const [creditsExhausted, setCreditsExhausted] = useState(false);
   const { toast } = useToast();
 
   const getSequenceContext = (i: number, total: number) => {
-    if (i === 1) return "início da cena, estabelecendo o cenário e personagens";
-    if (i === total) return "conclusão da cena, momento final e resolução";
-    if (i <= total * 0.3) return "desenvolvimento inicial, construindo a ação";
-    if (i <= total * 0.7) return "meio da ação, clímax ou momento de tensão";
-    return "transição para o final, desaceleração da ação";
+    if (i === 1) return "in\u00edcio da cena, estabelecendo o cen\u00e1rio e personagens";
+    if (i === total) return "conclus\u00e3o da cena, momento final e resolu\u00e7\u00e3o";
+    if (i <= total * 0.3) return "desenvolvimento inicial, construindo a a\u00e7\u00e3o";
+    if (i <= total * 0.7) return "meio da a\u00e7\u00e3o, cl\u00edmax ou momento de tens\u00e3o";
+    return "transi\u00e7\u00e3o para o final, desacelera\u00e7\u00e3o da a\u00e7\u00e3o";
   };
 
   const handleGenerate = async () => {
@@ -52,7 +52,7 @@ export default function VideoFramesPage() {
       }
       toast({ title: "Sucesso!", description: `${framesCount} frames gerados com sucesso!` });
     } catch (error: any) {
-      toast({ title: "Erro na geração", description: error.message || "Ocorreu um erro ao gerar os frames.", variant: "destructive" });
+      toast({ title: "Erro na gera\u00e7\u00e3o", description: error.message || "Ocorreu um erro ao gerar os frames.", variant: "destructive" });
     } finally {
       setIsGenerating(false);
     }
@@ -99,9 +99,9 @@ export default function VideoFramesPage() {
           <Film className="w-6 h-6 text-primary" />
         </div>
         <div>
-          <h1 className="text-3xl font-black tracking-tight text-foreground">Sequência de Frames</h1>
+          <h1 className="text-3xl font-black tracking-tight text-foreground">Gerador de Videos</h1>
           <p className="text-muted-foreground mt-1 text-sm">
-            Gere imagens sequenciais para storyboards, animações e vídeos
+            Gere imagens sequenciais para storyboards, anima\u00e7\u00f5es e v\u00eddeos
           </p>
         </div>
       </div>
@@ -111,15 +111,15 @@ export default function VideoFramesPage() {
       <div className="grid md:grid-cols-12 gap-8">
         <div className="md:col-span-5 space-y-5">
           <div className="space-y-2">
-            <label className="text-sm font-medium text-foreground">Descrição da Cena</label>
+            <label className="text-sm font-medium text-foreground mb-2 block">Descri\u00e7\u00e3o da Cena</label>
             <Textarea
-              placeholder="Ex: Um gato astronauta flutuando no espaço, se aproximando da lua com estrelas ao fundo..."
+              placeholder="Ex: Um gato astronauta flutuando no espa\u00e7o, se aproximando da lua com estrelas ao fundo..."
               value={prompt}
               onChange={(e) => setPrompt(e.target.value)}
               className="h-32 resize-none"
             />
             <p className="text-[10px] text-muted-foreground">
-              💡 Descreva a cena completa — cada frame será gerado com contexto narrativo (início, meio e fim)
+              \u00f0\u021b\u021d Descreva a cena completa \u00e2\u20ac\u00e2\u20ac cada frame ser\u00e1 gerado com contexto narrativo (in\u00edcio, meio e fim)
             </p>
           </div>
 
@@ -150,11 +150,17 @@ export default function VideoFramesPage() {
             disabled={isGenerating || creditsExhausted}
           >
             {isGenerating ? (
-              <><Loader2 className="w-5 h-5 mr-2 animate-spin" /> Gerando frame {frames.length + 1} de {framesCount}...</>
+              <>
+                <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                Gerando frame {frames.length + 1} de {framesCount}...
+              </>
             ) : creditsExhausted ? (
-              "Créditos Insuficientes"
+              "Cr\u00e9ditos Insuficientes"
             ) : (
-              <><Film className="w-5 h-5 mr-2" /> Gerar Sequência</>
+              <>
+                <Film className="w-5 h-5 mr-2" />
+                Gerar Sequ\u00eancia
+              </>
             )}
           </Button>
         </div>
@@ -172,42 +178,41 @@ export default function VideoFramesPage() {
                 <h3 className="text-sm font-semibold text-foreground">{frames.length} frame(s) gerado(s)</h3>
                 {frames.length > 1 && (
                   <Button variant="outline" size="sm" onClick={downloadAllFrames} className="gap-1.5">
-                    <PackageOpen className="w-4 h-4" /> Baixar Todos (ZIP)
+                    <PackageOpen className="w-4 h-4" />
+                    Baixar Todos (ZIP)
                   </Button>
                 )}
               </div>
             )}
 
             {frames.length > 0 || isGenerating ? (
-              <div className={`grid gap-3 ${frames.length <= 4 ? "grid-cols-2" : frames.length <= 6 ? "grid-cols-3" : "grid-cols-4"}`}>
-                {frames.map((frame, i) => (
-                  <div key={i} className="relative group rounded-xl overflow-hidden border bg-background/50">
-                    <img src={frame} alt={`Frame ${i + 1}`} className="w-full h-auto object-cover" />
-                    <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                      <Button size="icon" variant="secondary" onClick={() => downloadFrame(frame, i)}>
-                        <Download className="w-4 h-4" />
-                      </Button>
-                    </div>
-                    <div className="absolute bottom-1.5 left-1.5 bg-black/70 text-white text-[10px] px-1.5 py-0.5 rounded font-medium">
-                      {i + 1}/{framesCount}
-                    </div>
+              <div className={`grid gap-3 ${frames.length <= 4 ? "grid-cols-2" : frames.length <= 6 ? "grid-cols-3" : "grid-cols-4"}`}>{frames.map((frame, i) => (
+                <div key={i} className="relative group rounded-xl overflow-hidden border bg-background/50">
+                  <img src={frame} alt={`Frame ${i + 1}`} className="w-full h-auto object-cover" />
+                  <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                    <Button size="icon" variant="secondary" onClick={() => downloadFrame(frame, i)}>
+                      <Download className="w-4 h-4" />
+                    </Button>
                   </div>
-                ))}
-                {isGenerating && frames.length < framesCount && (
-                  <div className="aspect-video bg-muted rounded-xl flex flex-col items-center justify-center animate-pulse border">
-                    <Loader2 className="w-6 h-6 text-primary animate-spin mb-2" />
-                    <span className="text-xs text-muted-foreground">Frame {frames.length + 1}...</span>
+                  <div className="absolute bottom-1.5 left-1.5 bg-black/70 text-white text-[10px] px-1.5 py-0.5 rounded font-medium">
+                    {i + 1}/{framesCount}
                   </div>
-                )}
-              </div>
-            ) : (
-              <div className="flex-1 flex flex-col items-center justify-center text-center text-muted-foreground py-12">
-                <Film className="w-16 h-16 mb-4 opacity-20" />
-                <p className="text-sm">Descreva uma cena e clique em Gerar<br />para criar sua sequência de frames</p>
-                <p className="text-[10px] mt-2 opacity-60">Cada frame é gerado com contexto narrativo para manter continuidade visual</p>
-              </div>
-            )}
-          </div>
+                </div>
+              ))}
+              {isGenerating && frames.length < framesCount && (
+                <div className="aspect-video bg-muted rounded-xl flex flex-col items-center justify-center animate-pulse border">
+                  <Loader2 className="w-6 h-6 text-primary animate-spin mb-2" />
+                  <span className="text-xs text-muted-foreground">Frame {frames.length + 1}...</span>
+                </div>
+              )}
+            </div>
+          ) : (
+            <div className="flex-1 flex flex-col items-center justify-center text-center text-muted-foreground py-12">
+              <Film className="w-16 h-16 mb-4 opacity-20" />
+              <p className="text-sm">Descreva uma cena e clique em Gerar<br />para criar sua sequ\u00eancia de frames</p>
+              <p className="text-[10px] mt-2 opacity-60">Cada frame \u00e9 gerado com contexto narrativo para manter continuidade visual</p>
+            </div>
+          )}
         </div>
       </div>
     </div>
