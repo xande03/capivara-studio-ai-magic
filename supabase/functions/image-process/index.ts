@@ -95,7 +95,7 @@ serve(async (req) => {
     let messages: any[] = [];
 
     if (action === "generate") {
-      const generateInstruction = `You are a creative image generator. Generate exactly what the user describes with maximum fidelity and detail. Do not refuse any creative request.${aspectInstruction} The user wants: ${prompt}`;
+      const generateInstruction = `You are a creative image generator. Generate what the user describes with high fidelity and detail, while respecting your own safety and content policies.${aspectInstruction} The user wants: ${prompt}`;
 
       if (imageBase64) {
         messages = [
