@@ -160,8 +160,18 @@
 
           let downloadUrl = url;
           // Extract YouTube ID for more reliable redirection to yout.com
-          const ytMatch = url.match(/(?:youtube.com/(?:[^/]+/.+/|(?:v|e(?:mbed)?)/|.*[?&]v=)|youtu.be/)([^&?/s]{11})/);
-          const videoId = ytMatch ? ytMatch[1] : null;
+          let videoId: string | null = null;
+          try {
+            const parsed = new URL(url);
+            if (parsed.hostname.includes("youtu.be")) {
+              videoId = parsed.pathname.slice(1).split("/")[0] || null;
+            } else if (parsed.hostname.includes("youtube.com")) {
+              videoId = parsed.searchParams.get("v") || parsed.pathname.split("/").pop() || null;
+            }
+            if (videoId && videoId.length !== 11) videoId = null;
+          } catch {
+            videoId = null;
+          }
 
           if (videoId) {
             toast({
