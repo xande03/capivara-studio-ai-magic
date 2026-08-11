@@ -171,11 +171,13 @@
   }
 }
 
-/* Remove Lovable badge */
+/* Remove Lovable badge and its variations */
 #lovable-badge,
 [class*="lovable-badge"],
 [id*="lovable-badge"],
-iframe[src*="lovable"] {
+iframe[src*="lovable"],
+div[class*="lovable-badge-container"],
+.lovable-badge-wrapper {
   display: none !important;
   visibility: hidden !important;
   pointer-events: none !important;
