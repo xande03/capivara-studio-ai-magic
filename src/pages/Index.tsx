@@ -18,7 +18,7 @@ const tools = [
   },
   {
     title: "Editar Imagem",
-    description: "Edite, remova ou combine elementos em imagens",
+    description: "Adicione uma ferramenta de edição de imagens que permita eu usar um prompt para remover ou adicionar elementos e também combinar duas imagens.",
     icon: Pencil,
     path: "/edit",
   },
