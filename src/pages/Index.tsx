@@ -76,7 +76,7 @@ const Index = () => {
     <div className="max-w-5xl mx-auto space-y-10">
       {showWelcome && (
         <div className="text-center py-10">
-          <h1 className="text-5xl font-bold emerald-text">Olá, Alexandre!</h1>
+          <h1 className="text-5xl font-bold emerald-text">Boa tarde, Alexandre!</h1>
           <p className="text-lg text-muted-foreground mt-4">
             Bem-vindo ao Capivara Stúdio!
           </p>
