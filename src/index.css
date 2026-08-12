@@ -102,7 +102,7 @@
   html, body {
     @apply bg-background text-foreground;
     font-family: 'Inter', sans-serif;
-    background-image: url('/assets/Capivara-Gustavo-Figueiroa.png');
+    background-image: url('/assets/painel.png');
     background-size: cover;
     background-position: center;
     background-attachment: fixed;
