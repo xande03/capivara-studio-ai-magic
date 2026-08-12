@@ -100,10 +100,9 @@
   }
 
   html, body {
-    background-color: hsl(var(--background));
-    @apply text-foreground;
+    @apply bg-background text-foreground;
     font-family: 'Inter', sans-serif;
-    background-image: url('/assets/Capivara-Gustavo-Figueiroa.png');
+    background-image: url('/assets/cachorro.png');
     background-size: cover;
     background-position: center;
     background-attachment: fixed;
@@ -111,6 +110,7 @@
     min-height: 100vh;
     margin: 0;
     padding: 0;
+    box-shadow: inset 0 0 100px rgba(0, 0, 0, 0.2);
   }
 
   h1,
