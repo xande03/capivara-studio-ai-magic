@@ -9,7 +9,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
   return (
     <SidebarProvider>
-      <div className="min-h-[100dvh] flex w-full bg-background text-foreground animate-in fade-in duration-500">
+      <div className="min-h-[100dvh] flex w-full text-foreground">
         <AppSidebar />
         <main className="flex-1 flex flex-col min-w-0">
           <header className="h-14 flex items-center justify-between border-b border-border px-3 md:px-4 glass-card shrink-0">
