@@ -14,7 +14,7 @@ export const SplashScreen = () => {
   if (!isVisible) return null;
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-white z-50">
+    <div className="fixed inset-0 flex items-center justify-center bg-transparent z-50 backdrop-blur-md">
       <div className="text-4xl font-bold text-center">
         Olá, Alexandre
       </div>
