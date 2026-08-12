@@ -100,7 +100,8 @@
   }
 
   html, body {
-    @apply bg-background text-foreground;
+    background-color: hsl(var(--background));
+    @apply text-foreground;
     font-family: 'Inter', sans-serif;
     background-image: url('/assets/Capivara-Gustavo-Figueiroa.png');
     background-size: cover;
