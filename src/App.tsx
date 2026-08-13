@@ -19,8 +19,8 @@ import './App.css';
 function App() {
   return (
     <Router>
-      <Layout>
-        <Routes>
+      <Routes>
+        <Route element={<Layout />}>
           <Route path="/" element={<Index />} />
           <Route path="/chat" element={<ChatPage />} />
           <Route path="/generate" element={<GeneratePage />} />
@@ -35,8 +35,8 @@ function App() {
           <Route path="/video-frames" element={<VideoFramesPage />} />
           <Route path="/signature" element={<SignaturePage />} />
           <Route path="/gallery" element={<GalleryPage />} />
-        </Routes>
-      </Layout>
+        </Route>
+      </Routes>
     </Router>
   );
 }
