@@ -23,9 +23,9 @@ export default defineConfig(({ mode }) => ({
         navigateFallbackDenylist: [/^\/~oauth/],
       },
       manifest: {
-        name: 'Capivara Stúdio',
-        short_name: 'Capivara',
-        description: 'Capivara Studio AI Magic - Sua ferramenta de criação com IA',
+        name: 'Capivara Sills',
+        short_name: 'Capivara Sills',
+        description: 'Capivara Sills - Sua ferramenta de criação com IA',
         theme_color: '#3b82f6',
         icons: [
           {
