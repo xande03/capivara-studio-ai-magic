@@ -1,3 +1,4 @@
+// Complete file content — EVERY LINE
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -11,7 +12,7 @@ import GeneratePage from "./pages/GeneratePage";
 import EditPage from "./pages/EditPage";
 import RemoveBgPage from "./pages/RemoveBgPage";
 import GalleryPage from "./pages/GalleryPage";
-import MusicDnaPage from "./pages/MusicDnaPage";
+import MusicFxPage from "./pages/MusicFxPage";
 import QrCodePage from "./pages/QrCodePage";
 import ConverterPage from "./pages/ConverterPage";
 import ChatPage from "./pages/ChatPage";
@@ -37,7 +38,7 @@ const App = () => (
               <Route path="/edit" element={<EditPage />} />
               <Route path="/remove-bg" element={<RemoveBgPage />} />
               <Route path="/gallery" element={<GalleryPage />} />
-              <Route path="/music-dna" element={<MusicDnaPage />} />
+              <Route path="/music-fx" element={<MusicFxPage />} />
               <Route path="/qrcode" element={<QrCodePage />} />
               <Route path="/converter" element={<ConverterPage />} />
               <Route path="/chat" element={<ChatPage />} />
