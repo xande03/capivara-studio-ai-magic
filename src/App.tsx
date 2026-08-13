@@ -15,6 +15,8 @@ import GalleryPage from "./pages/GalleryPage";
 import MusicFxPage from "./pages/MusicFxPage";
 import QrCodePage from "./pages/QrCodePage";
 import ConverterPage from "./pages/ConverterPage";
+import ChatPage from "./pages/ChatPage";
+import MusicDnaPage from "./pages/MusicDnaPage";
 import SummarizerPage from "./pages/SummarizerPage";
 import SignaturePage from "./pages/SignaturePage";
 import VideoFramesPage from "./pages/VideoFramesPage";
@@ -38,7 +40,9 @@ function App() {
               <Route path="/remove-bg" element={<RemoveBgPage />} />
               <Route path="/gallery" element={<GalleryPage />} />
               <Route path="/music-fx" element={<MusicFxPage />} />
+              <Route path="/music-dna" element={<MusicDnaPage />} />
               <Route path="/qr-code" element={<QrCodePage />} />
+              <Route path="/qrcode" element={<QrCodePage />} />
               <Route path="/converter" element={<ConverterPage />} />
               <Route path="/summarizer" element={<SummarizerPage />} />
               <Route path="/signature" element={<SignaturePage />} />
