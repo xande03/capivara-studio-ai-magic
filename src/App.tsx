@@ -15,6 +15,8 @@ import GalleryPage from "./pages/GalleryPage";
 import MusicFxPage from "./pages/MusicFxPage";
 import QrCodePage from "./pages/QrCodePage";
 import ConverterPage from "./pages/ConverterPage";
+import ChatPage from "./pages/ChatPage";
+import MusicDnaPage from "./pages/MusicDnaPage";
 import SummarizerPage from "./pages/SummarizerPage";
 import SignaturePage from "./pages/SignaturePage";
 import VideoFramesPage from "./pages/VideoFramesPage";
