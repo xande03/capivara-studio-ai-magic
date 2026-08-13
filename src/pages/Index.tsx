@@ -1,127 +1,244 @@
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { ArrowUpCircle, Sparkles, Pencil, Scissors, Film, QrCode, Music, FileText, MessageCircle } from "lucide-react";
+import { Link } from 'react-router-dom';
+import { Sparkles, ArrowUpCircle, Scissors, Pencil, LayoutGrid, Zap, QrCode, Music, FileText, MessageCircle, BookOpen, PenTool, Film } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
-const tools = [
-  {
-    title: "Upscale & Restauraçãoo",
-    description: "Aumente resoluçãoo e restaure detalhes escondidos com IA",
-    icon: ArrowUpCircle,
-    path: "/upscale",
-  },
-  {
-    title: "Gerar Imagem",
-    description: "Crie imagens de personagens, cenários, fenômenos e mais",
-    icon: Sparkles,
-    path: "/generate",
-  },
-  {
-    title: "Editar Imagem",
-    description: "Adicione uma ferramenta de edição de imagens que permita eu usar um prompt para remover ou adicionar elementos e também combinar duas imagens.",
-    icon: Pencil,
-    path: "/edit",
-  },
-  {
-    title: "Remover Fundo",
-    description: "Remova fundos automaticamente com precisão",
-    icon: Scissors,
-    path: "/remove-bg",
-  },
-  {
-    title: "Gerar Vídeo",
-    description: "Crie vídeos a partir de prompts — em breve",
-    icon: Film,
-    path: "/video",
-  },
-  {
-    title: "QR Code Magic",
-    description: "Crie QR Codes dinâmicos para arquivos, mídia e links",
-    icon: QrCode,
-    path: "/qrcode",
-  },
-  {
-    title: "Music DNA",
-    description: "Identifique BPM, Tom, Letras e muito mais com IA",
-    icon: Music,
-    path: "/music-dna",
-  },
-  {
-    title: "Conversor de Documentos",
-    description: "Converta imagens em PDF, PDF em Word e escaneie documentos",
-    icon: FileText,
-    path: "/converter",
-  },
-  {
-    title: "Chat IA",
-    description: "Converse com Claude 3.7 Sonnet e DeepSeek v3.2",
-    icon: MessageCircle,
-    path: "/chat",
-  },
-];
-
-const Index = () => {
-  const navigate = useNavigate();
-  const [showWelcome, setShowWelcome] = useState(true);
-  const [loginTime, setLoginTime] = useState(0);
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setShowWelcome(false);
-    }, 3000);
-    return () => clearTimeout(timer);
-  }, []);
-
+export default function Index() {
   return (
-    <div className="max-w-5xl mx-auto space-y-10">
-      {showWelcome && (
-        <div className="text-center py-10">
-          <h1 className="text-5xl font-bold emerald-text">Olá, parceiros!</h1>
-          <p className="text-lg text-muted-foreground mt-4">
-            Bem-vindo ao Capivara Stúdio!
+    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-cyan-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+      <div className="container mx-auto px-4 py-8 md:py-12">
+        <div className="text-center mb-12">
+          <h1 className="text-4xl md:text-6xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-4">
+            Merge Skills
+          </h1>
+          <p className="text-xl md:text-2xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+            Transforme suas ideias em realidade com nossa suíte de ferramentas de IA
           </p>
         </div>
-      )}
-      {!showWelcome && (
-        <>
-          <header className="text-center space-y-4 py-8">
-            <div className="w-16 h-16 rounded-2xl overflow-hidden flex items-center justify-center mx-auto shadow-lg shadow-emerald-500/10">
-              <img src="/logo.png" alt="Capivara Stúdio" className="w-full h-full object-cover" />
-            </div>
-            <h1 className="text-4xl font-bold emerald-text">Capivara Stúdio</h1>
-            <p className="text-muted-foreground max-w-lg mx-auto">
-              Suite profissional de processamento de imagens com IA. Upscale, geração, edição e muito mais — com modelos Nano Banana e Nano Banana Pro.
-            </p>
-          </header>
-          <section className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {tools.map((tool) => (
-              <div
-                key={tool.path}
-                className="glass-card rounded-xl p-6 cursor-pointer hover:border-primary/40 transition-all hover:scale-[1.02] group"
-                onClick={() => navigate(tool.path)}
-              >
-                <tool.icon className="w-8 h-8 text-primary mb-3 group-hover:scale-110 transition-transform" />
-                <h3 className="font-semibold text-foreground mb-1">{tool.title}</h3>
-                <p className="text-xs text-muted-foreground">{tool.description}</p>
-              </div>
-            ))}
-          </section>
-          <footer className="text-center pb-6">
-            <p className="text-xs text-muted-foreground/50">
-              Capivara Stúdio • Processamento de imagens com inteligência artificial
-            </p>
-          </footer>
-          <div className="text-center mt-10">
-            <h2 className="text-3xl font-bold emerald-text">Bem-vindo ao Capivara Stúdio!</h2>
-            <p className="text-lg text-muted-foreground mt-4">
-              Aqui você encontrará as melhores ferramentas para processamento de imagens com IA.
-            </p>
-            <Button className="mt-6" onClick={() => navigate('/upscale')}>Começar</Button>
-          </div>
-        </>
-      )}
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+          <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Sparkles className="h-5 w-5 text-indigo-600" />
+                Gerar Imagens
+              </CardTitle>
+              <CardDescription>
+                Crie imagens únicas com base em sua descrição usando IA
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Link to="/generate">
+                <Button className="w-full">Começar</Button>
+              </Link>
+            </CardContent>
+          </Card>
+
+          <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Pencil className="h-5 w-5 text-indigo-600" />
+                Editar Imagens
+              </CardTitle>
+              <CardDescription>
+                Modifique e melhore suas imagens com ferramentas avançadas
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Link to="/edit">
+                <Button className="w-full">Começar</Button>
+              </Link>
+            </CardContent>
+          </Card>
+
+          <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <ArrowUpCircle className="h-5 w-5 text-indigo-600" />
+                Aumentar Resolução
+              </CardTitle>
+              <CardDescription>
+                Melhore a qualidade e a resolução das suas imagens
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Link to="/upscale">
+                <Button className="w-full">Começar</Button>
+              </Link>
+            </CardContent>
+          </Card>
+
+          <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Scissors className="h-5 w-5 text-indigo-600" />
+                Remover Fundo
+              </CardTitle>
+              <CardDescription>
+                Remova o fundo das suas imagens com um clique
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Link to="/remove-bg">
+                <Button className="w-full">Começar</Button>
+              </Link>
+            </CardContent>
+          </Card>
+
+          <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <LayoutGrid className="h-5 w-5 text-indigo-600" />
+                Converter Imagens
+              </CardTitle>
+              <CardDescription>
+                Converta entre diferentes formatos de imagem
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Link to="/converter">
+                <Button className="w-full">Começar</Button>
+              </Link>
+            </CardContent>
+          </Card>
+
+          <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <QrCode className="h-5 w-5 text-indigo-600" />
+                Gerar QR Code
+              </CardTitle>
+              <CardDescription>
+                Códigos QR personalizados para suas necessidades
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Link to="/qr-code">
+                <Button className="w-full">Começar</Button>
+              </Link>
+            </CardContent>
+          </Card>
+
+          <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Music className="h-5 w-5 text-indigo-600" />
+                Análise Musical
+              </CardTitle>
+              <CardDescription>
+                Analise músicas e obtenha insights detalhados
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Link to="/music-dna">
+                <Button className="w-full">Começar</Button>
+              </Link>
+            </CardContent>
+          </Card>
+
+          <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Zap className="h-5 w-5 text-indigo-600" />
+                Efeitos Musicais
+              </CardTitle>
+              <CardDescription>
+                Adicione efeitos especiais às suas músicas
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Link to="/music-fx">
+                <Button className="w-full">Começar</Button>
+              </Link>
+            </CardContent>
+          </Card>
+
+          <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <FileText className="h-5 w-5 text-indigo-600" />
+                Resumir Documentos
+              </CardTitle>
+              <CardDescription>
+                Resumos e pontos-chave de documentos e PDFs
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Link to="/summarizer">
+                <Button className="w-full">Começar</Button>
+              </Link>
+            </CardContent>
+          </Card>
+
+          <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <MessageCircle className="h-5 w-5 text-indigo-600" />
+                Chat com IA
+              </CardTitle>
+              <CardDescription>
+                Converse com assistentes de IA avançados
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Link to="/chat">
+                <Button className="w-full">Começar</Button>
+              </Link>
+            </CardContent>
+          </Card>
+
+          <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <BookOpen className="h-5 w-5 text-indigo-600" />
+                Quadros de Vídeo
+              </CardTitle>
+              <CardDescription>
+                Extraia quadros de vídeos e edite-os
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Link to="/video-frames">
+                <Button className="w-full">Começar</Button>
+              </Link>
+            </CardContent>
+          </Card>
+
+          <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <PenTool className="h-5 w-5 text-indigo-600" />
+                Assinatura Digital
+              </CardTitle>
+              <CardDescription>
+                Crie assinaturas digitais personalizadas
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Link to="/signature">
+                <Button className="w-full">Começar</Button>
+              </Link>
+            </CardContent>
+          </Card>
+
+          <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Film className="h-5 w-5 text-indigo-600" />
+                Galeria
+              </CardTitle>
+              <CardDescription>
+                Visualize e gerencie suas criações
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Link to="/gallery">
+                <Button className="w-full">Começar</Button>
+              </Link>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
     </div>
   );
-};
-
-export default Index;
+}
