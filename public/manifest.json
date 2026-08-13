@@ -1,7 +1,7 @@
 {
-  "name": "Capivara Studio AI Magic",
-  "short_name": "Capivara AI",
-  "description": "App PWA da Capivara Studio AI Magic",
+  "name": "Brazblow",
+  "short_name": "Brazblow",
+  "description": "App PWA da Brazblow - Sua ferramenta de criação com IA",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
