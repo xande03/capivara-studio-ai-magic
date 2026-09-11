@@ -2,6 +2,8 @@ import {
   ArrowUpCircle,
   BookOpen,
   CalendarDays,
+  ChevronLeft,
+  ChevronRight,
   FileText,
   Film,
   LayoutGrid,
@@ -14,6 +16,7 @@ import {
   Scissors,
   Sparkles,
 } from 'lucide-react';
+import { useRef, type WheelEvent } from 'react';
 import { useLocation } from 'react-router-dom';
 import { NavLink } from '@/components/NavLink';
 import { cn } from '@/lib/utils';
@@ -37,11 +40,22 @@ const tools = [
 
 export function AppSidebar() {
   const location = useLocation();
+  const navRef = useRef<HTMLElement>(null);
+
+  const scrollTools = (amount: number) => {
+    navRef.current?.scrollBy({ left: amount, behavior: 'smooth' });
+  };
+
+  const handleWheel = (event: WheelEvent<HTMLElement>) => {
+    if (Math.abs(event.deltaY) > Math.abs(event.deltaX)) {
+      event.currentTarget.scrollLeft += event.deltaY;
+    }
+  };
 
   return (
     <header className="fixed inset-x-0 top-0 z-50 flex justify-center px-3 pt-3 sm:px-6 sm:pt-5">
-      <div className="top-nav-island top-nav-scroll w-full max-w-[1440px] touch-pan-x overflow-x-auto rounded-[2rem] p-2 sm:p-2.5">
-        <div className="flex min-w-max items-center gap-2">
+      <div className="top-nav-island w-full max-w-[1440px] rounded-[2rem] p-2 sm:p-2.5">
+        <div className="flex min-w-0 items-center gap-2">
           <NavLink
             to="/"
             aria-label="Ir para o início do Capivara Studio"
@@ -60,9 +74,21 @@ export function AppSidebar() {
 
           <div className="hidden h-8 w-px shrink-0 bg-border sm:block" aria-hidden="true" />
 
+          <button
+            type="button"
+            onClick={() => scrollTools(-260)}
+            aria-label="Ver ferramentas anteriores"
+            title="Ver ferramentas anteriores"
+            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border border-border/60 bg-background/60 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+          >
+            <ChevronLeft className="h-4 w-4" />
+          </button>
+
           <nav
+            ref={navRef}
             aria-label="Ferramentas IA"
-            className="flex shrink-0 items-center gap-1 scroll-smooth"
+            onWheel={handleWheel}
+            className="top-nav-scroll flex min-w-0 flex-1 touch-pan-x items-center gap-1 overflow-x-auto scroll-smooth"
           >
             {tools.map((tool) => {
               const isActive = location.pathname === tool.url;
@@ -95,6 +121,16 @@ export function AppSidebar() {
               );
             })}
           </nav>
+
+          <button
+            type="button"
+            onClick={() => scrollTools(260)}
+            aria-label="Ver mais ferramentas"
+            title="Ver mais ferramentas"
+            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border border-border/60 bg-background/60 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+          >
+            <ChevronRight className="h-4 w-4" />
+          </button>
         </div>
       </div>
     </header>
