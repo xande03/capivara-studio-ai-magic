@@ -1,18 +1,15 @@
 import { Outlet } from 'react-router-dom';
 import { AppSidebar } from '@/components/AppSidebar';
-import { SidebarProvider, SidebarInset } from '@/components/ui/sidebar';
 
 export default function Layout() {
   return (
-    <SidebarProvider>
-      <div className="flex h-screen w-full">
-        <AppSidebar />
-        <SidebarInset className="flex-1">
-          <main className="flex flex-1 flex-col p-4">
-            <Outlet />
-          </main>
-        </SidebarInset>
-      </div>
-    </SidebarProvider>
+    <div className="min-h-screen w-full">
+      <AppSidebar />
+      <main className="relative z-10 min-h-screen w-full px-3 pb-8 pt-28 sm:px-6 sm:pt-32 lg:pt-36">
+        <div className="mx-auto w-full max-w-[1440px]">
+          <Outlet />
+        </div>
+      </main>
+    </div>
   );
 }

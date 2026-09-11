@@ -146,6 +146,28 @@
     filter: drop-shadow(0 0 10px rgba(239, 68, 68, 0.3));
   }
 
+  .top-nav-island {
+    border: 1px solid hsl(var(--border) / 0.72);
+    background: hsl(var(--background) / 0.78);
+    box-shadow: 0 20px 48px hsl(0 45% 8% / 0.18), 0 3px 12px hsl(var(--primary) / 0.08);
+    backdrop-filter: blur(24px) saturate(150%);
+  }
+
+  .dark .top-nav-island {
+    border-color: hsl(var(--border) / 0.85);
+    background: hsl(var(--background) / 0.72);
+    box-shadow: 0 20px 48px hsl(0 0% 0% / 0.32), 0 3px 16px hsl(var(--primary) / 0.12);
+  }
+
+  .top-nav-scroll {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .top-nav-scroll::-webkit-scrollbar {
+    display: none;
+  }
+
   .glass-card {
     background: hsl(0, 0%, 100% / 0.8);
     backdrop-filter: blur(20px);
