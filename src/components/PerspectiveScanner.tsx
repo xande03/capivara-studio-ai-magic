@@ -329,7 +329,7 @@ export function PerspectiveScanner() {
               <Button
                 onClick={handleCorrect}
                 disabled={processing}
-                className="blue-gradient text-white"
+                className="red-gradient text-white"
               >
                 {processing ? (
                   <Loader2 className="w-4 h-4 animate-spin mr-2" />
@@ -366,7 +366,7 @@ export function PerspectiveScanner() {
                 className="w-full max-w-lg rounded-lg border border-border"
               />
               <div className="flex flex-wrap gap-2">
-                <Button size="sm" className="blue-gradient text-white" onClick={handleDownloadPdf}>
+                <Button size="sm" className="red-gradient text-white" onClick={handleDownloadPdf}>
                   <Download className="w-4 h-4 mr-2" /> Baixar como PDF
                 </Button>
                 <Button
@@ -401,7 +401,7 @@ export function PerspectiveScanner() {
               <div className="flex flex-wrap gap-2">
                 <Button
                   size="sm"
-                  className="blue-gradient text-white"
+                  className="red-gradient text-white"
                   onClick={() => {
                     const pdf = new jsPDF();
                     const lines = pdf.splitTextToSize(scanResult, 170);

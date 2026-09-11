@@ -90,7 +90,7 @@ export default function EditPage() {
           )}
           <AspectRatioSelector value={aspectRatio} onChange={setAspectRatio} />
           <Textarea placeholder="O que deseja editar? Ex: 'remova o fundo e adicione uma praia'" value={prompt} onChange={(e) => setPrompt(e.target.value)} className="resize-none" rows={3} />
-          <Button onClick={handleEdit} disabled={loading || !inputImage || !prompt.trim() || creditsExhausted} className="w-full blue-gradient text-white font-semibold">
+          <Button onClick={handleEdit} disabled={loading || !inputImage || !prompt.trim() || creditsExhausted} className="w-full red-gradient text-white font-semibold">
             {loading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Pencil className="w-4 h-4 mr-2" />}
             {creditsExhausted ? "Créditos Insuficientes" : loading ? "Editando..." : "Editar Imagem"}
           </Button>

@@ -62,7 +62,7 @@ export default function RemoveBgPage() {
             <span className="text-xs font-bold text-purple-700 uppercase tracking-tight">Utilizando Nano Banana Pro</span>
           </div>
           <AspectRatioSelector value={aspectRatio} onChange={setAspectRatio} />
-          <Button onClick={handleRemove} disabled={loading || !inputImage || creditsExhausted} className="w-full blue-gradient text-white font-semibold">
+          <Button onClick={handleRemove} disabled={loading || !inputImage || creditsExhausted} className="w-full red-gradient text-white font-semibold">
             {loading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Scissors className="w-4 h-4 mr-2" />}
             {creditsExhausted ? "Créditos Insuficientes" : loading ? "Removendo..." : "Remover Fundo"}
           </Button>

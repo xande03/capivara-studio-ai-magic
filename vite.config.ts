@@ -28,7 +28,7 @@ export default defineConfig(({ mode }) => ({
         name: 'Capivara Sills',
         short_name: 'Capivara Sills',
         description: 'Capivara Sills - Sua ferramenta de criação com IA',
-        theme_color: '#3b82f6',
+        theme_color: '#dc2626',
         icons: [
           {
             src: 'logo.png',

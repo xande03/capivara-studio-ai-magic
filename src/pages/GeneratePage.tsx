@@ -102,8 +102,8 @@
          return (
             <div className='max-w-5xl mx-auto space-y-6'>
                <div className='flex items-center gap-4'>
-                  <div className='tool-header-card glow-blue'>
-                     <Sparkles className='w-7 h-7 text-blue-600' />
+                  <div className='tool-header-card glow-red'>
+                     <Sparkles className='w-7 h-7 text-red-600' />
                   </div>
                   <div>
                      <h1 className='text-2xl font-bold text-foreground'>Gerar Imagem</h1>
@@ -138,7 +138,7 @@
                      <Button
                         onClick={handleGenerate}
                         disabled={loading || creditsExhausted || (!prompt.trim() && !inputImage)}
-                        className='w-full blue-gradient text-white font-semibold'
+                        className='w-full red-gradient text-white font-semibold'
                      >
                         {loading ? <Loader2 className='w-4 h-4 animate-spin mr-2' /> : <Sparkles className='w-4 h-4 mr-2' />}
                         {creditsExhausted ? 'CrÃ©ditos Insuficientes' : loading ? 'Gerando...' : 'Gerar Imagem'}
@@ -147,15 +147,15 @@
                         <div className='mt-4'>
                            <p className='text-sm font-medium text-foreground'>Upload: {uploadProgress}%</p>
                            <div className='w-full bg-gray-200 rounded-full h-2.5 mb-2'>
-                              <div className='bg-blue-600 h-2.5 rounded-full' style={{ width: `${uploadProgress}%` }}></div>
+                              <div className='bg-red-600 h-2.5 rounded-full' style={{ width: `${uploadProgress}%` }}></div>
                            </div>
                            <p className='text-sm font-medium text-foreground'>Processamento: {processingProgress}%</p>
                            <div className='w-full bg-gray-200 rounded-full h-2.5 mb-2'>
-                              <div className='bg-blue-600 h-2.5 rounded-full' style={{ width: `${processingProgress}%` }}></div>
+                              <div className='bg-red-600 h-2.5 rounded-full' style={{ width: `${processingProgress}%` }}></div>
                            </div>
                            <p className='text-sm font-medium text-foreground'>Download: {downloadProgress}%</p>
                            <div className='w-full bg-gray-200 rounded-full h-2.5 mb-2'>
-                              <div className='bg-blue-600 h-2.5 rounded-full' style={{ width: `${downloadProgress}%` }}></div>
+                              <div className='bg-red-600 h-2.5 rounded-full' style={{ width: `${downloadProgress}%` }}></div>
                            </div>
                         </div>
                      )}

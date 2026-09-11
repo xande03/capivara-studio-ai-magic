@@ -6,8 +6,8 @@ import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGrou
 const tools = [
   { title: 'Chat IA', description: 'Claude & DeepSeek', url: '/chat', icon: MessageCircle, color: 'bg-violet-500/10 text-violet-600' },
   { title: 'Upscale', description: 'Aumentar resolução com IA', url: '/upscale', icon: ArrowUpCircle, color: 'bg-purple-500/10 text-purple-600' },
-  { title: 'Gerar Imagem', description: 'Criar imagens com IA', url: '/generate', icon: Sparkles, color: 'bg-blue-500/10 text-blue-600' },
-  { title: 'Editar Imagem', description: 'Ferramentas de edição', url: '/edit', icon: Scissors, color: 'bg-blue-500/10 text-blue-600' },
+  { title: 'Gerar Imagem', description: 'Criar imagens com IA', url: '/generate', icon: Sparkles, color: 'bg-red-500/10 text-red-600' },
+  { title: 'Editar Imagem', description: 'Ferramentas de edição', url: '/edit', icon: Scissors, color: 'bg-red-500/10 text-red-600' },
   { title: 'Remover Fundo', description: 'Remover fundo de imagens', url: '/remove-bg', icon: Pencil, color: 'bg-amber-500/10 text-amber-600' },
   { title: 'Music FX', description: 'Efeitos musicais com IA', url: '/music-fx', icon: Music, color: 'bg-pink-500/10 text-pink-600' },
   { title: 'QR Code', description: 'Gerar QR codes', url: '/qr-code', icon: QrCode, color: 'bg-cyan-500/10 text-cyan-600' },

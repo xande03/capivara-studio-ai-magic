@@ -92,7 +92,7 @@ export function TextOverlayEditor({ imageSrc, onConfirm, onCancel }: TextOverlay
 
       if (t.id === selectedId) {
         const metrics = ctx.measureText(t.text);
-        ctx.strokeStyle = "hsl(221, 83%, 53%)";
+        ctx.strokeStyle = "hsl(0, 72%, 51%)";
         ctx.lineWidth = 2;
         ctx.setLineDash([5, 3]);
         ctx.strokeRect(
@@ -341,7 +341,7 @@ export function TextOverlayEditor({ imageSrc, onConfirm, onCancel }: TextOverlay
           <Button variant="outline" size="sm" onClick={onCancel}>
             Cancelar
           </Button>
-          <Button size="sm" className="blue-gradient text-white" onClick={handleConfirm} disabled={texts.length === 0}>
+          <Button size="sm" className="red-gradient text-white" onClick={handleConfirm} disabled={texts.length === 0}>
             <Check className="w-4 h-4 mr-1" /> Confirmar
           </Button>
         </div>

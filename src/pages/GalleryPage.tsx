@@ -40,8 +40,8 @@ export default function GalleryPage() {
     <div className="max-w-6xl mx-auto space-y-6">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-black blue-text flex items-center gap-2">
-            <LayoutGrid className="w-7 h-7 text-blue-500" />
+          <h1 className="text-2xl font-black red-text flex items-center gap-2">
+            <LayoutGrid className="w-7 h-7 text-red-500" />
             Galeria
           </h1>
           <p className="text-[11px] text-muted-foreground mt-1 uppercase tracking-wider font-medium opacity-70">
@@ -55,7 +55,7 @@ export default function GalleryPage() {
               key={filter.label}
               onClick={() => setActiveFilter(filter.label)}
               className={`px-5 py-1.5 rounded-full text-xs font-bold transition-all duration-300 ${activeFilter === filter.label
-                ? "bg-blue-500 text-blue-950 shadow-lg shadow-blue-500/20 scale-105"
+                ? "bg-red-500 text-red-950 shadow-lg shadow-red-500/20 scale-105"
                 : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
                 }`}
             >

@@ -23,7 +23,7 @@ function CopyButton({ text }: { text: string }) {
   };
   return (
     <button onClick={handleCopy} className="absolute -bottom-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity bg-background border border-border rounded-md p-1 shadow-sm" title="Copiar">
-      {copied ? <Check className="w-3.5 h-3.5 text-blue-500" /> : <Copy className="w-3.5 h-3.5 text-muted-foreground" />}
+      {copied ? <Check className="w-3.5 h-3.5 text-red-500" /> : <Copy className="w-3.5 h-3.5 text-muted-foreground" />}
     </button>
   );
 }
@@ -191,7 +191,7 @@ export default function ChatPage() {
       {/* Input */}
       <div className="glass-card rounded-2xl p-3 flex gap-2 items-end">
         <Textarea value={input} onChange={(e) => setInput(e.target.value)} onKeyDown={handleKeyDown} placeholder="Digite sua mensagem..." rows={1} className="resize-none border-0 bg-transparent focus-visible:ring-0 min-h-[40px] max-h-[120px]" />
-        <Button size="icon" className="blue-gradient text-white shrink-0" onClick={handleSend} disabled={loading || !input.trim()}>
+        <Button size="icon" className="red-gradient text-white shrink-0" onClick={handleSend} disabled={loading || !input.trim()}>
           <Send className="w-4 h-4" />
         </Button>
       </div>

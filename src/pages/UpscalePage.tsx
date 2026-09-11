@@ -77,7 +77,7 @@ export default function UpscalePage() {
               ))}
             </div>
           </div>
-          <Button onClick={handleProcess} disabled={loading || !inputImage || creditsExhausted} className="w-full blue-gradient text-white font-semibold">
+          <Button onClick={handleProcess} disabled={loading || !inputImage || creditsExhausted} className="w-full red-gradient text-white font-semibold">
             {loading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <ArrowUpCircle className="w-4 h-4 mr-2" />}
             {creditsExhausted ? "Créditos Insuficientes" : loading ? "Processando..." : "Fazer Upscale"}
           </Button>
