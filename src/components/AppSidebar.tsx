@@ -1,11 +1,13 @@
 import {
   ArrowUpCircle,
   BookOpen,
+  CalendarDays,
   FileText,
   Film,
   LayoutGrid,
   MessageCircle,
   Music,
+  NotebookPen,
   Pencil,
   PenTool,
   QrCode,
@@ -29,6 +31,8 @@ const tools = [
   { title: 'Assinatura Digital', description: 'Criar assinatura', url: '/signature', icon: PenTool, color: 'text-indigo-600' },
   { title: 'Frames de Vídeo', description: 'Extrair frames', url: '/video-frames', icon: Film, color: 'text-rose-600' },
   { title: 'Galeria', description: 'Galeria de imagens', url: '/gallery', icon: LayoutGrid, color: 'text-sky-600' },
+  { title: 'Calendário', description: 'Organizar compromissos', url: '/calendar', icon: CalendarDays, color: 'text-red-600' },
+  { title: 'Notas', description: 'Bloco de notas pessoal', url: '/notes', icon: NotebookPen, color: 'text-red-600' },
 ];
 
 export function AppSidebar() {

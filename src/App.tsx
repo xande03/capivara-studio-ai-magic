@@ -14,6 +14,8 @@ import MusicFxPage from '@/pages/MusicFxPage';
 import VideoFramesPage from '@/pages/VideoFramesPage';
 import SignaturePage from '@/pages/SignaturePage';
 import GalleryPage from '@/pages/GalleryPage';
+import CalendarPage from '@/pages/CalendarPage';
+import NotesPage from '@/pages/NotesPage';
 import './App.css';
 
 function App() {
@@ -35,6 +37,8 @@ function App() {
           <Route path="/video-frames" element={<VideoFramesPage />} />
           <Route path="/signature" element={<SignaturePage />} />
           <Route path="/gallery" element={<GalleryPage />} />
+          <Route path="/calendar" element={<CalendarPage />} />
+          <Route path="/notes" element={<NotesPage />} />
         </Route>
       </Routes>
     </Router>

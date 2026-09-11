@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Sparkles, ArrowUpCircle, Scissors, Pencil, LayoutGrid, Zap, QrCode, Music, FileText, MessageCircle, BookOpen, PenTool, Film } from 'lucide-react';
+import { CalendarDays, Sparkles, ArrowUpCircle, Scissors, Pencil, LayoutGrid, Zap, QrCode, Music, FileText, MessageCircle, BookOpen, NotebookPen, PenTool, Film } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
@@ -233,6 +233,40 @@ export default function Index() {
             </CardHeader>
             <CardContent>
               <Link to="/gallery">
+                <Button className="w-full">Começar</Button>
+              </Link>
+            </CardContent>
+          </Card>
+
+          <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <CalendarDays className="h-5 w-5 text-red-600" />
+                Calendário
+              </CardTitle>
+              <CardDescription>
+                Organize compromissos, tarefas e lembretes
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Link to="/calendar">
+                <Button className="w-full">Começar</Button>
+              </Link>
+            </CardContent>
+          </Card>
+
+          <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <NotebookPen className="h-5 w-5 text-red-600" />
+                Bloco de notas
+              </CardTitle>
+              <CardDescription>
+                Escreva, pesquise e salve suas notas pessoais
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Link to="/notes">
                 <Button className="w-full">Começar</Button>
               </Link>
             </CardContent>

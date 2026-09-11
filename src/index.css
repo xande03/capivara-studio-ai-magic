@@ -168,6 +168,22 @@
     display: none;
   }
 
+  .calendar-event-day {
+    position: relative;
+  }
+
+  .calendar-event-day::after {
+    position: absolute;
+    bottom: 3px;
+    left: 50%;
+    width: 4px;
+    height: 4px;
+    border-radius: 9999px;
+    background: hsl(var(--primary));
+    content: "";
+    transform: translateX(-50%);
+  }
+
   .glass-card {
     background: hsl(0, 0%, 100% / 0.8);
     backdrop-filter: blur(20px);
