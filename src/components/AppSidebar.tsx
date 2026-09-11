@@ -40,8 +40,8 @@ export function AppSidebar() {
 
   return (
     <header className="fixed inset-x-0 top-0 z-50 flex justify-center px-3 pt-3 sm:px-6 sm:pt-5">
-      <div className="top-nav-island w-full max-w-[1440px] rounded-[2rem] p-2 sm:p-2.5">
-        <div className="flex min-w-0 items-center gap-2">
+      <div className="top-nav-island top-nav-scroll w-full max-w-[1440px] touch-pan-x overflow-x-auto rounded-[2rem] p-2 sm:p-2.5">
+        <div className="flex min-w-max items-center gap-2">
           <NavLink
             to="/"
             aria-label="Ir para o início do Capivara Studio"
@@ -62,7 +62,7 @@ export function AppSidebar() {
 
           <nav
             aria-label="Ferramentas IA"
-            className="top-nav-scroll flex min-w-0 flex-1 items-center gap-1 overflow-x-auto scroll-smooth"
+            className="flex shrink-0 items-center gap-1 scroll-smooth"
           >
             {tools.map((tool) => {
               const isActive = location.pathname === tool.url;
