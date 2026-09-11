@@ -92,7 +92,7 @@ export function TextOverlayEditor({ imageSrc, onConfirm, onCancel }: TextOverlay
 
       if (t.id === selectedId) {
         const metrics = ctx.measureText(t.text);
-        ctx.strokeStyle = "hsl(150, 80%, 50%)";
+        ctx.strokeStyle = "hsl(221, 83%, 53%)";
         ctx.lineWidth = 2;
         ctx.setLineDash([5, 3]);
         ctx.strokeRect(

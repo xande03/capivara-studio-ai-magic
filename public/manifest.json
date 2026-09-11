@@ -4,8 +4,8 @@
   "description": "App PWA da Brazblow - Sua ferramenta de criação com IA",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#000000",
+  "background_color": "#eff6ff",
+  "theme_color": "#2563eb",
   "icons": [
     {
       "src": "/icon-192x192.png",

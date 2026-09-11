@@ -9,6 +9,8 @@ export default defineConfig(({ mode }) => ({
   server: {
     host: "::",
     port: 8080,
+    // Permite o host dinâmico usado pelo preview do Agent Mode.
+    allowedHosts: [".e2b.app"],
     hmr: {
       overlay: false,
     },

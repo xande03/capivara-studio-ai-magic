@@ -214,11 +214,11 @@ const QrCodePage = () => {
         <div className="max-w-6xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
             <header className="space-y-4">
                 <div className="flex items-center gap-4">
-                    <div className="w-14 h-14 rounded-2xl overflow-hidden shadow-lg shadow-emerald-500/20 border border-border">
+                    <div className="w-14 h-14 rounded-2xl overflow-hidden shadow-lg shadow-blue-500/20 border border-border">
                         <img src="/logo.png" alt="Capivara Stúdio" className="w-full h-full object-cover" />
                     </div>
                     <div>
-                        <h1 className="text-3xl font-black tracking-tight emerald-text">QR Code Magic</h1>
+                        <h1 className="text-3xl font-black tracking-tight blue-text">QR Code Magic</h1>
                         <p className="text-muted-foreground text-xs font-bold uppercase tracking-[0.2em] opacity-70">Implantando informações com precisão cinematográfica</p>
                     </div>
                 </div>
@@ -228,10 +228,10 @@ const QrCodePage = () => {
                 {/* Configuration Panel */}
                 <div className="space-y-6">
                     <Card className="glass-card overflow-hidden relative group">
-                        <div className="absolute inset-0 bg-gradient-to-tr from-emerald-500/10 via-transparent to-transparent pointer-events-none" />
+                        <div className="absolute inset-0 bg-gradient-to-tr from-blue-500/10 via-transparent to-transparent pointer-events-none" />
                         <CardHeader>
                             <CardTitle className="text-xl flex items-center gap-2 text-foreground">
-                                <Sparkles className="w-5 h-5 text-emerald-500" />
+                                <Sparkles className="w-5 h-5 text-blue-500" />
                                 Configuração Profissional
                             </CardTitle>
                             <CardDescription>
@@ -241,12 +241,12 @@ const QrCodePage = () => {
                         <CardContent className="space-y-6">
                             <Tabs value={category} onValueChange={handleCategoryChange} className="w-full">
                                 <TabsList className="grid grid-cols-6 w-full bg-secondary p-1 rounded-xl">
-                                    <TabsTrigger value="link" className="data-[state=active]:bg-emerald-500 data-[state=active]:text-white rounded-lg transition-all"><LinkIcon className="w-4 h-4" /></TabsTrigger>
-                                    <TabsTrigger value="pdf" className="data-[state=active]:bg-emerald-500 data-[state=active]:text-white rounded-lg transition-all"><FileText className="w-4 h-4" /></TabsTrigger>
-                                    <TabsTrigger value="music" className="data-[state=active]:bg-emerald-500 data-[state=active]:text-white rounded-lg transition-all"><Music className="w-4 h-4" /></TabsTrigger>
-                                    <TabsTrigger value="image" className="data-[state=active]:bg-emerald-500 data-[state=active]:text-white rounded-lg transition-all"><ImageIcon className="w-4 h-4" /></TabsTrigger>
-                                    <TabsTrigger value="file" className="data-[state=active]:bg-emerald-500 data-[state=active]:text-white rounded-lg transition-all"><File className="w-4 h-4" /></TabsTrigger>
-                                    <TabsTrigger value="text" className="data-[state=active]:bg-emerald-500 data-[state=active]:text-white rounded-lg transition-all"><Type className="w-4 h-4" /></TabsTrigger>
+                                    <TabsTrigger value="link" className="data-[state=active]:bg-blue-500 data-[state=active]:text-white rounded-lg transition-all"><LinkIcon className="w-4 h-4" /></TabsTrigger>
+                                    <TabsTrigger value="pdf" className="data-[state=active]:bg-blue-500 data-[state=active]:text-white rounded-lg transition-all"><FileText className="w-4 h-4" /></TabsTrigger>
+                                    <TabsTrigger value="music" className="data-[state=active]:bg-blue-500 data-[state=active]:text-white rounded-lg transition-all"><Music className="w-4 h-4" /></TabsTrigger>
+                                    <TabsTrigger value="image" className="data-[state=active]:bg-blue-500 data-[state=active]:text-white rounded-lg transition-all"><ImageIcon className="w-4 h-4" /></TabsTrigger>
+                                    <TabsTrigger value="file" className="data-[state=active]:bg-blue-500 data-[state=active]:text-white rounded-lg transition-all"><File className="w-4 h-4" /></TabsTrigger>
+                                    <TabsTrigger value="text" className="data-[state=active]:bg-blue-500 data-[state=active]:text-white rounded-lg transition-all"><Type className="w-4 h-4" /></TabsTrigger>
                                 </TabsList>
 
                                 <div className="mt-8 space-y-6">
@@ -258,20 +258,20 @@ const QrCodePage = () => {
                                                 placeholder={category === "link" ? "https://exemplo.com" : "Digite a mensagem que o QR Code deve exibir..."}
                                                 value={inputValue}
                                                 onChange={(e) => setInputValue(e.target.value)}
-                                                className="bg-secondary/50 border-border focus:border-emerald-500/50 h-12 transition-all placeholder:text-muted-foreground/50"
+                                                className="bg-secondary/50 border-border focus:border-blue-500/50 h-12 transition-all placeholder:text-muted-foreground/50"
                                             />
                                         </div>
                                     ) : (
                                         <div className="space-y-3">
                                             <Label className="text-sm font-bold tracking-tight uppercase opacity-70">Upload de {category.toUpperCase()}</Label>
                                             <label
-                                                className="flex flex-col items-center justify-center w-full h-40 border-2 border-dashed border-border rounded-2xl cursor-pointer hover:bg-emerald-500/5 hover:border-emerald-500/40 transition-all group overflow-hidden relative bg-secondary/30"
+                                                className="flex flex-col items-center justify-center w-full h-40 border-2 border-dashed border-border rounded-2xl cursor-pointer hover:bg-blue-500/5 hover:border-blue-500/40 transition-all group overflow-hidden relative bg-secondary/30"
                                             >
                                                 <div className="flex flex-col items-center justify-center pt-5 pb-6 z-10">
                                                     {file ? (
-                                                        <CheckCircle2 className="w-10 h-10 text-emerald-500 mb-3 animate-bounce" />
+                                                        <CheckCircle2 className="w-10 h-10 text-blue-500 mb-3 animate-bounce" />
                                                     ) : (
-                                                        <Upload className="w-10 h-10 text-muted-foreground group-hover:text-emerald-500 transition-colors mb-3" />
+                                                        <Upload className="w-10 h-10 text-muted-foreground group-hover:text-blue-500 transition-colors mb-3" />
                                                     )}
                                                     <p className="text-sm font-bold text-foreground">
                                                         {file ? file.name : `Selecione seu arquivo ${category === 'music' ? 'de Áudio' : category.toUpperCase()}`}
@@ -285,13 +285,13 @@ const QrCodePage = () => {
 
                                     <div className="space-y-3 p-4 rounded-2xl bg-secondary/30 border border-border">
                                         <Label htmlFor="prompt" className="text-xs font-bold italic opacity-60 flex items-center gap-2">
-                                            <Sparkles className="w-3 h-3 text-emerald-500" />
+                                            <Sparkles className="w-3 h-3 text-blue-500" />
                                             Deseja um estilo visual via IA? (Opcional)
                                         </Label>
                                         <Input
                                             id="prompt"
                                             placeholder="Ex: Estilo Tech, Futurista com bordas arredondadas..."
-                                            className="bg-secondary/50 border-border focus:border-emerald-500/20 italic text-xs h-10 placeholder:text-muted-foreground/40"
+                                            className="bg-secondary/50 border-border focus:border-blue-500/20 italic text-xs h-10 placeholder:text-muted-foreground/40"
                                         />
                                     </div>
                                 </div>
@@ -301,8 +301,8 @@ const QrCodePage = () => {
                             <Button
                                 onClick={generateQrCode}
                                 className={`w-full h-14 rounded-xl gap-2 shadow-xl transition-all hover:scale-[1.01] active:scale-[0.98] font-black uppercase tracking-widest text-xs ${(isGenerating || isUploading)
-                                    ? "bg-emerald-500/20 text-emerald-600 dark:text-emerald-400"
-                                    : "bg-emerald-600 hover:bg-emerald-500 text-white shadow-emerald-900/40"
+                                    ? "bg-blue-500/20 text-blue-600 dark:text-blue-400"
+                                    : "bg-blue-600 hover:bg-blue-500 text-white shadow-blue-900/40"
                                     }`}
                                 disabled={isGenerating || isUploading}
                             >
@@ -321,11 +321,11 @@ const QrCodePage = () => {
                         </CardFooter>
                     </Card>
 
-                    <Card className="bg-emerald-500/5 border-emerald-500/10 p-4">
+                    <Card className="bg-blue-500/5 border-blue-500/10 p-4">
                         <div className="flex items-start gap-3">
-                            <ShieldCheck className="w-5 h-5 text-emerald-500 shrink-0 mt-0.5" />
+                            <ShieldCheck className="w-5 h-5 text-blue-500 shrink-0 mt-0.5" />
                             <div>
-                                <p className="text-xs font-bold emerald-text uppercase tracking-widest">Garantia Studio Pro</p>
+                                <p className="text-xs font-bold blue-text uppercase tracking-widest">Garantia Studio Pro</p>
                                 <p className="text-[11px] text-muted-foreground leading-relaxed mt-1">
                                     Todos os arquivos são armazenados permanentemente. O link gerado é acessível a qualquer pessoa que escaneie o QR Code. Digitalização 100% precisa.
                                 </p>
@@ -338,7 +338,7 @@ const QrCodePage = () => {
                 <div className="lg:sticky lg:top-8">
                     <Card className="glass-card p-10 flex flex-col items-center justify-center min-h-[500px] relative overflow-hidden rounded-3xl shadow-2xl">
                         {/* Dynamic Background Effects */}
-                        <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/5 blur-[100px] rounded-full animate-pulse" />
+                        <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/5 blur-[100px] rounded-full animate-pulse" />
                         <div className="absolute bottom-0 left-0 w-64 h-64 bg-blue-500/5 blur-[100px] rounded-full delay-700 animate-pulse" />
 
                         {qrValue ? (
@@ -353,11 +353,11 @@ const QrCodePage = () => {
                                         level="Q"
                                         includeMargin={false}
                                     />
-                                    <div className="absolute inset-0 border-4 border-emerald-500/10 rounded-[40px] group-hover:border-emerald-500/30 transition-all pointer-events-none" />
+                                    <div className="absolute inset-0 border-4 border-blue-500/10 rounded-[40px] group-hover:border-blue-500/30 transition-all pointer-events-none" />
                                 </div>
 
                                 <div className="text-center space-y-3">
-                                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-[10px] font-bold emerald-text uppercase tracking-widest">
+                                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-[10px] font-bold blue-text uppercase tracking-widest">
                                         <CheckCircle2 className="w-3 h-3" /> Digitalizável
                                     </div>
                                     <h3 className="font-bold text-2xl text-foreground tracking-tight">QR Code Magic Ativado</h3>
@@ -386,8 +386,8 @@ const QrCodePage = () => {
                         ) : (
                             <div className="text-center space-y-8 flex flex-col items-center">
                                 <div className="w-56 h-56 bg-secondary rounded-[40px] flex items-center justify-center border border-border relative group">
-                                    <div className="absolute inset-0 bg-emerald-500/5 blur-xl group-hover:bg-emerald-500/10 transition-all rounded-full" />
-                                    <QrCode className="w-20 h-20 text-muted-foreground/20 group-hover:text-emerald-500/20 transition-all" />
+                                    <div className="absolute inset-0 bg-blue-500/5 blur-xl group-hover:bg-blue-500/10 transition-all rounded-full" />
+                                    <QrCode className="w-20 h-20 text-muted-foreground/20 group-hover:text-blue-500/20 transition-all" />
                                 </div>
                                 <div className="space-y-3">
                                     <p className="text-foreground/80 font-bold text-lg tracking-tight">O Motor QR Magic está desligado</p>
